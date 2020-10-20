@@ -7,11 +7,14 @@ namespace dotNet5781_00_7588_3756
     {
         static void Main(string[] args)
         {
-            welcome7588();
+            Welcome7588();
+            Welcome3756();
             Console.ReadKey();
         }
 
-        private static void welcome7588()
+        static partial void Welcome3756();
+
+        private static void Welcome7588()
         {
             Console.WriteLine("Enter your name: ");
             string name = Console.ReadLine();
