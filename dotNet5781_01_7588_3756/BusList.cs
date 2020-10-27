@@ -6,6 +6,8 @@ namespace dotNet5781_01_7588_3756
     class BusList
     {
         private List<Bus> _allBus;
+        private const int MAX_DISTANCE = 2000;
+           
         /*
          * constractor
          */
@@ -71,7 +73,7 @@ namespace dotNet5781_01_7588_3756
             }
             
             Random rand = new Random(DateTime.Now.Millisecond);
-            int kilometers = rand.Next();
+            int kilometers = rand.Next(MAX_DISTANCE);
             Console.WriteLine("The travel distance is {0}", kilometers);
             
             if (selectedBus.NeedRefueling(kilometers) && !selectedBus.IsFueled)
