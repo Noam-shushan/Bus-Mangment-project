@@ -1,42 +1,27 @@
 ﻿using System;
-using System.Text;
 
 public class Bus
 {
-	private int _licenseNumber;
-	private DateTime _startActivity;
-	private int _kilometers;
-	private DateTime _lastTreatment;
-	private bool _isFueled;
-	private const int KILOMETER_BEFORE_TREATMENT = 20000;
+	private string _licenseNumber; // the license number of the bus
+	private DateTime? _startActivity; // the date of the stert activity
+	private int _kilometers; // the total kilometers
+	private int _prevKilometers; // the previes kilometers before a travel
+	private int _kilometersAfterTreatment; // kilometers after treatment
+	private DateTime? _lastTreatment; //the date of the last treatment
+	private bool _isFueled; // flag to know if the bus is fueled
+	private const int KILOMETER_BEFORE_TREATMENT = 20000; 
 	private const int MAX_KILOMETER_AFTER_REFUELING = 1200;
-	private const int MAX_DIGITS_FOR_BUS_BEFORE_2018 = 1000000;
-	private const int MAX_DIGITS_FOR_BUS_AFTER_2018 = 10000000;
 
-
-	public Bus(int licenseNumber, DateTime startActivity)
+	// constractor
+	public Bus(string licenseNumber, DateTime? startActivity)
 	{
 		_licenseNumber = licenseNumber;
 		_startActivity = startActivity;
 		_isFueled = true;
 	}
 
-	public bool ValidInput(int liscenseNumber, string startActivity)
-    {
 
-		DateTime date = Convert.ToDateTime(startActivity);
-		if (date == null)
-			return false;
-		if (date.Year < 2018 &&
-				liscenseNumber < MAX_DIGITS_FOR_BUS_BEFORE_2018)
-			return true;
-		if (date.Year >= 2018 &&
-			liscenseNumber < MAX_DIGITS_FOR_BUS_AFTER_2018)
-			return true;
-		return false;
-	}
-
-	public int LiscenseNumber
+	public string LiscenseNumber
     {
 		get => _licenseNumber;
 		set => _licenseNumber = value;
@@ -45,15 +30,19 @@ public class Bus
 	public int Kilometers
 	{
 		get => _kilometers; 
-		/*אם הקילומטרז + הנסיעה החדשה קטן מ1200 
-		 * וגם הוא תידלק
-		 * וגם הוא לא צריך טיפול (כי עברה שנה או 20000 קלימטר)
-		 * אז הוא יכול לקבל את הנסיעה החדשה
-		 */
 		set 
-		{ 
+		{
+			_prevKilometers = _kilometers;
+			//update only if the bus is fueled and dont need a treatment
 			if (IsFueled && !this.NeedsTreatment())
-				_kilometers = value; 
+				_kilometers += value; 
+			
+			_kilometersAfterTreatment = _kilometers;
+			//If the bus has traveled a greater distance than 12000 kilometers
+			//it needs refueling 
+			if ((_kilometers - _prevKilometers) >=
+				MAX_KILOMETER_AFTER_REFUELING)
+				IsFueled = false;
 		} 
     }
 
@@ -71,47 +60,35 @@ public class Bus
 	public void Treatment()
     {
 		_lastTreatment = DateTime.Now;
+		_kilometersAfterTreatment = 0;
     }
-
+	/*
+	 * Checks if a year has passed since the last treatment
+	 * or 20,000 kilometers since the last treatment
+	 */
 	public bool NeedsTreatment()
     {
-		return (this._lastTreatment - DateTime.Now.Date).Days >= 365 ||
-			_kilometers >= KILOMETER_BEFORE_TREATMENT;
+		return (_lastTreatment - DateTime.Now.Date)?.Days >= 365 ||
+			_kilometersAfterTreatment >= KILOMETER_BEFORE_TREATMENT;
 	}
 
 	public string toString()
     {
-		string strLiscenseNumber = "";
-		if (_startActivity.Year < 2018)
-        {
-			strLiscenseNumber = AddZeros(LiscenseNumber,
-				MAX_DIGITS_FOR_BUS_BEFORE_2018);
-
-			strLiscenseNumber.Insert(2, "-");
-			strLiscenseNumber.Insert(6, "-");
+		string strLiscenseNumber = _licenseNumber;
+		if (_startActivity?.Year < 2018)
+        { // 00-000-00
+			strLiscenseNumber = strLiscenseNumber.Insert(2, "-");
+			strLiscenseNumber = strLiscenseNumber.Insert(6, "-");
 		}
 		else
-		{
-			strLiscenseNumber = AddZeros(LiscenseNumber,
-				MAX_DIGITS_FOR_BUS_AFTER_2018);
-
-			strLiscenseNumber.Insert(3, "-");
-			strLiscenseNumber.Insert(6, "-");
+		{ // 000-00-000
+			strLiscenseNumber = strLiscenseNumber.Insert(3, "-");
+			strLiscenseNumber = strLiscenseNumber.Insert(6, "-");
 		}
-		return String.Format("liscense number : {0}\nKilometers: {1}", strLiscenseNumber, Kilometers);
+		return String.Format("liscense number: {0}\n" +
+			"Kilometers: {1}\n" +
+			"date of last treatment: {2}",
+			strLiscenseNumber, Kilometers,
+			_lastTreatment?.ToShortDateString());
 	}
-	
-	private string AddZeros(int liscenseNumber, int yaerDefintion)
-    {
-		var sb = new StringBuilder(liscenseNumber.ToString());
-		for (int x = yaerDefintion; x > 0; x /= 10)
-		{
-			if (liscenseNumber < x)
-				sb.Insert(0, "0");
-		}
-		return sb.ToString();
-	}
-
-
-
 }

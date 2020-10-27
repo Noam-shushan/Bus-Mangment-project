@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace dotNet5781_01_7588_3756
 {
     class BusList
     {
         private List<Bus> _allBus;
-        
+        /*
+         * constractor
+         */
         public BusList()
         {
             _allBus = new List<Bus>();
         }
-
-        
-
+        /*insert bus to the bus list
+         */
         public void InsertBus(Bus newBus) 
         {
             _allBus.Add(newBus);
         }
-
-        public Bus getBus(int licenseNumber)
+        /*
+         * get bus by liscense number from the bus list
+         * @param - licenseNumber
+         * @return - the bus object or null if not fuond in the list
+         */
+        public Bus GetBus(string licenseNumber)
         {
             foreach (Bus b in _allBus)
             {
@@ -31,132 +33,100 @@ namespace dotNet5781_01_7588_3756
             }
             return null;
         }
-
-        public void menu()
+        /*
+         * geting infromtion from the user to add new bus tothe list
+         * add bus to the bus list
+         */
+        public void AddBusToList() // case "1"
         {
-            string option = "";
-            do
-            {
-                Console.WriteLine(@"Insert option:");
-                Console.WriteLine(@"    1 - Insert bus ");
-                Console.WriteLine(@"    2 - Get bus ");
-                Console.WriteLine(@"    3 - Bus service");
-                Console.WriteLine(@"    0 - Exit ");
-                Console.Write(@"Your option :   ");
+            DateTime? startActivity = UserInput.GetStartActivityFromUser();
+            if (startActivity == null)
+                return; // not valid Date
 
-                option = Console.ReadLine();
-                this.checkMenuOption(option);
-            } while (option != "0");
-        }
+            string liscenseNumber = UserInput.GetLiscenseNumberFromUser(startActivity);
+            if (liscenseNumber == "")
+                return; // not valid license number
 
-        public int GetLiscenseNumberFromUser()
-        {
-            int result;
-            Console.Write(@"Insert licensing number of the bus: ");
-            string liscenseNumber = Console.ReadLine();
-            if (!int.TryParse(liscenseNumber, out result))
-            {
-                Console.WriteLine("Erorr: invalid liscense number");
-                return -1;
-            }
-            return result;
-        }
-
-        public void checkMenuOption(string option)
-        {
-            //Console.Clear();
-            Console.WriteLine(@"********");
-            switch (option)
-            {
-                case "1":
-                    AddBusToList();
-                    break;
-                case "2":
-                    ChooseBus();
-                    break;
-                case "3": break;
-                case "0": break;
-                default:
-                    Console.WriteLine(@"Error Invalid option");
-                    break;
-            }
-            Console.WriteLine(@"********");
-
-        }
-
-        private void AddBusToList()
-        {
-            int liscenseNumber = this.GetLiscenseNumberFromUser();
-            Console.Write(@"Insert a start activity date of the bus '(yyyy-mm-dd)': ");
-            string startActivity = Console.ReadLine();
-
-            Bus newBus = new Bus(0, Convert.ToDateTime(startActivity));
-
-            if (!newBus.ValidInput(liscenseNumber, startActivity))
-            {
-                Console.WriteLine("Invalid licence number");
-                return;
-            }
-            newBus.LiscenseNumber = liscenseNumber;
+            Bus newBus = new Bus(liscenseNumber, startActivity);
             this.InsertBus(newBus);
-            Console.WriteLine(@"Bus inserted");
+            Console.WriteLine("bus inserted");
         }
-
-        private void ChooseBus()
+        /*
+         * Get infromtion about the bus
+         * Sets travel distance randomly
+         * apply the travel
+         */
+        public void ChooseBus() // case "2"
         {
-            int liscenseNumber = this.GetLiscenseNumberFromUser();
-            Bus selectedBus = this.getBus(liscenseNumber);
-            
+            string liscenseNumber = UserInput.GetLiscenseNumberFromUser();
+            Bus selectedBus = this.GetBus(liscenseNumber);            
             if (!this.ExiestBus(selectedBus))
-                return;
+                return; // bus not found in the list
             
             if (selectedBus.NeedsTreatment())
             {
+                Console.WriteLine("Can not make the trip!");
                 Console.Write("This bus need treatment");
-                return;                     
+                return; // Can not make a trip must take care of the bus
             }
             
             Random rand = new Random(DateTime.Now.Millisecond);
             int kilometers = rand.Next();
+            Console.WriteLine("The travel distance is {0}", kilometers);
             
-            if (selectedBus.NeedRefueling(kilometers))
-            {
-                Console.Write(@"This bus need refueing to make this drive");
+            if (selectedBus.NeedRefueling(kilometers) && !selectedBus.IsFueled)
+            { // If both the new driving distance is greater than 1200
+              //and the vehicle is not refueled
+                Console.Write("This bus need refueing to make this drive");
                 return;
             }
             
             selectedBus.Kilometers = kilometers;
             Console.WriteLine("the drive approved");
         }
-        
-        public void GetService()
+        /*
+         * Get infromtion about the bus
+         * Performing refueling of the bus
+         * Periodic treatment or treatment after 20,000 kilometers
+         */
+        public void GetService() // case "3"
         {
-            int liscenseNumber = this.GetLiscenseNumberFromUser();
+            string liscenseNumber = UserInput.GetLiscenseNumberFromUser();
+            Bus selectedBus = this.GetBus(liscenseNumber);
+            if (!this.ExiestBus(selectedBus))
+                return; // bus not found in the bus list
             
-            Console.Write("enter:\n" +
-                "1 - for fueling the bus:\n" +
-                "2 - to make treatment");
-            
-            string option = Console.ReadLine();
-            Bus selectedBus = this.getBus(liscenseNumber);
-            
-            if(!this.ExiestBus(selectedBus)) 
-                return;
+            Console.Write("Insert option:\n" +
+                "1 - for fueling the bus: \n" +
+                "2 - to make treatment: ");            
+            string option = Console.ReadLine();                    
             
             switch (option)
             {
                 case "1":
-                    selectedBus.IsFueled = true;
-                    Console.WriteLine("bus {0} get Fueled", liscenseNumber);
+                    selectedBus.IsFueled = true; // refueling
+                    Console.WriteLine("bus get Fueled");
                     break;
                 case "2":
-                    selectedBus.Treatment();
-                    Console.WriteLine("bus {0} Treated", liscenseNumber);
+                    selectedBus.Treatment(); // treatment
+                    Console.WriteLine("bus Treated");
                     break;
             }
-
         }
-
+        /*
+         * print all bus liscense numbers,Kilometers and
+         * date of last treatment
+         */
+        public void PrintBusList() // case "4"
+        {
+            foreach(Bus b in _allBus)
+            {
+                Console.WriteLine(b.toString() + "\n");
+            }
+        }
+        /*
+         * check if the bus exiest 
+         */
         private bool ExiestBus(Bus b)
         {
             if (b == null)
@@ -166,6 +136,5 @@ namespace dotNet5781_01_7588_3756
             }
             return true;
         }
-
     }
 }
