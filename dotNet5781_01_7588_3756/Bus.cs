@@ -72,7 +72,7 @@ public class Bus
 			_kilometersAfterTreatment >= KILOMETER_BEFORE_TREATMENT;
 	}
 
-	public string toString()
+	public override string ToString()
     {
 		string strLiscenseNumber = _licenseNumber;
 		if (_startActivity?.Year < 2018)

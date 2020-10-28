@@ -123,7 +123,7 @@ namespace dotNet5781_01_7588_3756
         {
             foreach(Bus b in _allBus)
             {
-                Console.WriteLine(b.toString() + "\n");
+                Console.WriteLine(b + "\n");
             }
         }
         /*

@@ -64,13 +64,14 @@ namespace dotNet5781_01_7588_3756
         {
             Console.Write(@"Insert a start activity date of the bus '(yyyy-mm-dd)': ");
             DateTime startActivity;
+            
             if(!DateTime.TryParse(Console.ReadLine(), out startActivity))
             {
                 Console.WriteLine("Error: invalid date time");
                 return null;
             }
+            
             return startActivity;
-
         }
         /*
          * get liscense number from the user
@@ -83,26 +84,34 @@ namespace dotNet5781_01_7588_3756
         public static string GetLiscenseNumberFromUser(DateTime? startActivity)
         {
             Console.Write(@"Insert liscense number of the bus: ");
-            string liscenseNumber = Console.ReadLine();
+            string liscenseNumber = Console.ReadLine().Replace("-", "");
             
-            if(!ValidLiscenseNumber(liscenseNumber, startActivity))
+            if(!ValidLiscenseNumber(liscenseNumber, startActivity) ||
+                !FormatValid(liscenseNumber))
+            {
+                Console.WriteLine("Error: Invalid liscense number");
+                return "";
+            }
+            
+            return liscenseNumber;
+        }
+        /*override the previs function
+         * gest return the user input for the liscense number
+         */
+        public static string GetLiscenseNumberFromUser()
+        {
+            Console.Write(@"Insert liscense number of the bus: ");
+            string liscenseNumber = Console.ReadLine().Replace("-", "");
+            if (!FormatValid(liscenseNumber))
             {
                 Console.WriteLine("Error: Invalid liscense number");
                 return "";
             }
             return liscenseNumber;
         }
-        /*overide the previs function
-         * gest return the user input for the liscense number
-         */
-        public static string GetLiscenseNumberFromUser()
-        {
-            Console.Write(@"Insert liscense number of the bus: ");
-            string liscenseNumber = Console.ReadLine();
-            return liscenseNumber;
-        }
         /*
-         * check valid liscense number
+         * check valid liscense number 
+         * regarding the date of commencement of its activity
          */
         private static bool ValidLiscenseNumber(string liscenseNumber, DateTime? startActivity)
         {
@@ -113,6 +122,22 @@ namespace dotNet5781_01_7588_3756
                 liscenseNumber.Length == DIGITS_FOR_BUS_AFTER_2018)
                 return true;
             return false;
+        }
+        /*
+         * check if the liscense number the input from the user
+         * is contain only "123456789-"
+         */
+        private static bool FormatValid(string format)
+        {
+            string allowableLetters = "123456789-";
+
+            foreach (char c in format)
+            {
+                if (!allowableLetters.Contains(c.ToString()))
+                    return false;
+            }
+
+            return true;
         }
 
     }
