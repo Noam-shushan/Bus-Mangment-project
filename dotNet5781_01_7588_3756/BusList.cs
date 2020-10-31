@@ -36,7 +36,7 @@ namespace dotNet5781_01_7588_3756
             return null;
         }
         /*
-         * geting infromtion from the user to add new bus tothe list
+         * geting infromtion from the user to add new bus to the list
          * add bus to the bus list
          */
         public void AddBusToList() // case "1"
@@ -48,6 +48,12 @@ namespace dotNet5781_01_7588_3756
             string liscenseNumber = UserInput.GetLiscenseNumberFromUser(startActivity);
             if (liscenseNumber == "")
                 return; // not valid license number
+
+            if(GetBus(liscenseNumber) != null)
+            {
+                Console.WriteLine("Erorr: the bus is already in the bus list");
+                return;
+            }
 
             Bus newBus = new Bus(liscenseNumber, startActivity);
             this.InsertBus(newBus);
