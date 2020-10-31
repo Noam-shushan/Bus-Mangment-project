@@ -2,65 +2,46 @@
 
 public class Bus
 {
-	private string _licenseNumber; // the license number of the bus
-	private DateTime? _startActivity; // the date of the stert activity
+    private DateTime? _startActivity; // the date of the stert activity
 	private int _kilometers; // the total kilometers
-	private int _prevKilometers; // the previes kilometers before a travel
-	private int _kilometersAfterTreatment; // kilometers after treatment
-	private DateTime? _lastTreatment; //the date of the last treatment
-	private bool _isFueled; // flag to know if the bus is fueled
+    private DateTime? _lastTreatment; //the date of the last treatment
 	private const int KILOMETER_BEFORE_TREATMENT = 20000; 
 	private const int MAX_KILOMETER_AFTER_REFUELING = 1200;
 
 	// constractor
 	public Bus(string licenseNumber, DateTime? startActivity)
 	{
-		_licenseNumber = licenseNumber;
+		LiscenseNumber = licenseNumber;
 		_startActivity = startActivity;
-		_isFueled = true;
+		KilometersAfterFueling = 0;
 	}
 
+    public string LiscenseNumber { get; set; }
 
-	public string LiscenseNumber
-    {
-		get => _licenseNumber;
-		set => _licenseNumber = value;
-    }
-
-	public int Kilometers
+    public int Kilometers
 	{
 		get => _kilometers; 
 		set 
 		{
-			_prevKilometers = _kilometers;
-			//update only if the bus is fueled and dont need a treatment
-			if (IsFueled && !this.NeedsTreatment())
-				_kilometers += value; 
-			
-			_kilometersAfterTreatment = _kilometers;
-			//If the bus has traveled a greater distance than 12000 kilometers
-			//it needs refueling 
-			if ((_kilometers - _prevKilometers) >=
-				MAX_KILOMETER_AFTER_REFUELING)
-				IsFueled = false;
+			_kilometers += value;
+			KilometersAfterTreatment += value;
+			KilometersAfterFueling += value;
 		} 
     }
 
-	public bool IsFueled
-    {
-		get => _isFueled;
-		set => _isFueled = value;
-    }
+    public int KilometersAfterFueling { get; set; }
 
-	public bool NeedRefueling(int kilomters)
+    public int KilometersAfterTreatment { get; set; }
+
+    public bool NeedRefueling(int newKilomters)
     {
-		return kilomters >= MAX_KILOMETER_AFTER_REFUELING;
+		return KilometersAfterFueling + newKilomters >= MAX_KILOMETER_AFTER_REFUELING;
 	}
 
 	public void Treatment()
     {
 		_lastTreatment = DateTime.Now;
-		_kilometersAfterTreatment = 0;
+		KilometersAfterTreatment = 0;
     }
 	/*
 	 * Checks if a year has passed since the last treatment
@@ -69,26 +50,26 @@ public class Bus
 	public bool NeedsTreatment()
     {
 		return (_lastTreatment - DateTime.Now.Date)?.Days >= 365 ||
-			_kilometersAfterTreatment >= KILOMETER_BEFORE_TREATMENT;
+			KilometersAfterTreatment >= KILOMETER_BEFORE_TREATMENT;
 	}
 
 	public override string ToString()
     {
-		string strLiscenseNumber = _licenseNumber;
+		string formatLiscenseNumber = LiscenseNumber;
 		if (_startActivity?.Year < 2018)
         { // 00-000-00
-			strLiscenseNumber = strLiscenseNumber.Insert(2, "-");
-			strLiscenseNumber = strLiscenseNumber.Insert(6, "-");
+			formatLiscenseNumber = formatLiscenseNumber.Insert(2, "-");
+			formatLiscenseNumber = formatLiscenseNumber.Insert(6, "-");
 		}
 		else
 		{ // 000-00-000
-			strLiscenseNumber = strLiscenseNumber.Insert(3, "-");
-			strLiscenseNumber = strLiscenseNumber.Insert(6, "-");
+			formatLiscenseNumber = formatLiscenseNumber.Insert(3, "-");
+			formatLiscenseNumber = formatLiscenseNumber.Insert(6, "-");
 		}
 		return String.Format("liscense number: {0}\n" +
 			"Kilometers: {1}\n" +
-			"date of last treatment: {2}",
-			strLiscenseNumber, Kilometers,
-			_lastTreatment?.ToShortDateString());
+			"Kilometers since last treatment: {2}",
+			formatLiscenseNumber, Kilometers,
+			KilometersAfterTreatment);
 	}
 }

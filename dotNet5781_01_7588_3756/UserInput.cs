@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace dotNet5781_01_7588_3756
 {
@@ -16,11 +17,11 @@ namespace dotNet5781_01_7588_3756
             do
             {
                 Console.WriteLine(@"Insert option:");
-                Console.WriteLine(@"    0 - Exit ");
                 Console.WriteLine(@"    1 - Insert bus to the bus list");
                 Console.WriteLine(@"    2 - Choose a bus to travel");
                 Console.WriteLine(@"    3 - Bus service (Refueling/Treatment)");
                 Console.WriteLine(@"    4 - View bus data");
+                Console.WriteLine(@"    0 - Exit ");
                 Console.Write(@"Your option :   ");
 
                 option = Console.ReadLine();
@@ -48,10 +49,10 @@ namespace dotNet5781_01_7588_3756
                     myBusList.PrintBusList();
                     break;
                 case "0":
-                    Console.WriteLine("Exit program");
+                    Console.WriteLine("\nExit program");
                     break;
                 default:
-                    Console.WriteLine(@"Error Invalid option");
+                    Console.WriteLine("\nError: Invalid option");
                     break;
             }
             Console.WriteLine("\n********");
@@ -84,16 +85,16 @@ namespace dotNet5781_01_7588_3756
         public static string GetLiscenseNumberFromUser(DateTime? startActivity)
         {
             Console.Write(@"Insert liscense number of the bus: ");
-            string liscenseNumber = Console.ReadLine().Replace("-", "");
+            string liscenseNumber = Console.ReadLine();
             
-            if(!ValidLiscenseNumber(liscenseNumber, startActivity) ||
-                !FormatValid(liscenseNumber))
+            if(!validLiscenseNumber(liscenseNumber.Replace("-", ""), startActivity) ||
+                !formatValidLiscenseNumber(liscenseNumber))
             {
-                Console.WriteLine("Error: Invalid liscense number");
+                Console.WriteLine("\nError: Invalid liscense number");
                 return "";
             }
             
-            return liscenseNumber;
+            return liscenseNumber.Replace("-", "");
         }
         /*override the previs function
          * gest return the user input for the liscense number
@@ -101,19 +102,19 @@ namespace dotNet5781_01_7588_3756
         public static string GetLiscenseNumberFromUser()
         {
             Console.Write(@"Insert liscense number of the bus: ");
-            string liscenseNumber = Console.ReadLine().Replace("-", "");
-            if (!FormatValid(liscenseNumber))
+            string liscenseNumber = Console.ReadLine();
+            if (!formatValidLiscenseNumber(liscenseNumber))
             {
                 Console.WriteLine("Error: Invalid liscense number");
                 return "";
             }
-            return liscenseNumber;
+            return liscenseNumber.Replace("-", "");
         }
         /*
          * check valid liscense number 
          * regarding the date of commencement of its activity
          */
-        private static bool ValidLiscenseNumber(string liscenseNumber, DateTime? startActivity)
+        private static bool validLiscenseNumber(string liscenseNumber, DateTime? startActivity)
         {
             if (startActivity?.Year < 2018 &&
                     liscenseNumber.Length == DIGITS_FOR_BUS_BEFORE_2018)
@@ -127,15 +128,21 @@ namespace dotNet5781_01_7588_3756
          * check if the liscense number the input from the user
          * is contain only "123456789-"
          */
-        private static bool FormatValid(string format)
+        private static bool formatValidLiscenseNumber(string liscenseNumber)
         {
             string allowableLetters = "123456789-";
 
-            foreach (char c in format)
+            foreach (char c in liscenseNumber)
             {
                 if (!allowableLetters.Contains(c.ToString()))
                     return false;
             }
+            // if there is more then 2 '-' in the input
+            // or it star or end with '-'
+            if (liscenseNumber.Count(c => c == '-') > 2 ||
+                liscenseNumber.StartsWith("-") || 
+                liscenseNumber.EndsWith("-"))
+                return false;
 
             return true;
         }

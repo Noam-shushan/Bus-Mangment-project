@@ -51,7 +51,7 @@ namespace dotNet5781_01_7588_3756
 
             Bus newBus = new Bus(liscenseNumber, startActivity);
             this.InsertBus(newBus);
-            Console.WriteLine("bus inserted");
+            Console.WriteLine("\nBus inserted!");
         }
         /*
          * Get infromtion about the bus
@@ -67,24 +67,25 @@ namespace dotNet5781_01_7588_3756
             
             if (selectedBus.NeedsTreatment())
             {
-                Console.WriteLine("Can not make the trip!");
+                Console.WriteLine("\nCan not make the trip!");
                 Console.Write("This bus need treatment");
-                return; // Can not make a trip must take care of the bus
+                return; // Can not make a trip, must take care of the bus
             }
             
             Random rand = new Random(DateTime.Now.Millisecond);
             int kilometers = rand.Next(MAX_DISTANCE);
-            Console.WriteLine("The travel distance is {0}", kilometers);
-            
-            if (selectedBus.NeedRefueling(kilometers) && !selectedBus.IsFueled)
-            { // If both the new driving distance is greater than 1200
-              //and the vehicle is not refueled
-                Console.Write("This bus need refueing to make this drive");
+            Console.WriteLine("\nThe travel distance is {0}", kilometers);
+
+            // if the new driving distance is greater than 1200 
+            // and the bus is not refueled
+            if (selectedBus.NeedRefueling(kilometers) && selectedBus.KilometersAfterFueling > 0)
+            {             
+                Console.Write("\nThis bus need refueing to make this drive");
                 return;
             }
             
             selectedBus.Kilometers = kilometers;
-            Console.WriteLine("the drive approved");
+            Console.WriteLine("\nThe travel approved");
         }
         /*
          * Get infromtion about the bus
@@ -99,19 +100,19 @@ namespace dotNet5781_01_7588_3756
                 return; // bus not found in the bus list
             
             Console.Write("Insert option:\n" +
-                "1 - for fueling the bus: \n" +
-                "2 - to make treatment: ");            
+                "\t1 - for fueling the bus: \n" +
+                "\t2 - to make treatment: ");            
             string option = Console.ReadLine();                    
             
             switch (option)
             {
                 case "1":
-                    selectedBus.IsFueled = true; // refueling
-                    Console.WriteLine("bus get Fueled");
+                    selectedBus.KilometersAfterFueling = 0; // refueling
+                    Console.WriteLine("\nBus get Fueled!");
                     break;
                 case "2":
                     selectedBus.Treatment(); // treatment
-                    Console.WriteLine("bus Treated");
+                    Console.WriteLine("\nBus Treated!");
                     break;
             }
         }
@@ -133,7 +134,7 @@ namespace dotNet5781_01_7588_3756
         {
             if (b == null)
             {
-                Console.WriteLine("bus not fuond!");
+                Console.WriteLine("\nBus not fuond!");
                 return false;
             }
             return true;
