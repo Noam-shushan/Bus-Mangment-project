@@ -51,7 +51,7 @@ namespace dotNet5781_01_7588_3756
 
             if(GetBus(liscenseNumber) != null)
             {
-                Console.WriteLine("Erorr: the bus is already in the bus list");
+                Console.WriteLine("\nErorr: the bus is already in the bus list");
                 return;
             }
 
