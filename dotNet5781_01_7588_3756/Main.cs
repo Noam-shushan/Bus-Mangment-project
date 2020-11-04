@@ -8,7 +8,7 @@ namespace dotNet5781_01_7588_3756
         static void Main(string[] args)
         {
             BusList myBusList = new BusList();
-            UserInput.Menu(myBusList);
+            UserInput.Menu(myBusList); 
         }
     }    
 }
