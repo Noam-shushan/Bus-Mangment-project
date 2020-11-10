@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace dotNet5781_02_7588_3756
 {
-    public enum Regions { General, North, South, Center, Jerusalem, Ayosh };
-    
+    public enum Regions { General, North, South, Center, Jerusalem };
+
     class BusLine : IComparable<BusLine>
     {
         public int BusLineNum { get; set; }
@@ -20,6 +20,8 @@ namespace dotNet5781_02_7588_3756
 
         public int Area { get; set; }
 
+        public TimeSpan? TotalTimeOfTheLine { get; set; }
+
         public BusLine(int busLine, BusLineStation first, BusLineStation last)
         {
             BusLineNum = busLine;
@@ -30,12 +32,11 @@ namespace dotNet5781_02_7588_3756
                 FirstStation,
                 LastStation
             };
-            Area = (int)Regions.General;
+            Area = GetRegion(FirstStation.X, LastStation.Y);
         }
 
         public BusLine()
         {
-            Area = (int)Regions.General;
         }
 
         public override string ToString()
@@ -46,7 +47,7 @@ namespace dotNet5781_02_7588_3756
             int i = 1;
             foreach(var station in Stations)
             {
-                output += $"station number {i++} is {station.BusStationKey}\n";
+                output += $"Station number {i++} is {station.BusStationKey}\n";
             }
             return output;
         }
@@ -71,25 +72,22 @@ namespace dotNet5781_02_7588_3756
             return false;
         }
 
-        public double DistanceBetweenStations(BusLineStation satation1, BusLineStation satation2)
+        public double DistanceBetweenStations(BusLineStation station1, BusLineStation station2)
         {
-            if (!(StationInTheRoute(satation1) || StationInTheRoute(satation2)))
+            if (!StationInTheRoute(station1) || !StationInTheRoute(station2))
                 return -1;
             
-            return satation1.DistanceBetweenStations(satation2);
+            return station1.DistanceBetweenStations(station2);
         }
 
-        public TimeSpan? TimeBetweenStations(BusLineStation satation1, BusLineStation satation2)
+        public TimeSpan? TimeBetweenStations(BusLineStation station1, BusLineStation station2)
         {
-            if (!(StationInTheRoute(satation1) || StationInTheRoute(satation2)))
-                return null;
-
-            return satation1.TimeBetweenStations(satation2);
+            return SubRouteBeteenStation(station1, station2).TotalTimeOfTheLine;
         }
 
         public BusLine SubRouteBeteenStation(BusLineStation first, BusLineStation second)
         {
-            if (!(StationInTheRoute(first) || StationInTheRoute(second)))
+            if (!StationInTheRoute(first) || !StationInTheRoute(second))
                 return null;
 
             BusLine subRoute = new BusLine();
@@ -100,6 +98,7 @@ namespace dotNet5781_02_7588_3756
             subRoute.Stations = Stations.GetRange(smallIndex, bigIndex - smallIndex);
             subRoute.FirstStation = first;
             subRoute.LastStation = second;
+            subRoute.Area = GetRegion(subRoute.FirstStation.X, subRoute.LastStation.Y);
 
             return subRoute;
         }
@@ -129,13 +128,15 @@ namespace dotNet5781_02_7588_3756
         /// Int16.MaxValue : if it's erorr</returns>
         public int CompareTo(BusLine other)
         {
-            TimeSpan? myLineTime = TimeBetweenStations(FirstStation, LastStation);
-            TimeSpan? OtherLineTime = TimeBetweenStations(other.FirstStation, other.LastStation);
-            
-            if(myLineTime.HasValue && OtherLineTime.HasValue)
-                return TimeSpan.Compare(myLineTime.Value, OtherLineTime.Value);
-            
+            if (this.TotalTimeOfTheLine.HasValue && other.TotalTimeOfTheLine.HasValue)
+                return TimeSpan.Compare(this.TotalTimeOfTheLine.Value, other.TotalTimeOfTheLine.Value);
+
             return Int16.MaxValue;
+        }
+
+        public bool Equals(BusLine other)
+        {
+            return this.BusLineNum == other.BusLineNum;
         }
 
 
@@ -149,6 +150,29 @@ namespace dotNet5781_02_7588_3756
                 index++;
             }
             return -1;
+        }
+        /// <summary>
+        /// According to Wikipedia 
+        /// </summary>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
+        /// <returns></returns>
+        public int GetRegion(double latitude, double longitude)
+        {
+            if (inRange(latitude, longitude, 34.461262, 35.2408, 31.83538, 32.26356))
+                return (int)Regions.Center;
+            if (inRange(latitude, longitude, 35.1252, 35.2642, 31.7082, 31.8830))
+                return (int)Regions.Jerusalem;
+            if (inRange(latitude, longitude, 34.8288611, 35.97865, 32.3508222, 33.3579972))
+                return (int)Regions.North;
+            if (inRange(latitude, longitude, 33.81264994, 35.5857, 29.47925, 30.493059))
+                return (int)Regions.South;
+            return (int)Regions.General;
+        }
+
+        private bool inRange(double param1, double param2,  double x1, double y1, double x2, double y2)
+        {
+            return param1 >= x1 && param1 <= y1 && param2 >= x2 && param2 <= y2;
         }
     }
 }

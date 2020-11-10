@@ -13,13 +13,13 @@ namespace dotNet5781_02_7588_3756
     public class Coordinate
     {
 
-        private float _x;
-        private float _y;
+        private double _x;
+        private double _y;
 
         /// <summary>
-        /// //latitude range [-90, 90]
+        /// //latitude in range [-90, 90]
         /// </summary>
-        public float X 
+        public double X 
         {
             get => _x;
             set
@@ -29,9 +29,9 @@ namespace dotNet5781_02_7588_3756
             }
         }
         /// <summary>
-        /// longitude in ranga [-180, 180]
+        /// longitude in range [-180, 180]
         /// </summary>
-        public float Y
+        public double Y
         {
             get => _y;
             set
@@ -41,7 +41,7 @@ namespace dotNet5781_02_7588_3756
             }
         }
 
-        public Coordinate(float x, float y) 
+        public Coordinate(double x, double y) 
         {
             X = x; 
             Y = y; 
@@ -60,7 +60,7 @@ namespace dotNet5781_02_7588_3756
         private int _busStationKey;
         public string AddresBusStation { get; set; }
 
-        public BusStation(int key, float latitude, float longitude) 
+        public BusStation(int key, double latitude, double longitude) 
             : base(latitude, longitude)
         {
             BusStationKey = key;
@@ -78,12 +78,7 @@ namespace dotNet5781_02_7588_3756
 
         public override string ToString() // Bus Station Code: 765432, 31.234567°N 34.56789°E
         {
-            return ""; // תממש את זה
-        } 
-
-
-
-
-
+            return $"Bus Station Code: {BusStationKey}, {X}°N {Y}°E";
+        }
     }
 }
