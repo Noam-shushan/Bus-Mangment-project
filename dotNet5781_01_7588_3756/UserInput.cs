@@ -130,7 +130,7 @@ namespace dotNet5781_01_7588_3756
          */
         private static bool formatValidLiscenseNumber(string liscenseNumber)
         {
-            string allowableLetters = "123456789-";
+            string allowableLetters = "0123456789-";
 
             foreach (char c in liscenseNumber)
             {

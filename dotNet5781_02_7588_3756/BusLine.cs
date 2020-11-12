@@ -18,15 +18,20 @@ namespace dotNet5781_02_7588_3756
 
         public List<BusLineStation> Stations { get; set; }
 
-        public int Area { get; set; }
+        public Regions Area { get; set; }
 
         public TimeSpan? TotalTimeOfTheLine { get; set; }
-
+        /// <summary>
+        /// constractor
+        /// </summary>
+        /// <param name="busLine"></param>
+        /// <param name="first"></param>
+        /// <param name="last"></param>
         public BusLine(int busLine, BusLineStation first, BusLineStation last)
         {
             BusLineNum = busLine;
-            FirstStation = first;
-            LastStation = last;
+            FirstStation = new BusLineStation(first);
+            LastStation = new BusLineStation(last);
             Stations = new List<BusLineStation>
             {
                 FirstStation,
@@ -34,37 +39,66 @@ namespace dotNet5781_02_7588_3756
             };
             Area = GetRegion(FirstStation.X, LastStation.Y);
         }
-
-        public BusLine()
+        /// <summary>
+        /// copy constractor
+        /// </summary>
+        /// <param name="other"></param>
+        public BusLine(BusLine other)
         {
+            BusLineNum = other.BusLineNum;
+            FirstStation = new BusLineStation(other.FirstStation);
+            LastStation = new BusLineStation(other.LastStation);
+            Stations = new List<BusLineStation>
+            {
+                FirstStation,
+                LastStation
+            };
+            Area = GetRegion(FirstStation.X, LastStation.Y);
         }
-
+        /// <summary>
+        /// empty constractor
+        /// </summary>
+        public BusLine() { }
+        /// <summary>
+        /// override ToString
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string output = $"Bus line number: {BusLineNum}\n";
             output += $"Area: {Area}\n";
             output += "Bus stations:\n";
             int i = 1;
-            foreach(var station in Stations)
+            foreach (var station in Stations)
             {
                 output += $"Station number {i++} is {station.BusStationKey}\n";
             }
             return output;
         }
-
+        /// <summary>
+        /// add station to the bus line
+        /// </summary>
+        /// <param name="newSatation"></param>
         public void AddStation(BusLineStation newSatation)
         {
             Stations.Insert(1, newSatation);
         }
-
+        /// <summary>
+        /// remove station from the bus line
+        /// </summary>
+        /// <param name="satationToDel"></param>
         public void RemoveStation(BusLineStation satationToDel)
         {
             Stations.Remove(satationToDel);
         }
-
+        /// <summary>
+        /// check if a given station is in the routh of the bus line
+        /// </summary>
+        /// <param name="satationToFind"></param>
+        /// <returns></returns>
         public bool StationInTheRoute(BusLineStation satationToFind)
         {
-            foreach(var station in Stations)
+            foreach (var station in Stations)
             {
                 if (station.Equals(satationToFind))
                     return true;
@@ -76,7 +110,7 @@ namespace dotNet5781_02_7588_3756
         {
             if (!StationInTheRoute(station1) || !StationInTheRoute(station2))
                 return -1;
-            
+
             return station1.DistanceBetweenStations(station2);
         }
 
@@ -96,8 +130,8 @@ namespace dotNet5781_02_7588_3756
             int smallIndex = Math.Min(index1, index2);
             int bigIndex = Math.Max(index1, index2);
             subRoute.Stations = Stations.GetRange(smallIndex, bigIndex - smallIndex);
-            subRoute.FirstStation = first;
-            subRoute.LastStation = second;
+            subRoute.FirstStation = new BusLineStation(first);
+            subRoute.LastStation = new BusLineStation(second);
             subRoute.Area = GetRegion(subRoute.FirstStation.X, subRoute.LastStation.Y);
 
             return subRoute;
@@ -106,16 +140,10 @@ namespace dotNet5781_02_7588_3756
         public int FastRoute(BusLine other)
         {
             int compare = this.CompareTo(other);
-            
-            if(compare != Int16.MaxValue)
-            {
-                if (compare == 1)
-                    return other.BusLineNum;
-                else
-                    return this.BusLineNum;
-            }
-            
-            return -1;
+
+            if (compare == 1)
+                return other.BusLineNum;
+            return this.BusLineNum;
         }
         /// <summary>
         /// compare two BusLine by the duration time of the total drive 
@@ -124,14 +152,10 @@ namespace dotNet5781_02_7588_3756
         /// <returns>One of the following value:
         /// -1 : if the total time of this is shorter then other,
         /// 0 : if thay equals,
-        /// 1 : if the total time of this is longer then other,
-        /// Int16.MaxValue : if it's erorr</returns>
+        /// 1 : if the total time of this is longer then other</returns>
         public int CompareTo(BusLine other)
         {
-            if (this.TotalTimeOfTheLine.HasValue && other.TotalTimeOfTheLine.HasValue)
-                return TimeSpan.Compare(this.TotalTimeOfTheLine.Value, other.TotalTimeOfTheLine.Value);
-
-            return Int16.MaxValue;
+            return TimeSpan.Compare(this.TotalTimeOfTheLine.Value, other.TotalTimeOfTheLine.Value);
         }
 
         public bool Equals(BusLine other)
@@ -157,22 +181,21 @@ namespace dotNet5781_02_7588_3756
         /// <param name="latitude"></param>
         /// <param name="longitude"></param>
         /// <returns></returns>
-        public int GetRegion(double latitude, double longitude)
+        public Regions GetRegion(double latitude, double longitude)
         {
-            if (inRange(latitude, longitude, 34.461262, 35.2408, 31.83538, 32.26356))
-                return (int)Regions.Center;
-            if (inRange(latitude, longitude, 35.1252, 35.2642, 31.7082, 31.8830))
-                return (int)Regions.Jerusalem;
-            if (inRange(latitude, longitude, 34.8288611, 35.97865, 32.3508222, 33.3579972))
-                return (int)Regions.North;
-            if (inRange(latitude, longitude, 33.81264994, 35.5857, 29.47925, 30.493059))
-                return (int)Regions.South;
-            return (int)Regions.General;
-        }
+            if (ValidInput.InRange(latitude, longitude, 34.461262, 35.2408, 31.83538, 32.26356))
+                return Regions.Center;
 
-        private bool inRange(double param1, double param2,  double x1, double y1, double x2, double y2)
-        {
-            return param1 >= x1 && param1 <= y1 && param2 >= x2 && param2 <= y2;
+            if (ValidInput.InRange(latitude, longitude, 35.1252, 35.2642, 31.7082, 31.8830))
+                return Regions.Jerusalem;
+
+            if (ValidInput.InRange(latitude, longitude, 34.8288611, 35.97865, 32.3508222, 33.3579972))
+                return Regions.North;
+
+            if (ValidInput.InRange(latitude, longitude, 33.81264994, 35.5857, 29.47925, 30.493059))
+                return Regions.South;
+
+            return Regions.General;
         }
     }
 }

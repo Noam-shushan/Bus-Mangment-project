@@ -7,20 +7,25 @@ using System.Threading.Tasks;
 
 namespace dotNet5781_02_7588_3756
 {
-     
-    
+
+
     class BusLineStation : BusStation
     {
-        public static StationList stationList = new StationList();
-        
         public double DistanceFromPrevStation { get; set; }
         public TimeSpan TimeFromPrevStation { get; set; }
         public BusLineStation PrevStation { get; set; }
 
-        public BusLineStation(int key, double latitude, double longitude) 
-            : base(key, latitude,longitude)
+        public BusLineStation(string key, double latitude, double longitude)
+            : base(key, latitude, longitude)
         {
-            
+
+        }
+
+        public BusLineStation(BusLineStation other)
+            : base(other.BusStationKey, other.X, other.Y)
+        {
+            DistanceFromPrevStation = other.DistanceFromPrevStation;
+            TimeFromPrevStation = other.TimeFromPrevStation;
         }
         /// <summary>
         /// get the distansce between tow stations

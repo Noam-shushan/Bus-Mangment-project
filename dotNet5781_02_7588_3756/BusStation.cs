@@ -57,24 +57,15 @@ namespace dotNet5781_02_7588_3756
 
     public class BusStation : Coordinate
     {
-        private int _busStationKey;
+        public string BusStationKey { get; set; } // min 6 digits
         public string AddresBusStation { get; set; }
 
-        public BusStation(int key, double latitude, double longitude) 
+        public BusStation(string key, double latitude, double longitude) 
             : base(latitude, longitude)
         {
             BusStationKey = key;
         }
 
-        public int BusStationKey
-        {
-            get => _busStationKey;
-            set
-            {
-                if (value > 99999) // min 6 digits
-                    _busStationKey = value;
-            }
-        }
 
         public override string ToString() // Bus Station Code: 765432, 31.234567°N 34.56789°E
         {

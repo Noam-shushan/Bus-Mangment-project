@@ -49,7 +49,7 @@
     <Compile Include="BusStation.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StationList.cs" />
+    <Compile Include="ValidInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
