@@ -62,7 +62,7 @@ namespace dotNet5781_02_7588_3756
                 if (!validLocation(strTempX))
                     return false;
 
-                if(InRange(double.Parse(strTempX), double.Parse(strTempY), -90, 90, -180, 180))
+                if(!InRange(double.Parse(strTempX), double.Parse(strTempY), -90, 90, -180, 180))
                 {
                     Console.WriteLine("The location entered is outside the Earth");
                     return false;
