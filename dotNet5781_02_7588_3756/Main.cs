@@ -12,7 +12,8 @@ namespace dotNet5781_02_7588_3756
         static void Main(string[] args)
         {
             BusLineCollection b = new BusLineCollection();
-            Console.ReadKey();
+            ValidInput.InitializBusCollection(b, 10, 40);
+            ValidInput.Menu(b);
         }
     }
 }

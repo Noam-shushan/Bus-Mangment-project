@@ -45,7 +45,7 @@ namespace dotNet5781_02_7588_3756
                     }
                 }
             }
-            
+
             if (!found)
                 return null;
             
@@ -61,8 +61,7 @@ namespace dotNet5781_02_7588_3756
 
         public BusLine this[int i]
         {
-            get => BusLineList.ElementAt(i); 
-            set => BusLineList.Insert(i, value);
+            get => BusLineList.Find(x => x.BusLineNum == i); 
         }
 
         private bool validInsert(BusLine bl)
@@ -88,9 +87,7 @@ namespace dotNet5781_02_7588_3756
                     sameLine1.LastStation.Equals(sameLine2.FirstStation))
                     return true;
             }
-            if (found == 1)
-                return true;
-            return false;
+            return true;
         }
         
         public IEnumerator<BusLine> GetEnumerator()

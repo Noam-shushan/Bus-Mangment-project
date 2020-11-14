@@ -12,7 +12,7 @@ namespace dotNet5781_02_7588_3756
     class BusLineStation : BusStation
     {
         public double DistanceFromPrevStation { get; set; }
-        public TimeSpan TimeFromPrevStation { get; set; }
+        public TimeSpan? TimeFromPrevStation { get; set; }
         public BusLineStation PrevStation { get; set; }
 
         public BusLineStation(string key, double latitude, double longitude)

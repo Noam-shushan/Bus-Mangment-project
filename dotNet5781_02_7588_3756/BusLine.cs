@@ -81,15 +81,49 @@ namespace dotNet5781_02_7588_3756
         /// <param name="newSatation"></param>
         public void AddStation(BusLineStation newSatation)
         {
-            Stations.Insert(1, newSatation);
+            Stations.Insert(Stations.Count - 1, newSatation);
+            LastStation.DistanceFromPrevStation = DistanceBetweenStations(LastStation, newSatation);
+            newSatation.DistanceFromPrevStation = DistanceBetweenStations(newSatation,
+                Stations.ElementAt(Stations.Count - 2));
+            int hours = (int)LastStation.DistanceFromPrevStation % 24;
+            int minutes = (int)LastStation.DistanceFromPrevStation % 60;
+            LastStation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);
+            hours = (int)newSatation.DistanceFromPrevStation % 24;
+            minutes = (int)newSatation.DistanceFromPrevStation % 60;
+            newSatation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);
+            updeteTotalTime();
         }
+
+        private void updeteTotalTime()
+        {
+            foreach(var s in Stations)
+            {
+                TotalTimeOfTheLine?.Add((TimeSpan)s.TimeFromPrevStation);
+            }
+        }
+
         /// <summary>
         /// remove station from the bus line
-        /// </summary>
+        /// </summary>s
         /// <param name="satationToDel"></param>
         public void RemoveStation(BusLineStation satationToDel)
         {
+            if (!StationInTheRoute(satationToDel))
+                return;
+            if(satationToDel != LastStation)
+            {
+                var next =  Stations.ElementAt(Stations.IndexOf(satationToDel) + 1);
+                next.TimeFromPrevStation?.Add((TimeSpan)satationToDel.TimeFromPrevStation);
+                next.DistanceFromPrevStation += satationToDel.DistanceFromPrevStation;
+            }
+            else
+            {
+                LastStation.TimeFromPrevStation?.Add((TimeSpan)satationToDel.TimeFromPrevStation);
+                LastStation.DistanceFromPrevStation += satationToDel.DistanceFromPrevStation;
+            }
+            
             Stations.Remove(satationToDel);
+            updeteTotalTime();
         }
         /// <summary>
         /// check if a given station is in the routh of the bus line
@@ -196,6 +230,11 @@ namespace dotNet5781_02_7588_3756
                 return Regions.South;
 
             return Regions.General;
+        }
+
+        public BusLineStation GetStationByKey(string key)
+        {
+            return Stations.Find(x => x.BusStationKey == key);
         }
     }
 }
