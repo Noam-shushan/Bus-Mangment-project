@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace dotNet5781_02_7588_3756
 {
@@ -132,7 +131,7 @@ namespace dotNet5781_02_7588_3756
                 var s2 = busLine.GetStationByKey(stationKey2);
                 if (s1 != null && s2 != null)
                 {
-                    var temp = busLine.SubRouteBeteenStation(s1, s2);
+                    var temp = busLine.SubRouteBetweenStation(s1, s2);
                     if (temp != null)
                         outpot.AddBusLine(temp);
                 }

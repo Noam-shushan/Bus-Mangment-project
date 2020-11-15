@@ -1,25 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace dotNet5781_02_7588_3756
 {
-    public enum Regions { General, North, South, Center, Jerusalem };
-
+    public enum Regions { General, North, South, Center, Jerusalem };//enum of region in israel
+    /// <summary>
+    /// class BusLine
+    /// </summary>
     class BusLine : IComparable<BusLine>
     {
+        /// <summary>
+        /// the bus line number
+        /// </summary>
         public int BusLineNum { get; set; }
-
+        /// <summary>
+        /// the first station in the line
+        /// </summary>
         public BusLineStation FirstStation { get; set; }
-
+        /// <summary>
+        /// the last station in the line
+        /// </summary>
         public BusLineStation LastStation { get; set; }
-
+        /// <summary>
+        /// all station in the line
+        /// </summary>
         public List<BusLineStation> Stations { get; set; }
-
+        /// <summary>
+        /// the area in the contry of the line
+        /// </summary>
         public Regions Area { get; set; }
-
+        /// <summary>
+        /// the totla time of the line from the first station to the last
+        /// </summary>
         public TimeSpan? TotalTimeOfTheLine { get; set; }
         /// <summary>
         /// constractor
@@ -87,7 +101,7 @@ namespace dotNet5781_02_7588_3756
                 Stations.ElementAt(Stations.Count - 2));
             int hours = (int)LastStation.DistanceFromPrevStation % 24;
             int minutes = (int)LastStation.DistanceFromPrevStation % 60;
-            LastStation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);
+            LastStation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);//updete the time of the last station
             hours = (int)newSatation.DistanceFromPrevStation % 24;
             minutes = (int)newSatation.DistanceFromPrevStation % 60;
             newSatation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);
@@ -139,7 +153,12 @@ namespace dotNet5781_02_7588_3756
             }
             return false;
         }
-
+        /// <summary>
+        /// get the distance between two stations
+        /// </summary>
+        /// <param name="station1"></param>
+        /// <param name="station2"></param>
+        /// <returns></returns>
         public double DistanceBetweenStations(BusLineStation station1, BusLineStation station2)
         {
             if (!StationInTheRoute(station1) && !StationInTheRoute(station2))
@@ -147,13 +166,23 @@ namespace dotNet5781_02_7588_3756
 
             return station1.DistanceBetweenStations(station2);
         }
-
+        /// <summary>
+        /// get the time between two stations
+        /// </summary>
+        /// <param name="station1"></param>
+        /// <param name="station2"></param>
+        /// <returns>the total time of sub rout between the station</returns>
         public TimeSpan? TimeBetweenStations(BusLineStation station1, BusLineStation station2)
         {
-            return SubRouteBeteenStation(station1, station2).TotalTimeOfTheLine;
+            return SubRouteBetweenStation(station1, station2).TotalTimeOfTheLine;
         }
-
-        public BusLine SubRouteBeteenStation(BusLineStation first, BusLineStation second)
+        /// <summary>
+        /// get a sub rout between tow stations in the line
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        public BusLine SubRouteBetweenStation(BusLineStation first, BusLineStation second)
         {
             if (!StationInTheRoute(first) && !StationInTheRoute(second))
                 return null;
@@ -170,7 +199,11 @@ namespace dotNet5781_02_7588_3756
 
             return subRoute;
         }
-
+        /// <summary>
+        /// get the fast route between two lines
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>the number of line of the faster</returns>
         public int FastRoute(BusLine other)
         {
             int compare = this.CompareTo(other);
@@ -191,7 +224,11 @@ namespace dotNet5781_02_7588_3756
         {
             return TimeSpan.Compare(this.TotalTimeOfTheLine.Value, other.TotalTimeOfTheLine.Value);
         }
-
+        /// <summary>
+        /// compare by the bus line number
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(BusLine other)
         {
             return this.BusLineNum == other.BusLineNum;
@@ -231,7 +268,11 @@ namespace dotNet5781_02_7588_3756
 
             return Regions.General;
         }
-
+        /// <summary>
+        /// Get station by key
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public BusLineStation GetStationByKey(string key)
         {
             return Stations.Find(x => x.BusStationKey == key);

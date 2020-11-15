@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-//file 1
 namespace dotNet5781_02_7588_3756
 {
     /// <summary>
@@ -12,41 +7,29 @@ namespace dotNet5781_02_7588_3756
     /// </summary>
     public class Coordinate
     {
-
-        private double _x;
-        private double _y;
-
         /// <summary>
         /// //latitude in range [-90, 90]
         /// </summary>
-        public double X 
-        {
-            get => _x;
-            set
-            {
-                if (value <= 90 && value >= -90) 
-                    _x = value;
-            }
-        }
+        public double X { get; set; }
         /// <summary>
         /// longitude in range [-180, 180]
         /// </summary>
-        public double Y
-        {
-            get => _y;
-            set
-            {
-                if (value <= 180 && value >= -180)
-                    _y = value;
-            }
-        }
-
+        public double Y { get; set; }
+        /// <summary>
+        /// constractor
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public Coordinate(double x, double y) 
         {
             X = x; 
             Y = y; 
         }
-
+        /// <summary>
+        /// get the distance between two coordinate
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>the distance between two coordinate </returns>
         public double DistanceBetweenCoord(Coordinate other)// result >= 0
         {
             double distX = X - other.X;
@@ -54,20 +37,30 @@ namespace dotNet5781_02_7588_3756
             return Math.Sqrt(distX*distX + distY*distY);
         }
     }
-
+    /// <summary>
+    /// bus station class, Inherits the coordinate class
+    /// </summary>
     public class BusStation : Coordinate
     {
         public string BusStationKey { get; set; } // min 6 digits
         public string AddresBusStation { get; set; }
-
+        /// <summary>
+        /// constractor
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
         public BusStation(string key, double latitude, double longitude) 
             : base(latitude, longitude)
         {
             BusStationKey = key;
         }
-
-
-        public override string ToString() // Bus Station Code: 765432, 31.234567°N 34.56789°E
+        /// <summary>
+        /// print the location if the station and the key number
+        /// for example "Bus Station Code: 765432, 31.234567°N 34.56789°E"
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
         {
             return $"Bus Station Code: {BusStationKey}, {X}°N {Y}°E";
         }

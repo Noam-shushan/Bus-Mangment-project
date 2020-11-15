@@ -1,26 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace dotNet5781_02_7588_3756
 {
-
-
+    /// <summary>
+    /// class bus line station, Inherits the BusStation class
+    /// </summary>
     class BusLineStation : BusStation
     {
         public double DistanceFromPrevStation { get; set; }
         public TimeSpan? TimeFromPrevStation { get; set; }
-        public BusLineStation PrevStation { get; set; }
-
+        /// <summary>
+        /// constractor
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="latitude"></param>
+        /// <param name="longitude"></param>
         public BusLineStation(string key, double latitude, double longitude)
             : base(key, latitude, longitude)
         {
 
         }
-
+        /// <summary>
+        /// copy constractor
+        /// </summary>
+        /// <param name="other"></param>
         public BusLineStation(BusLineStation other)
             : base(other.BusStationKey, other.X, other.Y)
         {
