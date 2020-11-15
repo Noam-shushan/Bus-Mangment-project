@@ -142,7 +142,7 @@ namespace dotNet5781_02_7588_3756
 
         public double DistanceBetweenStations(BusLineStation station1, BusLineStation station2)
         {
-            if (!StationInTheRoute(station1) || !StationInTheRoute(station2))
+            if (!StationInTheRoute(station1) && !StationInTheRoute(station2))
                 return -1;
 
             return station1.DistanceBetweenStations(station2);
@@ -155,7 +155,7 @@ namespace dotNet5781_02_7588_3756
 
         public BusLine SubRouteBeteenStation(BusLineStation first, BusLineStation second)
         {
-            if (!StationInTheRoute(first) || !StationInTheRoute(second))
+            if (!StationInTheRoute(first) && !StationInTheRoute(second))
                 return null;
 
             BusLine subRoute = new BusLine();

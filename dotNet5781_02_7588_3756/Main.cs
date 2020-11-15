@@ -11,9 +11,9 @@ namespace dotNet5781_02_7588_3756
 
         static void Main(string[] args)
         {
-            BusLineCollection b = new BusLineCollection();
-            ValidInput.InitializBusCollection(b, 10, 40);
-            ValidInput.Menu(b);
+            BusLineCollection busColl = new BusLineCollection();
+            InitializationAndMenu.InitializBusCollection(busColl, 5, 20);
+            InitializationAndMenu.Menu(busColl);
         }
     }
 }
