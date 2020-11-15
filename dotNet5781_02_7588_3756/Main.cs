@@ -7,7 +7,7 @@ namespace dotNet5781_02_7588_3756
         static void Main(string[] args)
         {
             BusLineCollection busColl = new BusLineCollection();
-            InitializationAndMenu.InitializBusCollection(busColl, 5, 20);
+            InitializationAndMenu.InitializBusCollection(busColl, 10, 40);
             InitializationAndMenu.Menu(busColl);
         }
     }
