@@ -8,7 +8,7 @@ namespace dotNet5781_02_7588_3756
     /// <summary>
     /// class BusLineCollection, implamnt IEnumerable and Indexer
     /// </summary>
-    class BusLineCollection : IEnumerable<BusLine> 
+    public class BusLineCollection : IEnumerable<BusLine> 
     {
         public List<BusLine> BusLineList { get; set; }
         /// <summary>

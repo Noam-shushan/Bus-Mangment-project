@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace dotNet5781_02_7588_3756
 {
-    static class ValidInput
+    public static class ValidInput
     {
         static Random random = new Random();
         public static List<int> randomListStationKeys = new List<int>();

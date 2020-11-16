@@ -9,7 +9,7 @@ namespace dotNet5781_02_7588_3756
     /// <summary>
     /// class BusLine
     /// </summary>
-    class BusLine : IComparable<BusLine>
+    public class BusLine : IComparable<BusLine>
     {
         /// <summary>
         /// the bus line number

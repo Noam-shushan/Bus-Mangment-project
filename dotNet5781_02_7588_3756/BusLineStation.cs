@@ -6,7 +6,7 @@ namespace dotNet5781_02_7588_3756
     /// <summary>
     /// class bus line station, Inherits the BusStation class
     /// </summary>
-    class BusLineStation : BusStation
+    public class BusLineStation : BusStation
     {
         public double DistanceFromPrevStation { get; set; }
         public TimeSpan? TimeFromPrevStation { get; set; }

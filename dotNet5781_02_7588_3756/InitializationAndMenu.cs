@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace dotNet5781_02_7588_3756
 {
-    static class InitializationAndMenu
+    public static class InitializationAndMenu
     {
         static List<BusLineStation> allStation = new List<BusLineStation>();
         static Random random = new Random();
