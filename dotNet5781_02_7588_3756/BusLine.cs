@@ -15,26 +15,34 @@ namespace dotNet5781_02_7588_3756
         /// the bus line number
         /// </summary>
         public int BusLineNum { get; set; }
+        
         /// <summary>
         /// the first station in the line
         /// </summary>
         public BusLineStation FirstStation { get; set; }
+        
         /// <summary>
         /// the last station in the line
         /// </summary>
         public BusLineStation LastStation { get; set; }
+        
         /// <summary>
         /// all station in the line
         /// </summary>
         public List<BusLineStation> Stations { get; set; }
+        
         /// <summary>
         /// the area in the contry of the line
         /// </summary>
         public Regions Area { get; set; }
+        
         /// <summary>
         /// the totla time of the line from the first station to the last
         /// </summary>
         public TimeSpan? TotalTimeOfTheLine { get; set; }
+
+        public List<TimeSpan?> TimeListOfTheStation { get; set; }
+
         /// <summary>
         /// constractor
         /// </summary>
@@ -277,6 +285,11 @@ namespace dotNet5781_02_7588_3756
         public BusLineStation GetStationByKey(int key)
         {
             return Stations.Find(x => x.BusStationKey == key);
+        }
+
+        public void PrintStationInfo()
+        {
+            Stations.ForEach(Console.WriteLine);
         }
     }
 }

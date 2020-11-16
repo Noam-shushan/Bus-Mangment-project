@@ -99,20 +99,30 @@ namespace dotNet5781_02_7588_3756
         }
 
 
-        private static void printMe(BusLineCollection busCol)
+        private static void printMe(BusLineCollection busColl)
         {
             Console.WriteLine("To print all buss enter: 1\n" +
-                "To print all stations enter: 2\n");
+                "To print all stations of bus line enter: 2\n");
             string c = Console.ReadLine();
             if (c == "1")
             {
-                foreach (var b in busCol)
+                foreach (var b in busColl)
                     Console.WriteLine(b);
             }
             if (c == "2")
             {
-                foreach (var s in allStation)
-                    Console.WriteLine(s);
+                int busKey = ValidInput.GetBusLineNumberUesr();
+                if (busKey == -1)
+                    return;
+
+                try
+                {
+                    busColl[busKey].PrintStationInfo();
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("bus not found");
+                }
             }
         }
 
@@ -162,13 +172,9 @@ namespace dotNet5781_02_7588_3756
             if (busKey == -1)
                 return;
             
-            BusLine bus;
-            if ((bus = checkIfBusExist(busCol, busKey)) != null)
-                return;
-            
             if (c == "1")
             {
-                busCol.RemoveBusLine(bus);
+                busCol.RemoveBusLine(busCol[busKey]);
             }
 
             if (c == "2")
@@ -177,8 +183,8 @@ namespace dotNet5781_02_7588_3756
                 if (stationKey == -1)
                     return;
 
-                bus.RemoveStation(bus.GetStationByKey(stationKey));
-                allStation.Remove(bus.GetStationByKey(stationKey));
+                busCol[busKey].RemoveStation(busCol[busKey].GetStationByKey(stationKey));
+                allStation.Remove(busCol[busKey].GetStationByKey(stationKey));
             }
 
         }
@@ -260,26 +266,20 @@ namespace dotNet5781_02_7588_3756
 
         private static void addStationToBusLine(BusLineCollection busCol, int busKey, BusLineStation firstStation)
         {
-            BusLine bus;
-            if ((bus = checkIfBusExist(busCol, busKey)) != null)
-                return;
-
-            bus.AddStation(firstStation);
+            busCol[busKey].AddStation(firstStation);
             Console.WriteLine($"Station number {firstStation.BusStationKey} Add successfully to bus number  {busKey}");
         }
 
         private static void addExistStation(BusLineCollection busCol, int busKey)
         {
-            BusLine bus;
-            if ((bus = checkIfBusExist(busCol, busKey)) != null)
-                return;
+
             int stationKey = ValidInput.GetUniqueStationKey("user");
             if (stationKey == -1)
                 return;
             BusLineStation st;
             if ((st = checkIfStationExist(stationKey)) != null)
             {
-                bus.AddStation(st);
+                busCol[busKey].AddStation(st);
                 Console.WriteLine($"Station number {stationKey} Add successfully to bus number  {busKey}");
                 return;
             }
@@ -288,17 +288,6 @@ namespace dotNet5781_02_7588_3756
         private static BusLineStation checkIfStationExist(int key)
         {
             return allStation.Find(x => x.BusStationKey == key);
-        }
-
-        private static BusLine checkIfBusExist(BusLineCollection busCol, int key)
-        {
-            var bus = busCol[key];
-            if (bus == null)
-            {
-                Console.WriteLine("Bus not found!");
-                return null;
-            }
-            return bus;
         }
     }
 

@@ -51,5 +51,9 @@ namespace dotNet5781_02_7588_3756
             return this.BusStationKey == other.BusStationKey;
         }
 
+        public override string ToString()
+        {
+            return $"Bus Station Code: {BusStationKey}, {MyLocation.X}°N {MyLocation.Y}°E {TimeFromPrevStation}";
+        }
     }
 }
