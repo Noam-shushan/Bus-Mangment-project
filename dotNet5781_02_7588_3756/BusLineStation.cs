@@ -16,7 +16,7 @@ namespace dotNet5781_02_7588_3756
         /// <param name="key"></param>
         /// <param name="latitude"></param>
         /// <param name="longitude"></param>
-        public BusLineStation(string key, double latitude, double longitude)
+        public BusLineStation(int key, double latitude, double longitude)
             : base(key, latitude, longitude)
         {
 
@@ -26,7 +26,7 @@ namespace dotNet5781_02_7588_3756
         /// </summary>
         /// <param name="other"></param>
         public BusLineStation(BusLineStation other)
-            : base(other.BusStationKey, other.X, other.Y)
+            : base(other.BusStationKey, other.MyLocation.X, other.MyLocation.Y)
         {
             DistanceFromPrevStation = other.DistanceFromPrevStation;
             TimeFromPrevStation = other.TimeFromPrevStation;
@@ -38,7 +38,7 @@ namespace dotNet5781_02_7588_3756
         /// <returns></returns>
         public double DistanceBetweenStations(BusLineStation other)
         {
-            return this.DistanceBetweenCoord(new Coordinate(other.X, other.Y));
+            return this.MyLocation.DistanceBetweenCoord(new Coordinate(other.MyLocation.X, other.MyLocation.Y));
         }
 
         /// <summary>

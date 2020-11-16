@@ -86,8 +86,8 @@ namespace dotNet5781_02_7588_3756
             BusLineStation[] stationArr = new BusLineStation[numOfStation];
             for (int i = 0; i < numOfStation; i++)
             {
-                string key = ValidInput.GetUniqueStationKey();
-                if (key == "m")
+                int key = ValidInput.GetUniqueStationKey();
+                if (key == -1)
                     return null;
                 double latitude, longitude;
                 if (!ValidInput.GetLocation(out latitude, out longitude))
@@ -118,11 +118,11 @@ namespace dotNet5781_02_7588_3756
 
         private static void printTheFastLineBetweenStations(BusLineCollection busCol)
         {
-            string stationKey1 = ValidInput.GetUniqueStationKey("user");
-            if (stationKey1 == "Not valid")
+            int stationKey1 = ValidInput.GetUniqueStationKey("user");
+            if (stationKey1 == -1)
                 return;
-            string stationKey2 = ValidInput.GetUniqueStationKey("user");
-            if (stationKey2 == "Not valid")
+            int stationKey2 = ValidInput.GetUniqueStationKey("user");
+            if (stationKey2 == -1)
                 return;
             BusLineCollection outpot = new BusLineCollection();
             foreach (var busLine in busCol)
@@ -137,15 +137,15 @@ namespace dotNet5781_02_7588_3756
                 }
             }
 
-            var sortOutPot = outpot.SortBusLineList();
-            foreach (var b in sortOutPot)
+            var sortOutPut = outpot.SortBusLineList();
+            foreach (var b in sortOutPut)
                 Console.WriteLine(b);
         }
 
         private static void linsPassInStation(BusLineCollection busCol)
         {
-            string stationKey = ValidInput.GetUniqueStationKey("user");
-            if (stationKey == "Not valid")
+            int stationKey = ValidInput.GetUniqueStationKey("user");
+            if (stationKey == -1)
                 return;
             var busLines = busCol.GetListPassInStation(stationKey);
             Console.WriteLine($"Bus lines that pass through the station {stationKey} is:");
@@ -158,30 +158,25 @@ namespace dotNet5781_02_7588_3756
             Console.WriteLine("To remove bus line enter: 1\n" +
                     "to remove station from a bus line enter: 2");
             string c = Console.ReadLine();
-            int buskey = ValidInput.GetBusLineNumberUesr();
-            if (buskey == -1)
-            {
-                Console.WriteLine("not valid bus line");
+            int busKey = ValidInput.GetBusLineNumberUesr();
+            if (busKey == -1)
                 return;
-            }
+            
+            BusLine bus;
+            if ((bus = checkIfBusExist(busCol, busKey)) != null)
+                return;
+            
             if (c == "1")
             {
-                var bus = busCol[buskey];
-                if (busCol == null)
-                {
-                    Console.WriteLine("Bus not found!");
-                    return;
-                }
                 busCol.RemoveBusLine(bus);
             }
 
             if (c == "2")
             {
-                string stationKey = ValidInput.GetUniqueStationKey("user");
-                if (stationKey == "Not valid")
+                int stationKey = ValidInput.GetUniqueStationKey("user");
+                if (stationKey == -1)
                     return;
 
-                var bus = busCol[buskey];
                 bus.RemoveStation(bus.GetStationByKey(stationKey));
                 allStation.Remove(bus.GetStationByKey(stationKey));
             }
@@ -194,91 +189,116 @@ namespace dotNet5781_02_7588_3756
                 "To add station to a bus line enter: 2\n" +
                 "To add exist station to a bus line enter: 3");
             string c = Console.ReadLine();
-            int buskey = ValidInput.GetBusLineNumberUesr();
-            if (buskey == -1)
-            {
-                Console.WriteLine("not valid bus line");
+ 
+            int busKey = ValidInput.GetBusLineNumberUesr();
+            if (busKey == -1)
                 return;
-            }
-            var bus = busCol[buskey];
-            if (bus == null)
-            {
-                Console.WriteLine("Bus not found!");
-                return;
-            }
-            if (c == "3")
-            {
-                string stationKey3 = ValidInput.GetUniqueStationKey("user");
-                if (stationKey3 == "Not valid")
-                    return;
-                if (checkIfStationExist(stationKey3))
-                {
-                    var st = allStation.Find(x => x.BusStationKey == stationKey3);
-                    bus.AddStation(st);
-                    Console.WriteLine($"Station number {stationKey3} Add successfully to bus number  {buskey}");
-                    return;
-                }
 
-            }
-            string stationKey1 = ValidInput.GetUniqueStationKey("user");
-            if (stationKey1 == "Not valid")
+            int stationKey1 = ValidInput.GetUniqueStationKey("user");
+            if (stationKey1 == -1)
                 return;
-            if(checkIfStationExist(stationKey1))
+
+            if (checkIfStationExist(stationKey1) != null)
             {
                 Console.WriteLine("Station key is already exist");
                 return;
             }
-
             Console.WriteLine("Enter location of the station");
-            double latitude1, longitude1, latitude2, longitude2;
-            if (!ValidInput.GetLocation(out latitude1, out longitude1, "user"))
+            double latitude, longitude;
+            if (!ValidInput.GetLocation(out latitude, out longitude, "user"))
                 return;
 
-            var first = new BusLineStation(stationKey1, latitude1, longitude1);
-
+            BusLineStation firstStation = new BusLineStation(stationKey1, latitude, longitude);
+            
             if (c == "1")
             {
-                string stationKey2 = ValidInput.GetUniqueStationKey("user");
-                if (stationKey2 == "Not valid")
-                    return;
-                if (checkIfStationExist(stationKey1))
-                {
-                    Console.WriteLine("Station key is already exist");
-                    return;
-                }
-                Console.WriteLine("Enter location of the last station");
-                if (!ValidInput.GetLocation(out latitude2, out longitude2, "user"))
-                    return;
-                var last = new BusLineStation(stationKey2, latitude2, longitude2);
-
-                if (!busCol.AddBusLine(new BusLine(buskey, first, last)))
-                {
-                    Console.WriteLine("Error: This bus exists in the system");
-                    return;
-                }
-                else
-                {
-                    Console.WriteLine($"Bus number {buskey} Add successfully");
-                    allStation.Add(first);
-                    allStation.Add(last);
-                }
-
+                addNewBusToColl(busCol, busKey, firstStation);
+                return;
             }
             if (c == "2")
             {
-                bus.AddStation(first);
-                Console.WriteLine($"Station number {stationKey1} Add successfully to bus number  {buskey}");
+                addStationToBusLine(busCol, busKey, firstStation);
+                return;
+            }
+            if (c == "3")
+                addExistStation(busCol, busKey);
+        }
+
+        private static void addNewBusToColl(BusLineCollection busCol, int busKey, BusLineStation firstStation)
+        {
+
+            Console.WriteLine("enter last station");
+            int stationKey = ValidInput.GetUniqueStationKey("user");
+            if (stationKey == -1)
+                return;
+            
+            if (checkIfStationExist(stationKey) != null)
+            {
+                Console.WriteLine("Station key is already exist");
+                return;
+            }
+            
+            double latitude, longitude;
+            Console.WriteLine("Enter location of the last station");
+            if (!ValidInput.GetLocation(out latitude, out longitude, "user"))
+                return;
+            
+            BusLineStation lastStation = new BusLineStation(stationKey, latitude, longitude);
+
+            if (!busCol.AddBusLine(new BusLine(busKey, firstStation, lastStation)))
+            {
+                Console.WriteLine("Error: This bus exists in the system");
+                return;
+            }
+            else
+            {
+                Console.WriteLine($"Bus number {busKey} Add successfully");
+                allStation.Add(firstStation);
+                allStation.Add(lastStation);
             }
         }
 
-        private static bool checkIfStationExist(string key)
+        private static void addStationToBusLine(BusLineCollection busCol, int busKey, BusLineStation firstStation)
         {
-            foreach(var s in allStation)
+            BusLine bus;
+            if ((bus = checkIfBusExist(busCol, busKey)) != null)
+                return;
+
+            bus.AddStation(firstStation);
+            Console.WriteLine($"Station number {firstStation.BusStationKey} Add successfully to bus number  {busKey}");
+        }
+
+        private static void addExistStation(BusLineCollection busCol, int busKey)
+        {
+            BusLine bus;
+            if ((bus = checkIfBusExist(busCol, busKey)) != null)
+                return;
+            int stationKey = ValidInput.GetUniqueStationKey("user");
+            if (stationKey == -1)
+                return;
+            BusLineStation st;
+            if ((st = checkIfStationExist(stationKey)) != null)
             {
-                if(s.BusStationKey == key)
-                    return true;
+                bus.AddStation(st);
+                Console.WriteLine($"Station number {stationKey} Add successfully to bus number  {busKey}");
+                return;
             }
-            return false;
+        }
+
+        private static BusLineStation checkIfStationExist(int key)
+        {
+            return allStation.Find(x => x.BusStationKey == key);
+        }
+
+        private static BusLine checkIfBusExist(BusLineCollection busCol, int key)
+        {
+            var bus = busCol[key];
+            if (bus == null)
+            {
+                Console.WriteLine("Bus not found!");
+                return null;
+            }
+            return bus;
         }
     }
 

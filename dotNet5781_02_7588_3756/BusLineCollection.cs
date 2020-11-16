@@ -44,7 +44,7 @@ namespace dotNet5781_02_7588_3756
         /// </summary>
         /// <param name="stationKey"></param>
         /// <returns>List of BusLine or null if not found any</returns>
-        public List<BusLine> GetListPassInStation(string stationKey)
+        public List<BusLine> GetListPassInStation(int stationKey)
         {
             bool found = false;
             List<BusLine> output = new List<BusLine>();

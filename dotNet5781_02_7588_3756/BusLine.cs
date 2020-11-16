@@ -51,7 +51,7 @@ namespace dotNet5781_02_7588_3756
                 FirstStation,
                 LastStation
             };
-            Area = GetRegion(FirstStation.X, LastStation.Y);
+            Area = GetRegion(FirstStation.MyLocation.X, LastStation.MyLocation.Y);
         }
         /// <summary>
         /// copy constractor
@@ -67,7 +67,7 @@ namespace dotNet5781_02_7588_3756
                 FirstStation,
                 LastStation
             };
-            Area = GetRegion(FirstStation.X, LastStation.Y);
+            Area = GetRegion(FirstStation.MyLocation.X, LastStation.MyLocation.Y);
         }
         /// <summary>
         /// empty constractor
@@ -195,7 +195,8 @@ namespace dotNet5781_02_7588_3756
             subRoute.Stations = Stations.GetRange(smallIndex, bigIndex - smallIndex);
             subRoute.FirstStation = new BusLineStation(first);
             subRoute.LastStation = new BusLineStation(second);
-            subRoute.Area = GetRegion(subRoute.FirstStation.X, subRoute.LastStation.Y);
+            subRoute.Area = GetRegion(subRoute.FirstStation.MyLocation.X,
+                subRoute.LastStation.MyLocation.Y);
 
             return subRoute;
         }
@@ -273,7 +274,7 @@ namespace dotNet5781_02_7588_3756
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public BusLineStation GetStationByKey(string key)
+        public BusLineStation GetStationByKey(int key)
         {
             return Stations.Find(x => x.BusStationKey == key);
         }

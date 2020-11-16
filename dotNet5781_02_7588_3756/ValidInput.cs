@@ -16,23 +16,28 @@ namespace dotNet5781_02_7588_3756
         {
             Console.WriteLine("enter bus line number");
             string buskey = Console.ReadLine();
-            if (!validNumber(buskey) || buskey.Length > 3)
+            int res;
+            if (!int.TryParse(buskey, out res) && buskey.Length > 3 && res >= 0)
             {
-                Console.WriteLine("not valid bus line");
+                Console.WriteLine("not valid bus line number");
                 return -1;
             }
-            return int.Parse(buskey);
+            return res;
         }
 
-        public static string GetUniqueStationKey(string userOrRand = "rand")
+        public static int GetUniqueStationKey(string userOrRand = "rand")
         {
             if (userOrRand == "user")
             {
                 Console.WriteLine("Enter station key");
                 string sKey = Console.ReadLine();
-                if (!validStationKey(sKey))
-                        return "Not valid";
-                return sKey;
+                int res;
+                if (!int.TryParse(sKey, out res) && sKey.Length != 6 && res >= 0)
+                {
+                    Console.WriteLine("not valid station key");
+                    return -1;
+                }
+                return res; ;
             }
 
             int key = random.Next(100000, 999999);
@@ -41,7 +46,7 @@ namespace dotNet5781_02_7588_3756
                 key = random.Next(100000, 999999);
                 randomListStationKeys.Add(key);
             }
-            return key.ToString();
+            return key;
         }
 
         public static bool GetLocation(out double latitude, out double longitude, string userOrRand = "rand")
@@ -65,7 +70,8 @@ namespace dotNet5781_02_7588_3756
             latitude = longitude = 0;
             Console.WriteLine("Enter latitude: ");
             string strTempX = Console.ReadLine();
-            if (!validNumber(strTempX, "double"))
+            double x;
+            if (!double.TryParse(strTempX, out x))
             {
                 Console.WriteLine("not a valid number");
                 return false;
@@ -73,20 +79,21 @@ namespace dotNet5781_02_7588_3756
 
             Console.WriteLine("Enter longitude: ");
             string strTempY = Console.ReadLine();
-            if (!validNumber(strTempX, "double"))
+            double y;
+            if (!double.TryParse(strTempY, out y))
             {
                 Console.WriteLine("not a valid number");
                 return false;
             }
-
-            if (!InRange(double.Parse(strTempX), double.Parse(strTempY), -90, 90, -180, 180))
+            
+            if (!InRange(x, y, -90, 90, -180, 180))
             {
                 Console.WriteLine("The location entered is outside the Earth");
                 return false;
             }
 
-            latitude = double.Parse(strTempX);
-            longitude = double.Parse(strTempY);
+            latitude = x;
+            longitude = y;
             return true;
         }
 
@@ -94,28 +101,5 @@ namespace dotNet5781_02_7588_3756
         {
             return param1 >= x1 && param1 <= y1 && param2 >= x2 && param2 <= y2;
         }
-
-
-        private static bool validNumber(string num, string intOrDouble = "int")
-        {
-            string allowableLetters = intOrDouble == "int" ? "0123456789" : "0123456789.";
-            foreach (char c in num)
-            {
-                if (!allowableLetters.Contains(c.ToString()))
-                    return false;  
-            }
-            return true;
-        }
-
-        private static bool validStationKey(string num)
-        {
-            if(num.Length != 6 && !validNumber(num))
-            {
-                Console.WriteLine("not a valid number");
-                return false;
-            }
-            return true;
-        }
-
     }
 }
