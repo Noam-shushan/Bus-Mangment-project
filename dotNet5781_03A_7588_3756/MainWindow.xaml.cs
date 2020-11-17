@@ -21,16 +21,30 @@ namespace dotNet5781_03A_7588_3756
     /// </summary>
     public partial class MainWindow : Window
     {
+        private BusLine currentDisplayBusLine;
+        BusLineCollection busColl = new BusLineCollection();
+
         public MainWindow()
         {
-            BusLineCollection busColl = new BusLineCollection();
             InitializationAndMenu.InitializBusCollection(busColl, 10 ,40);
-            cbBusLines.ItemsSource = busColl;
-            cbBusLines.DisplayMemberPath = " BusLineNum ";
-            cbBusLines.SelectedIndex = 0;
-            //ShowBusLine(……….)
             InitializeComponent();
+            cbBusLines.ItemsSource = busColl;
+            cbBusLines.DisplayMemberPath = "BusLineNum";
+            cbBusLines.SelectedIndex = 0;
 
+
+        }
+        
+        private void ShowBusLine(int index)
+        {
+            currentDisplayBusLine = busColl[index];
+            UpGrid.DataContext = currentDisplayBusLine;
+            lbBusLineStations.DataContext = currentDisplayBusLine.Stations;
+        }
+
+        private void cbBusLines_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ShowBusLine((cbBusLines.SelectedValue as BusLine).BusLineNum);
         }
     }
 }

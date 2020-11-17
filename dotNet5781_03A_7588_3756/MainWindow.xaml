@@ -5,23 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotNet5781_03A_7588_3756"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="640" Width="800">
     <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="400*"/>
         </Grid.RowDefinitions>
-        <Grid Name="UpGrid" HorizontalAlignment="Stretch" Height="auto" Grid.Row="0" VerticalAlignment="Stretch" Width="auto" Margin="0,0,143,0">
+        <Grid  x:Name="UpGrid"  HorizontalAlignment="Stretch" Height="auto" Grid.Row="0"
+VerticalAlignment="Stretch" Width="auto">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions >
+
+            <ComboBox x:Name="cbBusLines" HorizontalAlignment= "Stretch" VerticalAlignment="Stretch" Grid.Column="1" SelectionChanged="cbBusLines_SelectionChanged" Margin="0.333,38,0.333,0"/>
+            <TextBox x:Name ="tbArea" HorizontalAlignment= "Stretch" VerticalAlignment="Stretch" Grid.Column="2" Text="{Binding Path=Area}" Grid.ColumnSpan="2" Margin="197.667,38,0.333,0"/>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Left" Margin="107.667,0,0,9" TextWrapping="Wrap" Text="Area:" VerticalAlignment="Bottom" RenderTransformOrigin="-0.136,0.797" Height="21" Width="74">
+                <TextBlock.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="0.317"/>
+                        <TranslateTransform X="-0.105" Y="-0.752"/>
+                    </TransformGroup>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+
+
         </Grid>
-        <ComboBox x:Name="cbBusLines" HorizontalAlignment= "Stretch" VerticalAlignment="Stretch" Grid.Column="1" />
-        <TextBox x:Name="tbArea" HorizontalAlignment= "Stretch" VerticalAlignment="Stretch" Grid.Column="3" Text="{Binding Path=Area}"/>
-        <ListBox x:Name="lbBusLineStation"  HorizontalAlignment="Left" Height="363" Margin="150,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="502"/>
+        <ListBox x:Name="lbBusLineStations" ItemsSource="{Binding}" HorizontalAlignment="Left" Height="542" Margin="117,1,0,-0.333" Grid.Row="1" VerticalAlignment="Top" Width="573" RenderTransformOrigin="0.5,0.5">
+            <ListBox.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.466"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </ListBox.RenderTransform>
+        </ListBox>
+        <TextBlock HorizontalAlignment="Left" Margin="75,40,0,0" TextWrapping="Wrap" Text="Bus line number: " VerticalAlignment="Top" Height="28" Width="122"/>
+
 
     </Grid>
 </Window>
