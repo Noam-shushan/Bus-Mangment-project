@@ -11,6 +11,7 @@ namespace dotNet5781_02_7588_3756
     /// </summary>
     public class BusLine : IComparable<BusLine>
     {
+        static Random random = new Random();
         /// <summary>
         /// the bus line number
         /// </summary>
@@ -41,7 +42,6 @@ namespace dotNet5781_02_7588_3756
         /// </summary>
         public TimeSpan? TotalTimeOfTheLine { get; set; }
 
-        public List<TimeSpan?> TimeListOfTheStation { get; set; }
 
         /// <summary>
         /// constractor
@@ -52,8 +52,8 @@ namespace dotNet5781_02_7588_3756
         public BusLine(int busLine, BusLineStation first, BusLineStation last)
         {
             BusLineNum = busLine;
-            FirstStation = new BusLineStation(first);
-            LastStation = new BusLineStation(last);
+            FirstStation = first;
+            LastStation = last;
             Stations = new List<BusLineStation>
             {
                 FirstStation,
@@ -103,49 +103,44 @@ namespace dotNet5781_02_7588_3756
         /// <param name="newSatation"></param>
         public void AddStation(BusLineStation newSatation)
         {
+            if (StationInTheRoute(newSatation))
+            {
+                Console.WriteLine("this station is already in the route!");
+                return;
+            }
             Stations.Insert(Stations.Count - 1, newSatation);
+            
             LastStation.DistanceFromPrevStation = DistanceBetweenStations(LastStation, newSatation);
             newSatation.DistanceFromPrevStation = DistanceBetweenStations(newSatation,
-                Stations.ElementAt(Stations.Count - 2));
-            int hours = (int)LastStation.DistanceFromPrevStation % 24;
-            int minutes = (int)LastStation.DistanceFromPrevStation % 60;
-            LastStation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);//updete the time of the last station
-            hours = (int)newSatation.DistanceFromPrevStation % 24;
-            minutes = (int)newSatation.DistanceFromPrevStation % 60;
-            newSatation.TimeFromPrevStation = new TimeSpan(hours, minutes, 0);
-            updeteTotalTime();
-        }
+                Stations.ElementAt(Stations.Count - 3));
 
-        private void updeteTotalTime()
-        {
-            foreach(var s in Stations)
-            {
-                TotalTimeOfTheLine?.Add((TimeSpan)s.TimeFromPrevStation);
-            }
+            newSatation.TimeFromPrevStation = new TimeSpan(0, random.Next(0, 60), 0);
+            TotalTimeOfTheLine = SetTotalTime(LastStation);
         }
 
         /// <summary>
         /// remove station from the bus line
         /// </summary>s
-        /// <param name="satationToDel"></param>
-        public void RemoveStation(BusLineStation satationToDel)
+        /// <param name="stationToDel"></param>
+        public void RemoveStation(BusLineStation stationToDel)
         {
-            if (!StationInTheRoute(satationToDel))
-                return;
-            if(satationToDel != LastStation)
+            if (!StationInTheRoute(stationToDel))
             {
-                var next =  Stations.ElementAt(Stations.IndexOf(satationToDel) + 1);
-                next.TimeFromPrevStation?.Add((TimeSpan)satationToDel.TimeFromPrevStation);
-                next.DistanceFromPrevStation += satationToDel.DistanceFromPrevStation;
+                Console.WriteLine($"this station is not in the route of bus line {BusLineNum}");
+                return;
+            }
+            if(stationToDel != LastStation)
+            {
+                int indexOfStationToDel = Stations.FindIndex(s => s.Equals(stationToDel));
+                var next =  Stations.ElementAt(indexOfStationToDel + 1);
+                next.DistanceFromPrevStation += stationToDel.DistanceFromPrevStation;
             }
             else
-            {
-                LastStation.TimeFromPrevStation?.Add((TimeSpan)satationToDel.TimeFromPrevStation);
-                LastStation.DistanceFromPrevStation += satationToDel.DistanceFromPrevStation;
-            }
-            
-            Stations.Remove(satationToDel);
-            updeteTotalTime();
+                LastStation = Stations.ElementAt(Stations.Count - 2);
+
+            Stations.RemoveAll(s => s.Equals(stationToDel));
+            TotalTimeOfTheLine = 
+                TotalTimeOfTheLine?.Subtract((TimeSpan)stationToDel.TimeFromPrevStation);
         }
         /// <summary>
         /// check if a given station is in the routh of the bus line
@@ -169,9 +164,6 @@ namespace dotNet5781_02_7588_3756
         /// <returns></returns>
         public double DistanceBetweenStations(BusLineStation station1, BusLineStation station2)
         {
-            if (!StationInTheRoute(station1) && !StationInTheRoute(station2))
-                return -1;
-
             return station1.DistanceBetweenStations(station2);
         }
         /// <summary>
@@ -196,15 +188,24 @@ namespace dotNet5781_02_7588_3756
                 return null;
 
             BusLine subRoute = new BusLine();
-            int index1 = getIndexOfStation(first);
-            int index2 = getIndexOfStation(second);
+            int index1 = Stations.FindIndex(s => s.Equals(first));
+            int index2 = Stations.FindIndex(s => s.Equals(first));
             int smallIndex = Math.Min(index1, index2);
             int bigIndex = Math.Max(index1, index2);
+           
             subRoute.Stations = Stations.GetRange(smallIndex, bigIndex - smallIndex);
+            
             subRoute.FirstStation = new BusLineStation(first);
             subRoute.LastStation = new BusLineStation(second);
+            subRoute.FirstStation.TimeFromPrevStation = new TimeSpan(0, 0, 0);
+            subRoute.LastStation.TimeFromPrevStation = new 
+                TimeSpan(second.TimeFromPrevStation.Value.Hours,
+                second.TimeFromPrevStation.Value.Minutes, 0);
+            foreach(var s in subRoute.Stations)
+                subRoute.TotalTimeOfTheLine = subRoute.SetTotalTime(s);
+            
             subRoute.Area = GetRegion(subRoute.FirstStation.MyLocation.X,
-                subRoute.LastStation.MyLocation.Y);
+                subRoute.FirstStation.MyLocation.Y);
 
             return subRoute;
         }
@@ -218,8 +219,8 @@ namespace dotNet5781_02_7588_3756
             int compare = this.CompareTo(other);
 
             if (compare == 1)
-                return other.BusLineNum;
-            return this.BusLineNum;
+                return BusLineNum;
+            return other.BusLineNum;
         }
         /// <summary>
         /// compare two BusLine by the duration time of the total drive 
@@ -231,7 +232,7 @@ namespace dotNet5781_02_7588_3756
         /// 1 : if the total time of this is longer then other</returns>
         public int CompareTo(BusLine other)
         {
-            return TimeSpan.Compare(this.TotalTimeOfTheLine.Value, other.TotalTimeOfTheLine.Value);
+            return (int)(TotalTimeOfTheLine?.CompareTo(other));
         }
         /// <summary>
         /// compare by the bus line number
@@ -243,18 +244,6 @@ namespace dotNet5781_02_7588_3756
             return this.BusLineNum == other.BusLineNum;
         }
 
-
-        private int getIndexOfStation(BusLineStation station)
-        {
-            int index = 0;
-            foreach (var s in Stations)
-            {
-                if (s.Equals(station))
-                    return index;
-                index++;
-            }
-            return -1;
-        }
         /// <summary>
         /// According to Wikipedia 
         /// </summary>
@@ -290,6 +279,10 @@ namespace dotNet5781_02_7588_3756
         public void PrintStationInfo()
         {
             Stations.ForEach(Console.WriteLine);
+        }
+        public TimeSpan? SetTotalTime(BusLineStation newStationTime)
+        {
+            return TotalTimeOfTheLine?.Add((TimeSpan)newStationTime.TimeFromPrevStation);
         }
     }
 }

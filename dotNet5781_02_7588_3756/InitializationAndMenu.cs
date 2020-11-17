@@ -9,6 +9,7 @@ namespace dotNet5781_02_7588_3756
     {
         static List<BusLineStation> allStation = new List<BusLineStation>();
         static Random random = new Random();
+        private const int MAX_HOUER_FOR_TOTLA_TIME = 3; 
 
         public static void Menu(BusLineCollection busCol)
         {
@@ -24,28 +25,35 @@ namespace dotNet5781_02_7588_3756
             {
                 Console.Write(" -> ");
                 string option = Console.ReadLine();
-                switch (option)
+                try
                 {
-                    case "1":
-                        addBusLineUser(busCol);
-                        break;
-                    case "2":
-                        deletBusLineUser(busCol);
-                        break;
-                    case "3":
-                        linsPassInStation(busCol);
-                        break;
-                    case "4":
-                        printTheFastLineBetweenStations(busCol);
-                        break;
-                    case "5":
-                        printMe(busCol);
-                        break;
-                    case "6":
-                        Console.WriteLine("bye!");
-                        return;
-                    default:
-                        break;
+                    switch (option)
+                    {
+                        case "1":
+                            addBusLineUser(busCol);
+                            break;
+                        case "2":
+                            deletBusLineUser(busCol);
+                            break;
+                        case "3":
+                            linsPassInStation(busCol);
+                            break;
+                        case "4":
+                            printTheFastLineBetweenStations(busCol);
+                            break;
+                        case "5":
+                            printMe(busCol);
+                            break;
+                        case "6":
+                            Console.WriteLine("bye!");
+                            return;
+                        default:
+                            break;
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                    Console.WriteLine("Eorr: Bus no found");
                 }
             }
         }
@@ -60,15 +68,8 @@ namespace dotNet5781_02_7588_3756
             int j = 0;
             for (int i = 0; i < numOfBusLines; i++, j += 2)
             {
-                BusLineStation first = new BusLineStation(stationArr[j % numOfStation]);
-                BusLineStation last = new BusLineStation(stationArr[j + 1 % numOfStation]);
-                first.DistanceFromPrevStation = 0;
-                first.TimeFromPrevStation = new TimeSpan();
-                last.DistanceFromPrevStation = last.DistanceBetweenStations(first);
-                busLineArr[i] = new BusLine(random.Next(1, 999), first, last);
-                busLineArr[i].TotalTimeOfTheLine = new
-                    TimeSpan(random.Next(0, 24), random.Next(0, 60), 0);
-                last.TimeFromPrevStation = busLineArr[i].TotalTimeOfTheLine;
+                busLineArr[i] = createBusLine(stationArr[j % numOfStation],
+                    stationArr[j + 1 % numOfStation]);
             }
 
             for (; j < numOfStation; j++)
@@ -77,6 +78,25 @@ namespace dotNet5781_02_7588_3756
             }
 
             busCol.BusLineList = busLineArr.ToList();
+        }
+
+        private static BusLine createBusLine(BusLineStation first, BusLineStation last, string userOrRand = "rand", int key = 0)
+        {
+            BusLineStation firstTemp = new BusLineStation(first);
+            BusLineStation lastTemp = new BusLineStation(last);
+            firstTemp.DistanceFromPrevStation = 0;
+            firstTemp.TimeFromPrevStation = new TimeSpan(0, 0, 0);
+            lastTemp.DistanceFromPrevStation = last.DistanceBetweenStations(first);
+
+            lastTemp.TimeFromPrevStation = new
+                TimeSpan(0, random.Next(0, 60), 0);
+            BusLine result;
+            if (userOrRand == "user")
+                result = new BusLine(key, firstTemp, lastTemp);
+            else
+                result = new BusLine(random.Next(1, 999), firstTemp, lastTemp);
+            result.TotalTimeOfTheLine = result.SetTotalTime(lastTemp);
+            return result;
         }
 
         private static BusLineStation[] getInitializStations(int numOfStation)
@@ -115,14 +135,7 @@ namespace dotNet5781_02_7588_3756
                 if (busKey == -1)
                     return;
 
-                try
-                {
-                    busColl[busKey].PrintStationInfo();
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine("bus not found");
-                }
+                busColl[busKey].PrintStationInfo();
             }
         }
 
@@ -184,7 +197,6 @@ namespace dotNet5781_02_7588_3756
                     return;
 
                 busCol[busKey].RemoveStation(busCol[busKey].GetStationByKey(stationKey));
-                allStation.Remove(busCol[busKey].GetStationByKey(stationKey));
             }
 
         }
@@ -251,7 +263,8 @@ namespace dotNet5781_02_7588_3756
             
             BusLineStation lastStation = new BusLineStation(stationKey, latitude, longitude);
 
-            if (!busCol.AddBusLine(new BusLine(busKey, firstStation, lastStation)))
+            var newBusLine = createBusLine(firstStation, lastStation, "user", busKey);
+            if (!busCol.AddBusLine(newBusLine))
             {
                 Console.WriteLine("Error: This bus exists in the system");
                 return;
@@ -279,7 +292,7 @@ namespace dotNet5781_02_7588_3756
             BusLineStation st;
             if ((st = checkIfStationExist(stationKey)) != null)
             {
-                busCol[busKey].AddStation(st);
+                busCol[busKey].AddStation(new BusLineStation(st));
                 Console.WriteLine($"Station number {stationKey} Add successfully to bus number  {busKey}");
                 return;
             }

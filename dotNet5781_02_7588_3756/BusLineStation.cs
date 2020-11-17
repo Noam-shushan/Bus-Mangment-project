@@ -28,8 +28,7 @@ namespace dotNet5781_02_7588_3756
         public BusLineStation(BusLineStation other)
             : base(other.BusStationKey, other.MyLocation.X, other.MyLocation.Y)
         {
-            DistanceFromPrevStation = other.DistanceFromPrevStation;
-            TimeFromPrevStation = other.TimeFromPrevStation;
+
         }
         /// <summary>
         /// get the distansce between tow stations
