@@ -58,8 +58,8 @@ namespace dotNet5781_02_7588_3756
 
             double xTemp = random.NextDouble();
             double yTemp = random.NextDouble();
-            xTemp += (double)random.Next(29, 33);
-            yTemp += (double)random.Next(34, 35);
+            xTemp += (double)random.Next(33, 36);
+            yTemp += (double)random.Next(29, 34);
             latitude = xTemp;
             longitude = yTemp;
             return true;
