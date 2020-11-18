@@ -9,7 +9,6 @@ namespace dotNet5781_02_7588_3756
     {
         static List<BusLineStation> allStation = new List<BusLineStation>();
         static Random random = new Random();
-        private const int MAX_HOUER_FOR_TOTLA_TIME = 3; 
 
         public static void Menu(BusLineCollection busCol)
         {
@@ -124,6 +123,9 @@ namespace dotNet5781_02_7588_3756
             Console.WriteLine("To print all buss enter: 1\n" +
                 "To print all stations of bus line enter: 2\n");
             string c = Console.ReadLine();
+            if (c != "1" || c != "2")
+                return;
+
             if (c == "1")
             {
                 foreach (var b in busColl)
@@ -181,6 +183,9 @@ namespace dotNet5781_02_7588_3756
             Console.WriteLine("To remove bus line enter: 1\n" +
                     "to remove station from a bus line enter: 2");
             string c = Console.ReadLine();
+            if (c != "1" || c != "2")
+                return;
+
             int busKey = ValidInput.GetBusLineNumberUesr();
             if (busKey == -1)
                 return;
@@ -195,8 +200,15 @@ namespace dotNet5781_02_7588_3756
                 int stationKey = ValidInput.GetUniqueStationKey("user");
                 if (stationKey == -1)
                     return;
+                var station = busCol[busKey].GetStationByKey(stationKey);
+                if(station != null)
+                {
+                    busCol[busKey].RemoveStation(station);
+                    Console.WriteLine($"station number {station.BusStationKey} remove successfully from bus line {busKey}");
+                }
+                else
+                    Console.WriteLine("Erorr: station not found in the line");
 
-                busCol[busKey].RemoveStation(busCol[busKey].GetStationByKey(stationKey));
             }
 
         }
@@ -207,7 +219,9 @@ namespace dotNet5781_02_7588_3756
                 "To add station to a bus line enter: 2\n" +
                 "To add exist station to a bus line enter: 3");
             string c = Console.ReadLine();
- 
+            if (c != "1" || c != "2" || c != "3")
+                return;
+            
             int busKey = ValidInput.GetBusLineNumberUesr();
             if (busKey == -1)
                 return;
