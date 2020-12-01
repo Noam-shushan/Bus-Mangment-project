@@ -2,18 +2,38 @@
 
 public class Bus
 {
-    private DateTime? _startActivity; // the date of the stert activity
+	private DateTime? _startActivity; // the date of the stert activity
 	private int _kilometers; // the total kilometers
-    private DateTime? _lastTreatment; //the date of the last treatment
-	private const int KILOMETER_BEFORE_TREATMENT = 20000; 
+	private DateTime? _lastTreatment; //the date of the last treatment
+	public const int KILOMETER_BEFORE_TREATMENT = 20000;
 	private const int MAX_KILOMETER_AFTER_REFUELING = 1200;
-
-	// constractor
+	public enum Status  { READY, IN_DRIVE, REFUELING, TREATMENT }
+	/// <summary>
+	/// constructor
+	/// </summary>
 	public Bus(string licenseNumber, DateTime? startActivity)
 	{
 		LiscenseNumber = licenseNumber;
 		_startActivity = startActivity;
 		KilometersAfterFueling = 0;
+	}
+	/// <summary>
+	/// overrlod constructor
+	/// </summary>
+	/// <param name="licenseNumber"></param>
+	/// <param name="startActivity"></param>
+	/// <param name="kilometers"></param>
+	/// <param name="lastTreatment"></param>
+	/// <param name="kilometersAfterTreatment"></param>
+	public Bus(string licenseNumber, DateTime? startActivity,
+		int kilometers, DateTime? lastTreatment, int kilometersAfterTreatment)
+    {
+		LiscenseNumber = licenseNumber;
+		_startActivity = startActivity;
+		KilometersAfterFueling = 0;
+		_lastTreatment = lastTreatment;
+		Kilometers = kilometers;
+		KilometersAfterTreatment = kilometersAfterTreatment;
 	}
 
     public string LiscenseNumber { get; set; }
@@ -26,6 +46,13 @@ public class Bus
 			_kilometers += value;
 			KilometersAfterTreatment += value;
 			KilometersAfterFueling += value;
+			
+			if (!NeedRefueling() && !NeedsTreatment())
+				CurrentStatus = Status.READY;
+			if(NeedsTreatment())
+				CurrentStatus = Status.TREATMENT;
+			if(NeedRefueling() && !NeedsTreatment())
+				CurrentStatus = Status.REFUELING;
 		} 
     }
 
@@ -33,7 +60,9 @@ public class Bus
 
     public int KilometersAfterTreatment { get; set; }
 
-    public bool NeedRefueling(int newKilomters)
+	public Status CurrentStatus { get; set; }
+
+    public bool NeedRefueling(int newKilomters = 0)
     {
 		return KilometersAfterFueling + newKilomters >= MAX_KILOMETER_AFTER_REFUELING;
 	}

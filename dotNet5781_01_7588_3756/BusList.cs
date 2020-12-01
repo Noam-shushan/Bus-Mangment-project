@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace dotNet5781_01_7588_3756
 {
-    class BusList
+    public class BusList
     {
         private List<Bus> _allBus;
         private const int MAX_DISTANCE = 2000;

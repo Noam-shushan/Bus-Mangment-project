@@ -10,6 +10,7 @@ namespace dotNet5781_02_7588_3756
             BusLineCollection busColl = new BusLineCollection();
             InitializationAndMenu.InitializBusCollection(busColl, 10, 40);
             InitializationAndMenu.Menu(busColl);
+
         }
     }
 }

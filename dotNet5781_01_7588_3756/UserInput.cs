@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace dotNet5781_01_7588_3756
 {
-    static class UserInput
+    public static class UserInput
     {
         private const int DIGITS_FOR_BUS_BEFORE_2018 = 7;
         private const int DIGITS_FOR_BUS_AFTER_2018 = 8;
@@ -114,7 +114,7 @@ namespace dotNet5781_01_7588_3756
          * check valid liscense number 
          * regarding the date of commencement of its activity
          */
-        private static bool validLiscenseNumber(string liscenseNumber, DateTime? startActivity)
+        public static bool validLiscenseNumber(string liscenseNumber, DateTime? startActivity)
         {
             if (startActivity?.Year < 2018 &&
                     liscenseNumber.Length == DIGITS_FOR_BUS_BEFORE_2018)
