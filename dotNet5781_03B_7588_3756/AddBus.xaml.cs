@@ -28,27 +28,18 @@ namespace dotNet5781_03B_7588_3756
             InitializeComponent();
         }
 
-        //private void tbUserStartActivity_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-
-        //}
-
-        //private void tbUserLicenseNumber_TextChanged(object sender, TextChangedEventArgs e)
-        //{
-
-        //}
-
         private void applyNewinfoForBus_Click(object sender, RoutedEventArgs e)
         {
             if (!DateTime.TryParse(tbUserStartActivity.Text, out startActivity))
             {
-                MessageBox.Show("Error: invalid date time");
+                lErrMsgDate.Content = "Error: invalid date";
             }
             if (UserInput.validLiscenseNumber(tbUserLicenseNumber.Text, startActivity))
                 licenseNumber = tbUserLicenseNumber.Text;
             else
-                MessageBox.Show("Error: invalid license number");
-            MainWindow.MyBusList.Add(new Bus(licenseNumber, startActivity));
+                lErrMsgLicenseNumber.Content = "Error: invalid license number";
+            
         }
+
     }
 }

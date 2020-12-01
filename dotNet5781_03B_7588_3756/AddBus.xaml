@@ -5,62 +5,89 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
-        Title="AddBus" Height="400" Width="500">
+        Background="Beige"
+        Title="Add new Bus" Height="350" Width="450">
     <Window.Resources>
         <Style TargetType="TextBox">
             <Setter Property="Foreground" Value="Gray"/>
-            <Setter Property="Height" Value="27"/>
-            <Setter Property="Width" Value="132"/>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Consolas"/>
         </Style>
     </Window.Resources>
-    <Grid x:Name="MainGrid" >
-        <TextBlock
-            x:Name="haedLine"
-            Text="Enter infromtion of the new bus"   
-            Height="30" Margin="10,31,10.333,309.667"
-            FontSize="16"/>
-        <TextBox
+    <Grid x:Name="MainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <TextBlock 
+            Text="Enter infromtion of the new bus" 
+            FontSize="16"
+            Grid.Column="1" Grid.Row="1" 
+            Margin="0,10,0,20"
+            Grid.ColumnSpan="3"/>
+        <TextBlock 
+            Text="Start activity:" 
+            FontSize="13"
+            Grid.Row="2"
+            Grid.Column="1"/>
+        <TextBox 
+            x:Name="tbUserStartActivity"
+            Grid.Column="2"  
+            Grid.Row="2"  
+            Text="dd/mm/yyyy" />
+        <TextBlock 
+            Text="License number:"
+            FontSize="13"
+            Grid.Column="1"
+            Grid.Row="4"/>
+
+        <TextBox 
             x:Name="tbUserLicenseNumber"
-            Margin="159,151,202.333,192.667" 
-            TextChanged="tbUserLicenseNumber_TextChanged" RenderTransformOrigin="5.463,0.341"
-                />
-        <TextBlock 
-            TextWrapping="Wrap" 
-            Text="License number:" 
-                HorizontalAlignment="Left" 
-                Margin="10,151,0,0" 
-                VerticalAlignment="Top" 
-                Height="27" Width="126" 
- 
-                FontSize="13"/>
-        <TextBlock 
-                HorizontalAlignment="Left" 
-                Margin="10,104,0,0" 
-                TextWrapping="Wrap" 
-                VerticalAlignment="Top" 
-                Height="27" Width="126" 
-                RenderTransformOrigin="0.718,2.037"><Run 
-                FontSize="13"
-                Text="Start activity:"/></TextBlock>
-        <TextBox
-                x:Name="tbUserStartActivity" 
-                HorizontalAlignment="Left" 
-                Height="27" 
-                Margin="159,104,0,0" 
-                TextWrapping="Wrap" 
-                Text="dd/mm/yyyy" 
-                VerticalAlignment="Top" 
-                Width="132" 
-                TextChanged="tbUserStartActivity_TextChanged"/>
+            Grid.Column="2" 
+            Grid.Row="4" />
+        
         <Button 
-                x:Name="applyNewinfoForBus"
-                Content="Apply" 
-                HorizontalAlignment="Left" 
-                Margin="188,248,0,0" 
-                VerticalAlignment="Top" 
-                Width="91" Height="32" Click="applyNewinfoForBus_Click"/>
+             x:Name = "applyNewinfoForBus"
+            Content = "Apply"
+            Foreground="FloralWhite"
+            FontSize="13"
+            Background="DarkCyan"
+            Grid.Column="2" 
+            Grid.Row="6"
+            Margin="10"
+            Click="applyNewinfoForBus_Click"/>
+        <Label 
+            x:Name="lErrMsgDate"
+            Content="" 
+            Foreground="Red"
+            FontSize="12"
+            Grid.Column="2" 
+            Grid.Row="3" 
+            Margin="5"/>
+        <Label 
+            x:Name="lErrMsgLicenseNumber"
+            Foreground="Red"
+            FontSize="12"
+            Content="" 
+            Grid.Column="2" 
+            Grid.Row="5" 
+            Margin="5"/>
     </Grid>
 </Window>
