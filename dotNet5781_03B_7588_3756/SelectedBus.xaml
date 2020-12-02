@@ -6,7 +6,37 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Title="SelectedBus" Height="450" Width="800">
-    <Grid>
-        
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="MainGrid" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="button" Content="Treatment" Grid.Column="5" HorizontalAlignment="Left" Margin="147,172,0,0" Grid.Row="7" VerticalAlignment="Top" Width="149" Height="70" Click="button_Click"/>
+        <Button x:Name="button1" Content="KilometersAfterFueling" Grid.Column="5" HorizontalAlignment="Left" Margin="468,172,0,0" Grid.Row="7" VerticalAlignment="Top" Width="149" Height="70"/>
     </Grid>
 </Window>
