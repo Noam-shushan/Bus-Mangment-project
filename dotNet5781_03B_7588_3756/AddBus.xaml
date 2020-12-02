@@ -49,6 +49,7 @@
             Grid.Column="1"/>
         <TextBox 
             x:Name="tbUserStartActivity"
+            GotFocus="tbUserStartActivity_GotFocus"
             Grid.Column="2"  
             Grid.Row="2"  
             Text="dd/mm/yyyy" />

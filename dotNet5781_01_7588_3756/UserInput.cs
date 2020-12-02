@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace dotNet5781_01_7588_3756
 {
@@ -7,6 +8,7 @@ namespace dotNet5781_01_7588_3756
     {
         private const int DIGITS_FOR_BUS_BEFORE_2018 = 7;
         private const int DIGITS_FOR_BUS_AFTER_2018 = 8;
+        private const string Pattern = "[^0-9^-]";
 
         /*
          * menu selction for the user
@@ -87,8 +89,8 @@ namespace dotNet5781_01_7588_3756
             Console.Write(@"Insert liscense number of the bus: ");
             string liscenseNumber = Console.ReadLine();
             
-            if(!validLiscenseNumber(liscenseNumber.Replace("-", ""), startActivity) ||
-                !formatValidLiscenseNumber(liscenseNumber))
+            if(!ValidLiscenseNumber(liscenseNumber.Replace("-", ""), startActivity) ||
+                !FormatValidLiscenseNumber(liscenseNumber))
             {
                 Console.WriteLine("\nError: Invalid liscense number");
                 return "";
@@ -103,7 +105,7 @@ namespace dotNet5781_01_7588_3756
         {
             Console.Write(@"Insert liscense number of the bus: ");
             string liscenseNumber = Console.ReadLine();
-            if (!formatValidLiscenseNumber(liscenseNumber))
+            if (!FormatValidLiscenseNumber(liscenseNumber))
             {
                 Console.WriteLine("Error: Invalid liscense number");
                 return "";
@@ -114,7 +116,7 @@ namespace dotNet5781_01_7588_3756
          * check valid liscense number 
          * regarding the date of commencement of its activity
          */
-        public static bool validLiscenseNumber(string liscenseNumber, DateTime? startActivity)
+        public static bool ValidLiscenseNumber(string liscenseNumber, DateTime? startActivity)
         {
             if (startActivity?.Year < 2018 &&
                     liscenseNumber.Length == DIGITS_FOR_BUS_BEFORE_2018)
@@ -128,15 +130,13 @@ namespace dotNet5781_01_7588_3756
          * check if the liscense number the input from the user
          * is contain only "123456789-"
          */
-        private static bool formatValidLiscenseNumber(string liscenseNumber)
+        public static bool FormatValidLiscenseNumber(string liscenseNumber)
         {
-            string allowableLetters = "0123456789-";
+            var regex = new Regex(Pattern);
+            var match = regex.Matches(liscenseNumber);
+            if (match.Count > 0)
+                return false;
 
-            foreach (char c in liscenseNumber)
-            {
-                if (!allowableLetters.Contains(c.ToString()))
-                    return false;
-            }
             // if there is more then 2 '-' in the input
             // or it star or end with '-'
             if (liscenseNumber.Count(c => c == '-') > 2 ||

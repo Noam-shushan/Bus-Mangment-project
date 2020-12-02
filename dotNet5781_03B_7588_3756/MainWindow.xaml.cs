@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,8 @@ namespace dotNet5781_03B_7588_3756
     public partial class MainWindow : Window
     {
         private Random rand = new Random();
-        public static List<Bus> MyBusList { get; } = new List<Bus>();
+        public static ObservableCollection<Bus> MyBusList { get; } = new ObservableCollection<Bus>();
+        public static Bus NewBus { get; set; } = null;
 
         public MainWindow()
         {
@@ -76,6 +78,12 @@ namespace dotNet5781_03B_7588_3756
         private void addBusButton_Click(object sender, RoutedEventArgs e)
         {
             new AddBus().ShowDialog();
+            if(NewBus != null)
+            {
+                MyBusList.Add(NewBus);
+                NewBus = null;
+            }
+
         }
     }
 }
