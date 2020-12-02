@@ -37,8 +37,34 @@
             Height="322" Margin="0,69,0,0" 
             Grid.Row="4" 
             VerticalAlignment="Top" 
-            Width="325" 
-            Grid.RowSpan="2"/>
+            Width="377" 
+            Grid.RowSpan="2"
+            MouseDoubleClick="activeBuses_MouseDoubleClick"
+            >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="refuelingButton"  
+                                Content="refueling" Grid.Column="1"
+                                Margin="0,0, 3, 3"
+                                Click="refuelingButton_Click"/>
+                        <Button x:Name="rbChooseBusToRide"  
+                                Content="Ride" Grid.Column="0"
+                                Margin="5"
+                                
+                                Click="rbChooseBusToRide_Click"/>
+                        <TextBlock Text="{Binding Path=LiscenseNumber}" Grid.Column="2"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <TextBlock 
             FontSize="15"
             FontFamily="Consolas"

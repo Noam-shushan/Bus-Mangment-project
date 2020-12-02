@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,6 +85,23 @@ namespace dotNet5781_03B_7588_3756
                 NewBus = null;
             }
 
+        }
+
+        private void rbChooseBusToRide_Click(object sender, RoutedEventArgs e)
+        {
+            new MakeRide().ShowDialog();
+        }
+
+        private void refuelingButton_Click(object sender, RoutedEventArgs e)
+        {
+            var busToRefuele = ((sender as Button).DataContext as Bus);
+            busToRefuele.KilometersAfterFueling = 0;
+        }
+
+        private void activeBuses_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var selectedBus = activeBuses.SelectedItem as Bus;
+            new SelectedBus(selectedBus).ShowDialog();
         }
     }
 }

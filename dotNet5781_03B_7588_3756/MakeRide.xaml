@@ -1,0 +1,54 @@
+﻿<Window x:Class="dotNet5781_03B_7588_3756.MakeRide"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
+        mc:Ignorable="d"
+        Title="MakeRide" Height="350" Width="350">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Enter kilomters to ride:" 
+                   FontSize="13"
+                   HorizontalAlignment="Center"
+                   FontFamily="Consolas"
+                   Grid.Column="1"
+                   Margin="20"
+                   Grid.Row="1"/>
+        <TextBox x:Name="tbUserKilometerToRide"
+                 Grid.Column="1"
+                 Grid.Row="2"
+                 HorizontalAlignment="Center"
+                 Height="30" Width="130"
+                 Margin="10"
+                 />
+        <Label x:Name="lErrMsg" 
+               Content="" 
+               Margin="5" 
+               Grid.Column="1" 
+               Grid.Row="3" />
+        <Button x:Name="ApplyRideButton" 
+                Content="Apply" 
+                Grid.Column="1"
+                Grid.Row="4"
+                Margin="10"
+                Width="90"
+                Foreground="FloralWhite"
+                FontSize="13"
+                Background="DarkCyan"
+                Click="ApplyRideButton_Click"/>
+    </Grid>
+</Window>
