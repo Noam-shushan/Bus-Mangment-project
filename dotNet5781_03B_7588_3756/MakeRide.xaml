@@ -33,13 +33,15 @@
                  Grid.Row="2"
                  HorizontalAlignment="Center"
                  Height="30" Width="130"
-                 Margin="10"
+                 Margin="10,10,10,3"
                  />
         <Label x:Name="lErrMsg" 
                Content="" 
                Margin="5" 
                Grid.Column="1" 
-               Grid.Row="3" />
+               Grid.Row="3" 
+               Foreground="Red"
+               HorizontalAlignment="Center"/>
         <Button x:Name="ApplyRideButton" 
                 Content="Apply" 
                 Grid.Column="1"

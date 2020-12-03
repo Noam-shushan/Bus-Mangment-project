@@ -89,7 +89,9 @@ namespace dotNet5781_03B_7588_3756
 
         private void rbChooseBusToRide_Click(object sender, RoutedEventArgs e)
         {
-            new MakeRide().ShowDialog();
+            var selectedBus = ((sender as Button).DataContext as Bus);
+            new MakeRide(selectedBus).ShowDialog();
+            activeBuses.Items.Refresh();
         }
 
         private void refuelingButton_Click(object sender, RoutedEventArgs e)
@@ -102,6 +104,7 @@ namespace dotNet5781_03B_7588_3756
         {
             var selectedBus = activeBuses.SelectedItem as Bus;
             new SelectedBus(selectedBus).ShowDialog();
+            activeBuses.Items.Refresh();
         }
     }
 }
