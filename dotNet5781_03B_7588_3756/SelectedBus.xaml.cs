@@ -22,9 +22,16 @@ namespace dotNet5781_03B_7588_3756
         public SelectedBus(Bus selectedBus)
         {
             InitializeComponent();
-            //selectedBus.Treatment();
-            //selectedBus.KilometersAfterFueling = 0;
-            //selectedBus.ToString();
+            selectedBus.Treatment();
+            selectedBus.KilometersAfterFueling = 0;
+            selectedBus.ToString();
+        }
+        
+        
+
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("The bus will be treated");
         }
     }
 }
