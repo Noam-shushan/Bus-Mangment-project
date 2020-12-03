@@ -5,20 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
-        Title="SelectedBus" Height="350" Width="450">
+        Title="Selected Bus" Height="350" Width="350">
     <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Foreground" Value="Gray"/>
-        </Style>
-        <Style TargetType="TextBlock">
+        <Style TargetType="Button">
             <Setter Property="FontFamily" Value="Consolas"/>
         </Style>
     </Window.Resources>
     <Grid x:Name="MainGrid" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
@@ -29,18 +24,32 @@
             <RowDefinition Height="10"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
-        <Button x:Name="button" Content="Treatment" Grid.Column="5" HorizontalAlignment="Left" Margin="71,172,0,0" Grid.Row="7" VerticalAlignment="Top" Width="70" Height="70" Click="button_Click" RenderTransformOrigin="-0.623,0.484"/>
-        <Button x:Name="button1" Content="Fueling" Grid.Column="5" HorizontalAlignment="Left" Margin="281,172,0,0" Grid.Row="7" VerticalAlignment="Top" Width="70" Height="70" Click="button1_Click" RenderTransformOrigin="4.434,0.468"/>
-        <TextBlock x:Name="textBlock"   Grid.Column="5" HorizontalAlignment="Left" Height="74" Margin="71,35,0,193.5" Grid.Row="7" TextWrapping="Wrap" Width="280">
-            
-        </TextBlock>
+        <Button x:Name="TreatmentButton"
+                Content="Treatment"
+                Margin="30"
+                Width="75"
+                Height="35"
+                Grid.Column="1" Grid.Row="2" 
+                Click="TreatmentButton_Click" />
+        <Button x:Name="FuelingButton" 
+                Content="Fueling" 
+                Margin="30"
+                Width="75"
+                Height="35"
+                Grid.Column="2" Grid.Row="2" 
+                Click="FuelingButton_Click"/>
+        <TextBlock x:Name="tbBusInfo" 
+                   Text="{Binding}" 
+                   Grid.Column="1" 
+                   Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   FontFamily="Consolas"
+                   FontSize="14"/>
+
+
 
     </Grid>
 </Window>
