@@ -8,90 +8,127 @@
         Background="OldLace"
         Title="Bus company" Height="450" Width="800">
     <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="WhiteSmoke"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+        </Style>
     </Window.Resources>
     <Grid x:Name="MainGrig">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
         <ListBox 
             x:Name="activeBuses"
             ItemsSource="{Binding }"
             FontFamily="Consolas"
-            Grid.Column="4" 
-            HorizontalAlignment="Left" 
-            Height="322" Margin="0,69,0,0" 
-            Grid.Row="4" 
-            VerticalAlignment="Top" 
-            Width="377" 
-            Grid.RowSpan="2"
+            Grid.Column="1"
+            Grid.ColumnSpan="5"
+            Grid.Row="3" 
+            Grid.RowSpan="4"
             MouseDoubleClick="activeBuses_MouseDoubleClick"
             >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <Button x:Name="refuelingButton"  
-                                Content="refueling" Grid.Column="1"
-                                Margin="0,0, 3, 3"
-                                Click="refuelingButton_Click"/>
+                                Content="Refueling" Grid.Column="1"
+                                Click="refuelingButton_Click"
+                                Margin="5,3,0,3"/>
                         <Button x:Name="rbChooseBusToRide"  
                                 Content="Ride" Grid.Column="0"
-                                Margin="5"
-                                
-                                Click="rbChooseBusToRide_Click"/>
-                        <TextBlock Text="{Binding Path=LiscenseNumber}" Grid.Column="2"/>
+                                Margin="1,3,0,3"
+                                Click="rbChooseBusToRide_Click"
+                                Width="40"/>
+                        <TextBlock Text="{Binding Path=LiscenseNumber}" Grid.Column="3"/>
+                        <TextBlock Text="{Binding Path=Kilometers}" Grid.Column="5"/>
+                        <TextBlock Text="{Binding Path=KilometersAfterTreatment}" Grid.Column="7"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         <TextBlock 
-            FontSize="15"
-            FontFamily="Consolas"
-            Grid.Column="4" 
-            HorizontalAlignment="Left" 
-            Margin="10,38,0,0" 
-            Grid.Row="4" 
-            TextWrapping="Wrap" 
+            FontSize="16"
+            Grid.Column="1" 
+            Grid.Row="1" 
             Text="Active buses:" 
-            VerticalAlignment="Top" 
-            Height="26" Width="133"/>
+            Margin="6"/>
+
+        <TextBlock Text="Service:"
+                   HorizontalAlignment="Center"
+                   Grid.Column="1"
+                   Grid.Row="2"
+                   FontSize="13"
+                   />
+
+        <TextBlock
+                   Grid.Column="2"
+                   Grid.Row="2"
+                   FontSize="12"
+                   Margin="10,0,10,0"
+                   Width="90" 
+                   ><Run Text="Liscense"/><LineBreak/><Run Text="number"/></TextBlock>
+
+        <TextBlock Text="Kilometers"
+                   Grid.Column="3"
+                   Grid.Row="2"
+                   FontSize="12"
+                   Width="90"
+                   Margin="5,0,5,0"
+                   />
+        <TextBlock
+                   Grid.Column="4"
+                   Grid.Row="2"
+                   Grid.RowSpan="2"
+                   FontSize="12"
+                    Width="120"
+                    Margin="10,0,0,0"
+                   ><Run Text="Kilometers since"/><LineBreak/><Run Text="last treatment"/></TextBlock>
         <Button
             FontSize="14"
             x:Name="addBusButton"
             Click="addBusButton_Click"
-            Background="CornflowerBlue"
-            Foreground="Snow"
             FontStretch="Normal"
             Content="Add new Bus" 
-            Grid.Column="4" 
-            HorizontalAlignment="Left" 
-            Margin="469,126,0,0" 
-            Grid.Row="4" 
-            VerticalAlignment="Top" 
-            Width="113"
-            RenderTransformOrigin="0.818,4.452" 
-            Height="38" FontFamily="Segoe UI Symbol"/>
+            Grid.Column="7"
+            Width="120"
+            Height="30"
+            Grid.Row="3"
+            Margin="10"/>
 
     </Grid>
 </Window>

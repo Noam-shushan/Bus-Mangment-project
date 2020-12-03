@@ -13,7 +13,7 @@ public class Bus
 	/// </summary>
 	public Bus(string licenseNumber, DateTime? startActivity)
 	{
-		LiscenseNumber = licenseNumber;
+		LiscenseNumber = formatLiscenseNumber(licenseNumber);
 		_startActivity = startActivity;
 		KilometersAfterFueling = 0;
 	}
@@ -28,7 +28,7 @@ public class Bus
 	public Bus(string licenseNumber, DateTime? startActivity,
 		int kilometers, DateTime? lastTreatment, int kilometersAfterTreatment)
     {
-		LiscenseNumber = licenseNumber;
+		LiscenseNumber = formatLiscenseNumber(licenseNumber);
 		_startActivity = startActivity;
 		KilometersAfterFueling = 0;
 		_lastTreatment = lastTreatment;
@@ -84,21 +84,26 @@ public class Bus
 
 	public override string ToString()
     {
-		string formatLiscenseNumber = LiscenseNumber;
-		if (_startActivity?.Year < 2018)
-        { // 00-000-00
-			formatLiscenseNumber = formatLiscenseNumber.Insert(2, "-");
-			formatLiscenseNumber = formatLiscenseNumber.Insert(6, "-");
-		}
-		else
-		{ // 000-00-000
-			formatLiscenseNumber = formatLiscenseNumber.Insert(3, "-");
-			formatLiscenseNumber = formatLiscenseNumber.Insert(6, "-");
-		}
 		return String.Format("liscense number: {0}\n" +
 			"Kilometers: {1}\n" +
 			"Kilometers since last treatment: {2}",
-			formatLiscenseNumber, Kilometers,
+			LiscenseNumber, Kilometers,
 			KilometersAfterTreatment);
+	}
+
+	private string formatLiscenseNumber(string liscenseNumber)
+    {
+		string formatNumber = liscenseNumber;
+		if (_startActivity?.Year < 2018)
+		{ // 00-000-00
+			formatNumber = formatNumber.Insert(2, "-");
+			formatNumber = formatNumber.Insert(6, "-");
+		}
+		else
+		{ // 000-00-000
+			formatNumber = formatNumber.Insert(3, "-");
+			formatNumber = formatNumber.Insert(6, "-");
+		}
+		return formatNumber;
 	}
 }
