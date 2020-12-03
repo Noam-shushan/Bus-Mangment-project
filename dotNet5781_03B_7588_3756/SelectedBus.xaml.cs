@@ -19,6 +19,8 @@ namespace dotNet5781_03B_7588_3756
     /// </summary>
     public partial class SelectedBus : Window
     {
+      
+
         public SelectedBus(Bus selectedBus)
         {
             InitializeComponent();
@@ -27,11 +29,25 @@ namespace dotNet5781_03B_7588_3756
             selectedBus.ToString();
         }
         
-        
+       
+
+       
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("The bus will be treated");
+        }
+
+        private void button1_Click(object sender, RoutedEventArgs e)
+        {
+            
+            MessageBox.Show("The bus will be refuel");
+        }
+
+        private void textBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            
+            
         }
     }
 }

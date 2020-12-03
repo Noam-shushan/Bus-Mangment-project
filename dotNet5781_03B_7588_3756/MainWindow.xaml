@@ -30,7 +30,7 @@
 
         <ListBox 
             x:Name="activeBuses"
-            ItemsSource="{Binding}"
+            ItemsSource="{Binding }"
             FontFamily="Consolas"
             Grid.Column="4" 
             HorizontalAlignment="Left" 
