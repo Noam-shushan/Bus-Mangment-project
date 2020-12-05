@@ -52,7 +52,7 @@ namespace dotNet5781_03B_7588_3756
             if (!flag)
                 return;
 
-            MainWindow.NewBus = new Bus(licenseNumber, startActivity);
+            MainWindow.NewBus = new MyBus(licenseNumber, startActivity);
             Close();
         }
 

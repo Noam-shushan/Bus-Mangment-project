@@ -19,25 +19,25 @@ namespace dotNet5781_03B_7588_3756
     /// </summary>
     public partial class SelectedBus : Window
     {
-        private Bus myBus = null;
+        private MyBus myBus = null;
 
-        public SelectedBus(Bus selectedBus)
+        public SelectedBus(MyBus selectedBus)
         {
             InitializeComponent();
             tbBusInfo.Text = selectedBus.ToString();
             myBus = selectedBus;
         }
 
-        private void TreatmentButton_Click(object sender, RoutedEventArgs e)
+        private async void TreatmentButton_Click(object sender, RoutedEventArgs e)
         {
-            myBus.Treatment();
-            MessageBox.Show("The bus will be treated");
+            await MainWindow.TreatmentAsync(myBus);
+            MessageBox.Show($"Bus {myBus.LiscenseNumber} will be treated");
         }
 
-        private void FuelingButton_Click(object sender, RoutedEventArgs e)
+        private async void FuelingButton_Click(object sender, RoutedEventArgs e)
         {
-            myBus.KilometersAfterFueling = 0;
-            MessageBox.Show("The bus will be refuel");
+            await MainWindow.FuelingtAsync(myBus);
+            MessageBox.Show($"Bus {myBus.LiscenseNumber} will be refueled");
         }
     }
 }

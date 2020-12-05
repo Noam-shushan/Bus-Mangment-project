@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,39 +20,60 @@ namespace dotNet5781_03B_7588_3756
     /// </summary>
     public partial class MakeRide : Window
     {
-        private Bus myBus = null;
+        private MyBus myBus = null;
+        private Random rand = new Random();
 
-        public MakeRide(Bus busToRide)
+        public MakeRide(MyBus busToRide)
         {
             myBus = busToRide;
             InitializeComponent();
         }
 
-        private void ApplyRideButton_Click(object sender, RoutedEventArgs e)
-        {     
+        private async void ApplyRideButton_Click(object sender, RoutedEventArgs e)
+        {
+            var validTesk = await rideAsync();
+            if (!validTesk)
+                return;
+            Close();
+        }
+
+        private async Task<bool> rideAsync()
+        {
+             
+            int kilometers = validRide();
+            if (kilometers == -1)
+                return false;
+            myBus.CurrentStatus = MyBus.Status.RIDE;
+            await Task.Delay(MainWindow.MY_SECONDS * (kilometers / rand.Next(20, 50)));
+            myBus.Kilometers = kilometers;
+            myBus.CurrentStatus = MyBus.Status.READY;
+            return true;
+        }
+
+        private int validRide()
+        {
             int kilometers;
             if (!int.TryParse(tbUserKilometerToRide.Text, out kilometers))
             {
                 lErrMsg.Content = "Not a valid number";
-                return;
+                return -1;
             }
-            if(kilometers < 0)
+            if (kilometers < 0)
             {
                 lErrMsg.Content = "Not a valid number";
-                return;
+                return -1;
             }
             if (myBus.NeedsTreatment())
             {
                 lErrMsg.Content = "This bus need treatment";
-                return;
+                return -1;
             }
-            if(myBus.NeedRefueling())
+            if (myBus.NeedRefueling(kilometers))
             {
                 lErrMsg.Content = "This bus need refueing to make this ride";
-                return;
+                return -1;
             }
-            myBus.Kilometers = kilometers;
-            Close();
+            return kilometers;
         }
     }
 }
