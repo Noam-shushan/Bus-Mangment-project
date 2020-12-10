@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
-        Title="Selected Bus" Height="350" Width="350" FontFamily="Consolas">
+        Title="Bus info" Height="350" Width="350" FontFamily="Consolas" ResizeMode="NoResize">
     
     <Grid x:Name="MainGrid" >
         <Grid.ColumnDefinitions>
@@ -43,14 +43,14 @@
                 Click="FuelingButton_Click"/>
 
         <TextBlock x:Name="tbBusInfo" 
-                   Text="{Binding}" 
+                   Text="" 
                    Grid.Column="1" 
                    Grid.Row="1"
                    Grid.ColumnSpan="2"
                    FontSize="14"/>
-        <ProgressBar x:Name="pbFueling" Minimum="0" Maximum="12" Grid.Column="2" Grid.Row="3" Height="20" Margin="10"/>
-        <ProgressBar x:Name="pbTreatment" Minimum="0" Maximum="144" Grid.Column="1" Grid.Row="3" Height="20" Margin="10"/>
-        <TextBlock x:Name="lTimerTreat" Grid.Row="4" Grid.Column="1" Margin="10"/>
-        <TextBlock x:Name="lTimerFueil" Grid.Row="4" Grid.Column="2" Margin="10"/>
+        <ProgressBar x:Name="pbFueling" Minimum="0" Maximum="11" Grid.Column="2" Grid.Row="3" Height="20" Margin="10"/>
+        <ProgressBar x:Name="pbTreatment" Minimum="0" Maximum="143" Grid.Column="1" Grid.Row="3" Height="20" Margin="10"/>
+        <TextBlock x:Name="lTimerTreat" Grid.Row="4" Grid.Column="1" Margin="10" FontSize="14" HorizontalAlignment="Center"/>
+        <TextBlock x:Name="lTimerFueil" Grid.Row="4" Grid.Column="2" Margin="10" FontSize="14" HorizontalAlignment="Center"/>
     </Grid>
 </Window>

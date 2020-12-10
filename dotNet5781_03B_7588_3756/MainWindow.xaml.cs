@@ -58,12 +58,13 @@ namespace dotNet5781_03B_7588_3756
                 NewBus = null;
             }
         }
-
+        
+        
         // add a ride to selected bus
         private void rbChooseBusToRide_Click(object sender, RoutedEventArgs e)
         {
             var selectedBus = ((sender as Button).DataContext as MyBus);
-            new MakeRide(selectedBus).ShowDialog();
+            new MakeRide(selectedBus).Show();
             RefreshMyView();
         }
         

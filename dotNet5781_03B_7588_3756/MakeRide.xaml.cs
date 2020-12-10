@@ -27,8 +27,9 @@ namespace dotNet5781_03B_7588_3756
         {
             myBus = busToRide;
             InitializeComponent();
+            tbBusInfo.Text = $"Bus: {myBus.LiscenseNumber}";
         }
-       
+
         private async void tbUserKilometerToRide_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
@@ -39,6 +40,7 @@ namespace dotNet5781_03B_7588_3756
                 Close();
             }
         }
+        
 
         private async Task<bool> rideAsync()
         {

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
-        Title="MakeRide" Height="220" Width="300">
+        Title="Ride" Height="220" Width="300" ResizeMode="NoResize" Background="Azure">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
@@ -15,6 +15,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -28,9 +29,11 @@
                    Grid.Column="1"
                    Margin="20"
                    Grid.Row="1"/>
+        <TextBlock x:Name="tbBusInfo" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center"
+                   FontFamily="Consolas" Text=""/>
         <TextBox x:Name="tbUserKilometerToRide"
                  Grid.Column="1"
-                 Grid.Row="2"
+                 Grid.Row="3"
                  PreviewTextInput="NumberValidationTextBox"
                  HorizontalAlignment="Center"
                  Height="30" Width="130"
@@ -42,7 +45,7 @@
                Content="" 
                Margin="5" 
                Grid.Column="1" 
-               Grid.Row="3" 
+               Grid.Row="4" 
                Foreground="Red"
                HorizontalAlignment="Center"/>
     </Grid>

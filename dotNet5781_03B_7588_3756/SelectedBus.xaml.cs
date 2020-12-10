@@ -28,8 +28,7 @@ namespace dotNet5781_03B_7588_3756
         private bool fuelingFlag = false;
         private bool treatmentFlag = false;
         DispatcherTimer timer = new DispatcherTimer();
-        TimeSpan timeOfRefuiling = new TimeSpan(0, 0, 12);
-        TimeSpan timeOfTreatment = new TimeSpan(0, 0, 144);
+        DateTime start;
 
         public SelectedBus(MyBus selectedBus)
         {
@@ -42,8 +41,8 @@ namespace dotNet5781_03B_7588_3756
             CurrentBus = selectedBus;
             setBusInfo();
         }
-        
-        // to allow the user to see the progres of the refueling or the treatment even if the user as close the window
+
+        //to allow the user to see the progres of the refueling or the treatment even if the user as close the window
         protected override void OnClosing(CancelEventArgs e)
         {
             this.Visibility = Visibility.Hidden;
@@ -56,26 +55,28 @@ namespace dotNet5781_03B_7588_3756
             if (fuelingFlag)
             {
                 pbFueling.Value += timer.Interval.TotalSeconds;
-                lTimerFueil.Text = $"{(timeOfRefuiling - timer.Interval).Minutes}:{(timeOfRefuiling - timer.Interval).Seconds}";
+                lTimerFueil.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1}";
             }
             
             if (treatmentFlag)
             {
                 pbTreatment.Value += timer.Interval.TotalSeconds;
-                lTimerTreat.Text = $"{(timeOfTreatment - timer.Interval).Minutes}:{(timeOfTreatment - timer.Interval).Seconds}";
+                lTimerTreat.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1}";
             }
         }
 
         private async void TreatmentButton_Click(object sender, RoutedEventArgs e)
         {
             FuelingButton.IsEnabled = false;
+            TreatmentButton.IsEnabled = false;
             timer.Start();
+            start = DateTime.Now;
             treatmentFlag = true;
             await mainWin.TreatmentAsync(CurrentBus);
             timer.Stop();
             pbTreatment.Value = 0;
             treatmentFlag = false;
-            
+            TreatmentButton.IsEnabled = true;
             if (CurrentBus.NeedRefueling()) // If the bus also needs refueling it comes out refueled from the treatment 
                 await fueling();
             setBusInfo();
@@ -90,14 +91,17 @@ namespace dotNet5781_03B_7588_3756
                 return;
             }
             TreatmentButton.IsEnabled = false;
+            FuelingButton.IsEnabled = false;
             await fueling();
             setBusInfo();
             TreatmentButton.IsEnabled = true;
+            FuelingButton.IsEnabled = true;
         }
 
         private async Task fueling()
         {
             timer.Start();
+            start = DateTime.Now;
             fuelingFlag = true;
             await mainWin.FuelingtAsync(CurrentBus);
             timer.Stop();
