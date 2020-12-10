@@ -57,6 +57,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MyBus.cs" />
+    <Compile Include="MyData.cs" />
     <Compile Include="SelectedBus.xaml.cs">
       <DependentUpon>SelectedBus.xaml</DependentUpon>
     </Compile>
@@ -122,6 +123,9 @@
       <Project>{084a4fef-474a-41c8-a91c-535d27ae7b52}</Project>
       <Name>dotNet5781_01_7588_3756</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="—Pngtree—yellow bus icon_4432661.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

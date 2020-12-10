@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Background="Beige"
+        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
         Title="Add new Bus" Height="350" Width="450">
     <Window.Resources>
         <Style TargetType="TextBox">
@@ -25,7 +26,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
             <RowDefinition Height="auto"/>
@@ -48,12 +49,11 @@
             FontSize="13"
             Grid.Row="2"
             Grid.Column="1"/>
-        <TextBox 
-            x:Name="tbUserStartActivity"
-            GotFocus="tbUserStartActivity_GotFocus"
+        <DatePicker
+            x:Name="dpUserStartActivity"
             Grid.Column="2"  
-            Grid.Row="2"  
-            Text="dd/mm/yyyy" />
+            Grid.Row="2"
+            />
         <TextBlock 
             Text="License number:"
             FontSize="13"
@@ -64,7 +64,7 @@
             x:Name="tbUserLicenseNumber"
             Grid.Column="2" 
             Grid.Row="4" />
-        
+
         <Button 
              x:Name = "applyNewinfoForBus"
             Content = "Apply"

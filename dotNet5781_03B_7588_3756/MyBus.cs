@@ -9,23 +9,43 @@ using dotNet5781_01_7588_3756;
 
 namespace dotNet5781_03B_7588_3756
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MyBus : Bus, INotifyPropertyChanged
     {
         public enum Status { READY, RIDE, REFUELING, TREATMENT }
         private Status _currentStatus;
         private SolidColorBrush _statusColor;
+        private bool _isReady;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsReady 
+        {
+            get => _isReady;
+            set
+            {
+                _isReady = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsReady"));
+            } 
+        }
+        /// <summary>
+        /// 
+        /// </summary>
         public SolidColorBrush StatusColor
         {
             get => _statusColor;
             set
             {
                 _statusColor = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentStatus"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("StatusColor"));
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Status CurrentStatus
         {
             get => _currentStatus;
@@ -39,7 +59,7 @@ namespace dotNet5781_03B_7588_3756
                         StatusColor = Brushes.Green;
                         break;
                     case Status.REFUELING:
-                        StatusColor = Brushes.Yellow;
+                        StatusColor = Brushes.Orange;
                         break;
                     case Status.RIDE:
                         StatusColor = Brushes.Blue;
@@ -49,23 +69,37 @@ namespace dotNet5781_03B_7588_3756
                         break;
 
                 }
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("CurrentStatus"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentStatus"));
             }
         }
-        public MyBus(string licenseNumber, DateTime? startActivity) : base(licenseNumber, startActivity) { }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="licenseNumber"></param>
+        /// <param name="startActivity"></param>
+        public MyBus(string licenseNumber, DateTime? startActivity) 
+            : base(licenseNumber, startActivity) 
+        {
+            CurrentStatus = Status.READY;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="licenseNumber"></param>
+        /// <param name="startActivity"></param>
+        /// <param name="kilometers"></param>
+        /// <param name="lastTreatment"></param>
+        /// <param name="kilometersAfterTreatment"></param>
         public MyBus(string licenseNumber, DateTime? startActivity,
             int kilometers, DateTime? lastTreatment, int kilometersAfterTreatment)
             : base(licenseNumber, startActivity)
         {
             CurrentStatus = Status.READY;
-            _lastTreatment = lastTreatment;
+            LastTreatment = lastTreatment;
             Kilometers = kilometers;
             KilometersAfterTreatment = kilometersAfterTreatment;
         }
-
-        public bool IsReady { get; set; }
+        
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

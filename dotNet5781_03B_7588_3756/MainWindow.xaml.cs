@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -24,147 +25,143 @@ namespace dotNet5781_03B_7588_3756
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Random rand = new Random();
-        public ObservableCollection<MyBus> MyBusList { get; } = new ObservableCollection<MyBus>();
-        public static MyBus NewBus { get; set; } = null;
-        public const int MY_SECONDS = 100;
-        public const int TIME_FOR_TREATMENT =  144 * 1000;
-        public const int TIME_FOR_FUELING = 2 * 6 * 1000;
+        MyData myData = new MyData(); // my colloction of buss
+        public MyBus NewBus { get; set; } = null;
+        
+        // Saves all windows of bus selection by double-clicking to allow user
+        // to return to window to see the progress of handling and refueling
+        private List<SelectedBus> winsSelectedBus = new List<SelectedBus>();
+        
+        private const int MY_SECONDS = 100;
+        private const int TIME_FOR_TREATMENT = 144 * 1000;
+        private const int TIME_FOR_FUELING = 2 * 6 * 1000;
 
         public MainWindow()
         {
-            initializeBusList(15);
+            myData.InitializeBusList(numOfBuss: 15);
             InitializeComponent();
-            activeBuses.ItemsSource = MyBusList;
+            activeBuses.ItemsSource = myData.MyBusList;
         }
 
+        public void RefreshMyView()
+        {
+            activeBuses.Items.Refresh();
+        }
 
-
+        // add new bus 
         private void addBusButton_Click(object sender, RoutedEventArgs e)
         {
-            new AddBus().Show();
-            if(NewBus != null)
+            new AddBus().ShowDialog();
+            if (NewBus != null)
             {
-                MyBusList.Add(NewBus);
+                myData.MyBusList.Add(NewBus);
                 NewBus = null;
             }
-
         }
 
+        // add a ride to selected bus
         private void rbChooseBusToRide_Click(object sender, RoutedEventArgs e)
         {
             var selectedBus = ((sender as Button).DataContext as MyBus);
             new MakeRide(selectedBus).ShowDialog();
-            activeBuses.Items.Refresh();
+            RefreshMyView();
         }
-
-
+        
+        // Show bus informtion and make a treatment or refueling
         private void activeBuses_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var selectedBus = activeBuses.SelectedItem as MyBus;
-            new SelectedBus(selectedBus).Show();
-            activeBuses.Items.Refresh();
+            
+            if (!selectedBus.IsReady)
+            {
+                if (selectedBus.CurrentStatus == MyBus.Status.TREATMENT || selectedBus.CurrentStatus == MyBus.Status.REFUELING)
+                {   // find the bus that in progres
+                    var w = winsSelectedBus.Find(x => x.CurrentBus.LiscenseNumber == selectedBus.LiscenseNumber);
+                    if(w != null)
+                        w.Show();                                       
+                }
+                return;
+            }
+            
+            var currWin = new SelectedBus(selectedBus);
+            winsSelectedBus.Add(currWin);
+            currWin.Show();
+            RefreshMyView();
         }
-
+        
+        // Make a treatment to all buss that needed
         private async void TreatmentAllButton_Click(object sender, RoutedEventArgs e)
         {
             List<Task> tasks = new List<Task>();
-            foreach(var b in MyBusList)
+            foreach (var b in myData.MyBusList)
             {
                 if (b.NeedsTreatment())
                 {
                     b.CurrentStatus = MyBus.Status.TREATMENT;
+                    RefreshMyView();
                     tasks.Add(TreatmentAsync(b));
                 }
-                    
             }
             await Task.WhenAll(tasks);
-            foreach(var b in MyBusList)
+            foreach (var b in myData.MyBusList)
             {
                 if (b.CurrentStatus == MyBus.Status.TREATMENT)
                     b.CurrentStatus = MyBus.Status.READY;
             }
-            activeBuses.Items.Refresh();
+            RefreshMyView();
         }
+        
         // Refueling
         private async void refuelingButton_Click(object sender, RoutedEventArgs e)
         {
             var busToRefuele = ((sender as Button).DataContext as MyBus);
             await FuelingtAsync(busToRefuele);
-            activeBuses.Items.Refresh();
         }
-        
+        /// <summary>
+        /// Refueling the bus
+        /// It takes 12 seconds in the refueling simulation of the exercise
+        /// </summary>
+        /// <param name="bus"></param>
+        /// <returns></returns>
+        public async Task FuelingtAsync(MyBus bus)
+        {
+            bus.CurrentStatus = MyBus.Status.REFUELING;
+            RefreshMyView();
+            await Task.Delay(TIME_FOR_FUELING);
+            bus.KilometersAfterFueling = 0;
+            bus.CurrentStatus = MyBus.Status.READY;
+            RefreshMyView();
+        }
+        /// <summary>
+        /// Make a ride 
+        /// </summary>
+        /// <param name="bus"></param>
+        /// <param name="kilometers"></param>
+        /// <returns></returns>
+        public async Task RideAsync(MyBus bus, int kilometers)
+        {
+            bus.CurrentStatus = MyBus.Status.RIDE;
+            RefreshMyView();
+            await Task.Delay(MY_SECONDS * (kilometers / myData.rand.Next(20, 50)));
+            bus.Kilometers = kilometers;
+            bus.CurrentStatus = MyBus.Status.READY;
+            RefreshMyView();
+        }
+
         /// <summary>
         /// Treatmen for a bus
         /// It takes 144 seconds in the exercise simulation clock
         /// </summary>
         /// <param name="bus"></param>
         /// <returns></returns>
-        public static async Task TreatmentAsync(MyBus bus)
+        public async Task TreatmentAsync(MyBus bus)
         {
             bus.CurrentStatus = MyBus.Status.TREATMENT;
-            bus.Treatment();
+            RefreshMyView();
             await Task.Delay(TIME_FOR_TREATMENT);
+            bus.Treatment();
             bus.CurrentStatus = MyBus.Status.READY;
-        }
-        /// <summary>
-        /// Refueling the bus
-        /// It takes 6 seconds in the refueling simulation of the exercise
-        /// </summary>
-        /// <param name="bus"></param>
-        /// <returns></returns>
-        public static async Task FuelingtAsync(MyBus bus)
-        {
-            bus.CurrentStatus = MyBus.Status.REFUELING;
-            bus.KilometersAfterFueling = 0;
-            await Task.Delay(TIME_FOR_FUELING);
-            bus.CurrentStatus = MyBus.Status.READY;
-        }
-
-        private void initializeBusList(int numOfBuss)
-        {
-            for (int i = 0; i < numOfBuss; i++)
-            {
-                var startActivity = randomDate();
-                string licenseNumber = randomLicenseNumber(startActivity);
-                var lastTreatment = randomDate("lastTreatment");
-                int kilometers = rand.Next(2000, 100000);
-                int kilometersAfterTreatment = rand.Next(0, Bus.KILOMETER_BEFORE_TREATMENT);
-                MyBusList.Add(new MyBus(licenseNumber, startActivity,
-                    kilometers, lastTreatment, kilometersAfterTreatment));
-            }
-            MyBusList[0].Treatment();
-            MyBusList[1].KilometersAfterTreatment = Bus.KILOMETER_BEFORE_TREATMENT - 1;
-            MyBusList[2].KilometersAfterTreatment = Bus.MAX_KILOMETER_AFTER_REFUELING - 1;
-        }
-
-        private DateTime randomDate(string begin = "startActivity")
-        {
-            DateTime start = begin == "startActivity" ?
-                new DateTime(2000, 1, 1) : new DateTime(2018, 1, 1);
-            int range = (DateTime.Today - start).Days;
-            return start.AddDays(rand.Next(range));
-        }
-
-        private string randomLicenseNumber(DateTime startActivity)
-        {
-            string res;
-            if (startActivity.Year < 2018)
-            {
-                res = rand.Next(10000000).ToString();
-                int numOfZeros = Math.Abs(res.Length - 7);
-                for (int j = 0; j < numOfZeros; j++)
-                    res = res.Insert(0, "0");
-            }
-            else
-            {
-                res = rand.Next(100000000).ToString();
-                int numOfZeros = Math.Abs(res.Length - 8);
-                for (int j = 0; j < numOfZeros; j++)
-                    res = res.Insert(0, "0");
-            }
-            return res;
+            RefreshMyView();
         }
     }
-
 }

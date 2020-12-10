@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
-        Title="MakeRide" Height="350" Width="350">
+        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
+        Title="MakeRide" Height="220" Width="300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10"/>
@@ -14,7 +15,6 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -31,9 +31,12 @@
         <TextBox x:Name="tbUserKilometerToRide"
                  Grid.Column="1"
                  Grid.Row="2"
+                 PreviewTextInput="NumberValidationTextBox"
                  HorizontalAlignment="Center"
                  Height="30" Width="130"
                  Margin="10,10,10,3"
+                 KeyDown="tbUserKilometerToRide_KeyDown"
+                 TextChanged="tbUserKilometerToRide_TextChanged"
                  />
         <Label x:Name="lErrMsg" 
                Content="" 
@@ -42,15 +45,5 @@
                Grid.Row="3" 
                Foreground="Red"
                HorizontalAlignment="Center"/>
-        <Button x:Name="ApplyRideButton" 
-                Content="Apply" 
-                Grid.Column="1"
-                Grid.Row="4"
-                Margin="10"
-                Width="90"
-                Foreground="FloralWhite"
-                FontSize="13"
-                Background="DarkCyan"
-                Click="ApplyRideButton_Click"/>
     </Grid>
 </Window>

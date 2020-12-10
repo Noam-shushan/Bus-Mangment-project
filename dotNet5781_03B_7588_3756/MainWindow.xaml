@@ -6,13 +6,14 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Background="OldLace"
-        Title="Bus company" Height="450" Width="800">
+        Title="Bus company" Height="450" Width="800"
+        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png">
     <Window.Resources>
 
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Consolas"/>
         </Style>
-        
+
         <Style TargetType="Button">
             <Setter Property="Background" Value="WhiteSmoke"/>
             <Setter Property="FontFamily" Value="Consolas"/>
@@ -50,25 +51,22 @@
             Grid.ColumnSpan="5"
             Grid.Row="3" 
             Grid.RowSpan="4"
-            MouseDoubleClick="activeBuses_MouseDoubleClick"
-            IsHitTestVisible ="{Binding Path=IsReady}">
+            MouseDoubleClick="activeBuses_MouseDoubleClick">
             <ListBox.ItemTemplate>
                 <DataTemplate x:Name="dataTempOfBuses">
-                    
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <ListBoxItem IsEnabled="{Binding Path=IsReady}"/>
-                        <Button x:Name="refuelingButton"  
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="70"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="refuelingButton"  
                                 Content="Refueling" Grid.Column="1"
                                 Click="refuelingButton_Click"
                                 Margin="5,3,0,3"
@@ -160,6 +158,18 @@
                     HorizontalAlignment="Left"
                     Content="here" Click="TreatmentAllButton_Click"/>
         </Grid>
+        
+        <TextBlock Grid.Column="7" 
+                   Grid.Row="6" 
+                   Margin="10, 0, 0, 10"
+                   VerticalAlignment="Bottom"
+                   >
+            <Run Text="Status colors:" FontSize="13"/><LineBreak/>
+            <Run Text="Ready" Foreground="Green"/> <LineBreak/>
+            <Run Text="Ride" Foreground="Blue"/> <LineBreak/>
+            <Run Text="Refueling" Foreground="Orange"/> <LineBreak/>
+            <Run Text="Treatment" Foreground="Red"/>
+        </TextBlock>
 
     </Grid>
 </Window>

@@ -5,10 +5,10 @@ public class Bus
 {
 	private DateTime? _startActivity; // the date of the stert activity
 	private int _kilometers; // the total kilometers
-	protected DateTime? _lastTreatment; //the date of the last treatment
+	private DateTime? _lastTreatment; //the date of the last treatment
 	public const int KILOMETER_BEFORE_TREATMENT = 20000;
 	public const int MAX_KILOMETER_AFTER_REFUELING = 1200;
-	
+
 	/// <summary>
 	/// constructor
 	/// </summary>
@@ -19,26 +19,36 @@ public class Bus
 		KilometersAfterFueling = 0;
 	}
 
-    public string LiscenseNumber { get; set; }
+	public string LiscenseNumber { get; set; }
 
-    public int Kilometers
+	public int Kilometers
 	{
-		get => _kilometers; 
-		set 
+		get => _kilometers;
+		set
 		{
 			_kilometers += value;
 			KilometersAfterTreatment += value;
 			KilometersAfterFueling += value;
-		} 
-    }
+		}
+	}
 
-    public int KilometersAfterFueling { get; set; }
+	public int KilometersAfterFueling { get; set; }
 
-    public int KilometersAfterTreatment { get; set; }
+	public int KilometersAfterTreatment { get; set; }
 
+	public DateTime? StartActivity
+	{
+		get => _startActivity;
+		set => _startActivity = value;
+	}
 
+	public DateTime? LastTreatment 
+	{
+		get => _lastTreatment;
+		set => _lastTreatment = value;
+	}
 
-    public bool NeedRefueling(int newKilomters = 0)
+	public bool NeedRefueling(int newKilomters = 0)
     {
 		return KilometersAfterFueling + newKilomters >= MAX_KILOMETER_AFTER_REFUELING;
 	}

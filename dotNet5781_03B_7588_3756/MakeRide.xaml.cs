@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,20 +22,22 @@ namespace dotNet5781_03B_7588_3756
     public partial class MakeRide : Window
     {
         private MyBus myBus = null;
-        private Random rand = new Random();
 
         public MakeRide(MyBus busToRide)
         {
             myBus = busToRide;
             InitializeComponent();
         }
-
-        private async void ApplyRideButton_Click(object sender, RoutedEventArgs e)
+       
+        private async void tbUserKilometerToRide_KeyDown(object sender, KeyEventArgs e)
         {
-            var validTesk = await rideAsync();
-            if (!validTesk)
-                return;
-            Close();
+            if (e.Key == Key.Return)
+            {
+                var validTesk = await rideAsync();
+                if (!validTesk)
+                    return;
+                Close();
+            }
         }
 
         private async Task<bool> rideAsync()
@@ -43,21 +46,20 @@ namespace dotNet5781_03B_7588_3756
             int kilometers = validRide();
             if (kilometers == -1)
                 return false;
-            myBus.CurrentStatus = MyBus.Status.RIDE;
-            await Task.Delay(MainWindow.MY_SECONDS * (kilometers / rand.Next(20, 50)));
-            myBus.Kilometers = kilometers;
-            myBus.CurrentStatus = MyBus.Status.READY;
+            MainWindow mainWin = (MainWindow) Application.Current.MainWindow;
+            await mainWin.RideAsync(myBus, kilometers);
             return true;
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]");
+            e.Handled = regex.IsMatch(e.Text);
         }
 
         private int validRide()
         {
-            int kilometers;
-            if (!int.TryParse(tbUserKilometerToRide.Text, out kilometers))
-            {
-                lErrMsg.Content = "Not a valid number";
-                return -1;
-            }
+            int kilometers = int.Parse(tbUserKilometerToRide.Text);
             if (kilometers < 0)
             {
                 lErrMsg.Content = "Not a valid number";
@@ -74,6 +76,11 @@ namespace dotNet5781_03B_7588_3756
                 return -1;
             }
             return kilometers;
+        }
+
+        private void tbUserKilometerToRide_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            lErrMsg.Content = "";
         }
     }
 }
