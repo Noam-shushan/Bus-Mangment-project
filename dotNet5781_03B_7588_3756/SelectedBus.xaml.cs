@@ -62,7 +62,7 @@ namespace dotNet5781_03B_7588_3756
             if (treatmentFlag)
             {
                 pbTreatment.Value += timer.Interval.TotalSeconds;
-                lTimerTreat.Text += $"{(timeOfTreatment - timer.Interval).Minutes}:{(timeOfTreatment - timer.Interval).Seconds}";
+                lTimerTreat.Text = $"{(timeOfTreatment - timer.Interval).Minutes}:{(timeOfTreatment - timer.Interval).Seconds}";
             }
         }
 
