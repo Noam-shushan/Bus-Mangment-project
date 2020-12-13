@@ -16,12 +16,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+/// <summary>
+/// aouther: noam shushan, eliuo bela
+/// </summary>
 namespace dotNet5781_03B_7588_3756
 {
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Bus management application
+    /// You can add a new bus, and send a bus for travel, refueling and treatment
+    /// You can also send all the buses that need treatment at the touch of a button
+    /// You can see the progress of the treatment or refueling by double-clicking on the bus.
+    /// A bus whose license number is marked in green is ready to go, yellow means it is refueling, red is a treat, blue means travel.
+    /// When adding a trip you can press enter and the trip is added
     /// </summary>
     public partial class MainWindow : Window
     {

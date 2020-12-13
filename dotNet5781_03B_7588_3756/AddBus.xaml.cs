@@ -16,7 +16,8 @@ using dotNet5781_01_7588_3756;
 namespace dotNet5781_03B_7588_3756
 {
     /// <summary>
-    /// Interaction logic for AddBus.xaml
+    /// Adding a new bus to the company
+    /// You can select the start date of an activity from a calendar
     /// </summary>
     public partial class AddBus : Window
     {
@@ -37,10 +38,10 @@ namespace dotNet5781_03B_7588_3756
                 lErrMsgDate.Content = "Error: date is missing";
                 return;
             }
-            startActivity = dpUserStartActivity.SelectedDate.Value.Date;
+            startActivity = dpUserStartActivity.SelectedDate.Value.Date; // get the date from the date piker
 
             if (UserInput.ValidLiscenseNumber(tbUserLicenseNumber.Text.Replace("-", ""), startActivity) &&
-                UserInput.FormatValidLiscenseNumber(tbUserLicenseNumber.Text))
+                UserInput.FormatValidLiscenseNumber(tbUserLicenseNumber.Text)) // check validtion of the liscense number
             {
                 licenseNumber = tbUserLicenseNumber.Text.Replace("-", "");
                 if (MyData.CheckExistingLicenseNumber(int.Parse(licenseNumber)))
@@ -48,7 +49,7 @@ namespace dotNet5781_03B_7588_3756
                     lErrMsgLicenseNumber.Content = "Error: license number already exist";
                     return;
                 }
-                MyData.UniqueLicenseNumbers.Add(int.Parse(licenseNumber));
+                MyData.UniqueLicenseNumbers.Add(int.Parse(licenseNumber)); // save the new liscense number
             }
             else
             {

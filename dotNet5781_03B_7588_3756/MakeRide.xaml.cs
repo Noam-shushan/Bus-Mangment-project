@@ -17,7 +17,9 @@ using System.Windows.Shapes;
 namespace dotNet5781_03B_7588_3756
 {
     /// <summary>
-    /// Interaction logic for MakeRide.xaml
+    /// Take a ride
+    /// Add miles by pressing Enter
+    /// In the view of the main window will be marked in blue
     /// </summary>
     public partial class MakeRide : Window
     {
@@ -53,7 +55,7 @@ namespace dotNet5781_03B_7588_3756
             return true;
         }
 
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        private void numberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]");
             e.Handled = regex.IsMatch(e.Text);

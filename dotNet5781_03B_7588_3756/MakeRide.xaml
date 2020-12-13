@@ -34,7 +34,7 @@
         <TextBox x:Name="tbUserKilometerToRide"
                  Grid.Column="1"
                  Grid.Row="3"
-                 PreviewTextInput="NumberValidationTextBox"
+                 PreviewTextInput="numberValidationTextBox"
                  HorizontalAlignment="Center"
                  Height="30" Width="130"
                  Margin="10,10,10,3"

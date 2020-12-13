@@ -10,7 +10,7 @@ using dotNet5781_01_7588_3756;
 namespace dotNet5781_03B_7588_3756
 {
     /// <summary>
-    /// 
+    /// Using the bus class and adding necessary things to the exercise
     /// </summary>
     public class MyBus : Bus, INotifyPropertyChanged
     {
@@ -20,7 +20,7 @@ namespace dotNet5781_03B_7588_3756
         private bool _isReady;
 
         /// <summary>
-        /// 
+        /// Flag to know if the bus is ready
         /// </summary>
         public bool IsReady 
         {
@@ -32,7 +32,7 @@ namespace dotNet5781_03B_7588_3756
             } 
         }
         /// <summary>
-        /// 
+        /// Color matching status
         /// </summary>
         public SolidColorBrush StatusColor
         {
@@ -44,7 +44,7 @@ namespace dotNet5781_03B_7588_3756
             }
         }
         /// <summary>
-        /// 
+        /// Current status of the bus
         /// </summary>
         public Status CurrentStatus
         {
@@ -73,7 +73,7 @@ namespace dotNet5781_03B_7588_3756
             }
         }
         /// <summary>
-        /// 
+        /// constructor
         /// </summary>
         /// <param name="licenseNumber"></param>
         /// <param name="startActivity"></param>
@@ -83,7 +83,7 @@ namespace dotNet5781_03B_7588_3756
             CurrentStatus = Status.READY;
         }
         /// <summary>
-        /// 
+        /// constructor
         /// </summary>
         /// <param name="licenseNumber"></param>
         /// <param name="startActivity"></param>

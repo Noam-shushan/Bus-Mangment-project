@@ -19,7 +19,8 @@ using System.Windows.Threading;
 namespace dotNet5781_03B_7588_3756
 {
     /// <summary>
-    /// Interaction logic for SelectedBus.xaml
+    /// Displays bus data
+    /// Send for treatment, refueling
     /// </summary>
     public partial class SelectedBus : Window
     {
@@ -28,7 +29,7 @@ namespace dotNet5781_03B_7588_3756
         private bool fuelingFlag = false;
         private bool treatmentFlag = false;
         DispatcherTimer timer = new DispatcherTimer();
-        DateTime start;
+        DateTime start; // To show the time left for treatment or refueling
 
         public SelectedBus(MyBus selectedBus)
         {
@@ -55,13 +56,13 @@ namespace dotNet5781_03B_7588_3756
             if (fuelingFlag)
             {
                 pbFueling.Value += timer.Interval.TotalSeconds;
-                lTimerFueil.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1}";
+                lTimerFueil.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1} / 00:12";
             }
             
             if (treatmentFlag)
             {
                 pbTreatment.Value += timer.Interval.TotalSeconds;
-                lTimerTreat.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1}";
+                lTimerTreat.Text = $"{(DateTime.Now - start).Minutes}:{(DateTime.Now - start).Seconds + 1} / 02:24";
             }
         }
 

@@ -7,11 +7,15 @@ using System.Threading.Tasks;
 
 namespace dotNet5781_03B_7588_3756
 {
+    /// <summary>
+    /// Data initialization
+    /// Data structures relevant to the exercise
+    /// </summary>
     class MyData
     {
         public Random rand = new Random();
-        public ObservableCollection<MyBus> MyBusList { get; } = new ObservableCollection<MyBus>(); // 
-        public static List<int> UniqueLicenseNumbers { get; } = new List<int>(); // 
+        public ObservableCollection<MyBus> MyBusList { get; } = new ObservableCollection<MyBus>(); // all of my buses 
+        public static List<int> UniqueLicenseNumbers { get; } = new List<int>(); // Unique License Numbers
         /// <summary>
         /// 
         /// </summary>
@@ -40,7 +44,7 @@ namespace dotNet5781_03B_7588_3756
             return start.AddDays(rand.Next(range));
         }
         /// <summary>
-        /// 
+        /// Checks if the license number exists
         /// </summary>
         /// <param name="licenseNumber"></param>
         /// <returns></returns>
@@ -66,14 +70,14 @@ namespace dotNet5781_03B_7588_3756
                 res = getUniqueLicenseNumber(10000000).ToString();
                 int numOfZeros = Math.Abs(res.Length - 7);
                 for (int j = 0; j < numOfZeros; j++)
-                    res = res.Insert(0, "0");
+                    res = res.Insert(0, "0"); // add zeros to the bigenig 
             }
             else
             {
                 res = getUniqueLicenseNumber(100000000).ToString();
                 int numOfZeros = Math.Abs(res.Length - 8);
                 for (int j = 0; j < numOfZeros; j++)
-                    res = res.Insert(0, "0");
+                    res = res.Insert(0, "0"); // add zeros to the bigenig
             }
             return res;
         }
