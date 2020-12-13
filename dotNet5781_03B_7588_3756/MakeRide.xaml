@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
-        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
+        Icon="—Pngtree—yellow bus icon_4432661.png"
         Title="Ride" Height="220" Width="300" ResizeMode="NoResize" Background="Azure">
     <Grid>
         <Grid.ColumnDefinitions>

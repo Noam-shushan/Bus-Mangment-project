@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Background="OldLace"
         Title="Bus company" Height="450" Width="800"
-        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png">
+        Icon="—Pngtree—yellow bus icon_4432661.png">
     <Window.Resources>
 
         <Style TargetType="TextBlock">
