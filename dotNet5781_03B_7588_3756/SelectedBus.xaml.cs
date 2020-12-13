@@ -22,7 +22,7 @@ namespace dotNet5781_03B_7588_3756
     /// Displays bus data
     /// Send for treatment, refueling
     /// </summary>
-    public partial class SelectedBus : Window
+    public partial class SelectedBus : Window 
     {
         public MyBus CurrentBus { get; set; } = null;
         private MainWindow mainWin = null;
