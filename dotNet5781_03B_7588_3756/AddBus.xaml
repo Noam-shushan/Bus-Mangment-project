@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:dotNet5781_03B_7588_3756"
         mc:Ignorable="d"
         Background="Beige"
-        Icon="C:\Users\Asuspcc\source\Repos\Noam-shushan\dotNet5781_7588_3756\dotNet5781_03B_7588_3756\—Pngtree—yellow bus icon_4432661.png"
+        Icon="—Pngtree—yellow bus icon_4432661.png"
         Title="Add new Bus" Height="350" Width="450">
     <Window.Resources>
         <Style TargetType="TextBox">
