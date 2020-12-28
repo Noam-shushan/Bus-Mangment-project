@@ -1,0 +1,59 @@
+﻿<Window x:Class="PLGui.Management"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PLGui"
+        mc:Ignorable="d"
+        FontFamily="Consolas"
+        Title="Management" Height="450" Width="800">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Margin" Value="100,20,100,5"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Foreground" Value="BlueViolet"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="100,0,100,20"/>
+            <Setter Property="Width" Value="70"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Managment"
+                       FontSize="35"
+                       HorizontalAlignment="Center"
+                       />
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="btnBuss"
+                        Content="Buss"
+                        Click="btnBuss_Click"
+                        />
+                <Button x:Name="btnLines"
+                        Content="Lines"
+                        Click="btnLines_Click"
+                        />
+                <Button x:Name="btnStations"
+                        Content="Stations"
+                        Click="btnStations_Click"
+                        />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="cbBuss"
+                          ItemsSource="{Binding}"
+                          />
+                <ComboBox x:Name="cbLinse"
+                          ItemsSource="{Binding}"
+                          />
+                <ComboBox x:Name="cbStations"
+                          ItemsSource="{Binding}"
+                          />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

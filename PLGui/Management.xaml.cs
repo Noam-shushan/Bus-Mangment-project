@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace PLGui
+{
+    /// <summary>
+    /// Interaction logic for Management.xaml
+    /// </summary>
+    public partial class Management : Window
+    {
+        BlApi.IBL myBL = BlApi.BlFactory.GetBL();
+
+        public Management()
+        {
+            InitializeComponent();
+            
+            cbBuss.ItemsSource = myBL.GetAllBuss();
+            cbBuss.DisplayMemberPath = "LicenseNum";
+
+            cbLinse.ItemsSource = myBL.GetAllLines();
+            cbLinse.DisplayMemberPath = "Id";
+
+            cbStations.ItemsSource = myBL.GetAllStations();
+            cbStations.DisplayMemberPath = "Code";
+        }
+
+        private void btnBuss_Click(object sender, RoutedEventArgs e)
+        {
+            new BussListWin().Show();
+        }
+
+        private void btnLines_Click(object sender, RoutedEventArgs e)
+        {
+            new LinesListWin().Show();
+        }
+
+        private void btnStations_Click(object sender, RoutedEventArgs e)
+        {
+            new StationListWin().Show();
+        }
+    }
+}
