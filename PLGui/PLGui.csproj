@@ -58,16 +58,25 @@
     <Compile Include="BussListWin.xaml.cs">
       <DependentUpon>BussListWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BusViewInfo.xaml.cs">
+      <DependentUpon>BusViewInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LinesListWin.xaml.cs">
       <DependentUpon>LinesListWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PO\Bus.cs" />
     <Compile Include="StationListWin.xaml.cs">
       <DependentUpon>StationListWin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Tools.cs" />
     <Compile Include="Traveling.xaml.cs">
       <DependentUpon>Traveling.xaml</DependentUpon>
     </Compile>
     <Page Include="BussListWin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BusViewInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

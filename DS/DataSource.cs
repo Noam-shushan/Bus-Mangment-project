@@ -13,7 +13,7 @@ namespace DS
         public static List<DO.Line> LinesList; // did
         public static List<DO.BusOnTrip> BusesOnTripList; 
         public static List<DO.AdjacentStations> AdjacentStationsList;
-        public static List<DO.Station> StationsList;
+        public static List<DO.Station> StationsList; // did
         public static List<DO.LineStation> LineStationsList;
         public static List<DO.Trip> TripsList;
         public static List<DO.LineTrip> LineTripsList;
@@ -80,6 +80,7 @@ namespace DS
                     Code = RandomValues.getUniqueStationKey(),
                     Latitude = latitude,
                     Longitude = longitude,
+                    Area = RandomValues.getArea(longitude, latitude)
                 });
             }
         }
@@ -108,14 +109,23 @@ namespace DS
         static int[] initializLineStations(int lineId, int numOfLS = 10) 
         {
             List<DO.LineStation> stationTemp = new List<DO.LineStation>();
-            for(int i = 0; i < numOfLS; i++)
+            var first = new DO.LineStation()
+            {
+                LineId = lineId,
+                Station = RandomValues.getStation(stationTemp),
+                LineStationIndex = 0,
+                PrevStation = 0,
+            };
+            var area = StationsList.Find(s => s.Code == first.Station).Area;
+            stationTemp.Add(first);
+            for(int i = 1; i < numOfLS; i++)
             {
                 stationTemp.Add(new DO.LineStation()
                 {
                     LineId = lineId,
-                    Station = RandomValues.getStation(stationTemp),
+                    Station = RandomValues.getStation(stationTemp, area),
                     LineStationIndex = i,
-                    PrevStation = i == 0 ? 0 : stationTemp.ElementAt(i - 1).Station,
+                    PrevStation = stationTemp.ElementAt(i - 1).Station,
                 }) ;
             }
             foreach(var ls in stationTemp)

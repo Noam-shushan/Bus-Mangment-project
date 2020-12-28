@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +21,17 @@ namespace PLGui
     public partial class Management : Window
     {
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
+        ObservableCollection<PO.Bus> myBusList { get; } = new ObservableCollection<PO.Bus>();
 
         public Management()
         {
             InitializeComponent();
             
-            cbBuss.ItemsSource = myBL.GetAllBuss();
+            foreach(var bus in myBL.GetAllBuss())
+            {
+                myBusList.Add(Tools.CopyBusBOToPO(bus));
+            }
+            cbBuss.ItemsSource = myBusList;
             cbBuss.DisplayMemberPath = "LicenseNum";
 
             cbLinse.ItemsSource = myBL.GetAllLines();
@@ -48,6 +54,22 @@ namespace PLGui
         private void btnStations_Click(object sender, RoutedEventArgs e)
         {
             new StationListWin().Show();
+        }
+
+        private void cbBuss_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var bus = cbBuss.SelectedItem as PO.Bus;
+            new BusViewInfo(bus).Show();
+        }
+
+        private void cbLinse_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void cbStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

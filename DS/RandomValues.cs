@@ -45,16 +45,17 @@ namespace DS
             return random.Next(1, 999);
         }
 
-        internal static int getStation(List<DO.LineStation> uniqueStatinCode)
+        internal static int getStation(List<DO.LineStation> uniqueStatinCode,
+            DO.Areas areaOfFirstStation = DO.Areas.GENERAL)
         {
             if(uniqueStatinCode.Count == 0)
                 return DataSource.StationsList.ElementAt(random.Next(0, DataSource.StationsList.Count)).Code;
             
             var lTemp = DataSource.StationsList.Where(s1 => 
                 uniqueStatinCode.All(s2 => s1.Code != s2.Station));
-            lTemp = lTemp.Where(s1 => lTemp.All(s2 =>
-                getArea(s1.Latitude, s1.Longitude) == getArea(s2.Latitude, s2.Longitude)));
-            
+            lTemp = from s in lTemp
+                    where s.Area == areaOfFirstStation
+                    select s;
             return lTemp.ElementAt(random.Next(0, lTemp.Count())).Code;
         }
 
@@ -68,9 +69,9 @@ namespace DS
 
         static int getUniqueLicenseNumber(int max)
         {
-            int res = random.Next(max);
+            int res = random.Next(max/10 ,max);
             while (uniqueLicenseNumbers.Contains(res))
-                res = random.Next(max);
+                res = random.Next(max/10 ,max);
             uniqueLicenseNumbers.Add(res);
             return res;
         }

@@ -15,12 +15,17 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="18"/>
-            <Setter Property="Foreground" Value="BlueViolet"/>
+            <Setter Property="Foreground" Value="#5f6368"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="100,0,100,20"/>
-            <Setter Property="Width" Value="70"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="80,0,80,20"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="40"/>
         </Style>
     </Window.Resources>
     <Grid>
@@ -28,6 +33,7 @@
             <TextBlock Text="Managment"
                        FontSize="35"
                        HorizontalAlignment="Center"
+                       Margin="10"
                        />
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="btnBuss"
@@ -46,12 +52,15 @@
             <StackPanel Orientation="Horizontal">
                 <ComboBox x:Name="cbBuss"
                           ItemsSource="{Binding}"
+                          SelectionChanged="cbBuss_SelectionChanged"
                           />
                 <ComboBox x:Name="cbLinse"
                           ItemsSource="{Binding}"
+                          SelectionChanged="cbLinse_SelectionChanged"
                           />
                 <ComboBox x:Name="cbStations"
                           ItemsSource="{Binding}"
+                          SelectionChanged="cbStations_SelectionChanged"
                           />
             </StackPanel>
         </StackPanel>

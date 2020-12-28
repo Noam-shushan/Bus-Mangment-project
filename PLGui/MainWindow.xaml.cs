@@ -27,7 +27,7 @@ namespace PLGui
             InitializeComponent();
         }
 
-        private void btnSigeIn_Click(object sender, RoutedEventArgs e)
+        private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
             lbErrPassword.Content = lbErrUsername.Content = "";
             _ = new BO.User();
