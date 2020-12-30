@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,6 @@ namespace DS
         static List<int> randomListStationKeys = new List<int>();
         static List<int> uniqueLicenseNumbers = new List<int>();
         static Random random = new Random(1000);
-        static int lineCounter = 0;
-
-        internal static int getLineCounter()
-        {
-            lineCounter++;
-            return lineCounter;
-        }
 
         internal static int getUniqueStationKey()
         {
@@ -32,12 +26,8 @@ namespace DS
 
         internal static void getLocation(out double latitude, out double longitude)
         {
-            double xTemp = random.NextDouble();
-            double yTemp = random.NextDouble();
-            xTemp += random.Next(33, 36);
-            yTemp += random.Next(29, 34);
-            latitude = xTemp;
-            longitude = yTemp;
+            latitude = random.NextDouble() + random.Next(33, 36);
+            longitude = random.NextDouble() + random.Next(29, 34);
         }
 
         internal static int getLineCode()
@@ -93,26 +83,41 @@ namespace DS
             return random.Next(500);
         }
 
-        static bool inRange(double param1, double param2, double x1, double y1, double x2, double y2)
+        static bool inRange(double param1, double param2, double x1, double x2, double y1, double y2)
         {
-            return param1 >= x1 && param1 <= y1 && param2 >= x2 && param2 <= y2;
+            return param1 >= x1 && param1 <= x2 && param2 >= y1 && param2 <= y2;
         }
 
         internal static DO.Areas getArea(double latitude, double longitude)
         {
-            if (inRange(latitude, longitude, 34.461262, 35.2408, 31.83538, 32.26356))
-                return DO.Areas.CENTER;
-
-            if (inRange(latitude, longitude, 35.1252, 35.2642, 31.7082, 31.8830))
-                return DO.Areas.JERUSALEM;
-
-            if (inRange(latitude, longitude, 34.8288611, 35.97865, 32.3508222, 33.3579972))
-                return DO.Areas.NORTH;
-
-            if (inRange(latitude, longitude, 33.81264994, 35.5857, 29.47925, 30.493059))
+            if (inRange(latitude, longitude, 34, 34.5, 29, 33))
                 return DO.Areas.SOUTH;
 
+            if (inRange(latitude, longitude, 34.5, 35, 29, 33))
+                return DO.Areas.JERUSALEM;
+
+            if (inRange(latitude, longitude, 35, 35.5, 29, 33))
+                return DO.Areas.NORTH;
+
+            if (inRange(latitude, longitude, 35.5, 36, 29, 33))
+                return DO.Areas.CENTER;
+
             return DO.Areas.GENERAL;
+        }
+
+        internal static double getDisteance(double latitude1, double longitude1,
+            double latitude2, double longitude2)
+        {
+            return new GeoCoordinate(latitude1, longitude1).GetDistanceTo(new 
+                GeoCoordinate(latitude2, longitude2));
+        }
+
+        internal static TimeSpan getTimeBetweenStations(double dist)
+        {
+            double km = dist / 1000;
+            double kmPerMin = 0.5;
+            double totalMinute = km / kmPerMin;
+            return TimeSpan.FromMinutes(totalMinute);
         }
     }
 }

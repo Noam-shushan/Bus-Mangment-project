@@ -159,6 +159,14 @@ namespace BL
         }
         #endregion
 
+        #region LineStation
+        public IEnumerable<BO.LineStation> GetAllLineStationsByLineID(int lineId)
+        {
+            return from ls1 in dl.GetAllLineStationBy(ls2 => ls2.LineId == lineId)
+                   select ls1.CopyPropertiesToNew(typeof(BO.LineStation)) as BO.LineStation;
+        } 
+        #endregion
+
         #region Line
         public IEnumerable<BO.Line> GetAllLines()
         {
@@ -175,13 +183,25 @@ namespace BL
                    select lineBo;
         }
 
+        public IEnumerable<BO.Line> GetAllLinePassByStation(int stationCode)
+        {
+            var allLineStationsOfSpecific = from st
+                                            in dl.GetAllLineStationBy(ls => ls.Station == stationCode)
+                                            select st;
+            return from st in allLineStationsOfSpecific
+                   from line in dl.GetAllLines()
+                   let lineBo = line.CopyPropertiesToNew(typeof(BO.Line)) as BO.Line
+                   where st.LineId == lineBo.Id
+                   select lineBo;
+        }
+
         public BO.Line GetLine(int lineId)
         {
             var lineBo = new BO.Line();
             try
             {
-                var busDo = dl.GetBus(lineId);
-                busDo.CopyPropertiesTo(lineBo);
+                var lineDo = dl.GetBus(lineId);
+                lineDo.CopyPropertiesTo(lineBo);
             }
             catch (DO.BadLineException ex)
             {

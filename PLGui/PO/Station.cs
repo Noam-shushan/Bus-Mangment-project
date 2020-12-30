@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BO
+namespace PO
 {
     public class Station
     {
@@ -13,6 +13,17 @@ namespace BO
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public bool IsDeleted { get; set; }
-        public Areas Area { get; set; }
+        public BO.Areas Area { get; set; }
+        public string Location 
+        {
+            get => $"{Latitude}°N {Longitude}°E";
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() =>
+            $"{Name}\n" +
+            $"Station code: {Code}";
     }
 }

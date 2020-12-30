@@ -22,11 +22,33 @@ namespace BL
             }
             return to;
         }
+
         public static object CopyPropertiesToNew<S>(this S from, Type type)
         {
             object to = Activator.CreateInstance(type); // new object of Type
             from.CopyPropertiesTo(to);
             return to;
+        }
+        public static string FormatLiscenseNumber(this BO.Bus bus)
+        {
+            string formatNumber = bus.LicenseNum.ToString();
+            if (bus.FromDate.Year < 2018)
+            { // 00-000-00
+                int numOfZeros = Math.Abs(formatNumber.Length - 7);
+                for (int j = 0; j < numOfZeros; j++)
+                    formatNumber = formatNumber.Insert(0, "0"); // add zeros to the bigenig 
+                formatNumber = formatNumber.Insert(2, "-");
+                formatNumber = formatNumber.Insert(6, "-");
+            }
+            else
+            { // 000-00-000
+                int numOfZeros = Math.Abs(formatNumber.Length - 8);
+                for (int j = 0; j < numOfZeros; j++)
+                    formatNumber = formatNumber.Insert(0, "0"); // add zeros to the bigenig 
+                formatNumber = formatNumber.Insert(3, "-");
+                formatNumber = formatNumber.Insert(6, "-");
+            }
+            return formatNumber;
         }
     }
 }

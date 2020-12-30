@@ -6,9 +6,6 @@ using System.Threading.Tasks;
 
 namespace BO
 {
-    public class Enums
-    {
-        public enum Areas { GENERAL, NORTH, SOUTH, CENTER, JERUSALEM }  // enum of region in israel
-        public enum BusStatus { READY, RIDE, REFUELING, TREATMENT }
-    }
+    public enum Areas { GENERAL, NORTH, SOUTH, CENTER, JERUSALEM }  // enum of region in israel
+    public enum BusStatus { READY, RIDE, REFUELING, TREATMENT }
 }

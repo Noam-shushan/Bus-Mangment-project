@@ -25,7 +25,7 @@
         <Style TargetType="ComboBox">
             <Setter Property="Margin" Value="80,0,80,20"/>
             <Setter Property="Width" Value="120"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="30"/>
         </Style>
     </Window.Resources>
     <Grid>

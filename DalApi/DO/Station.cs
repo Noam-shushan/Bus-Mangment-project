@@ -16,5 +16,6 @@ namespace DO
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public Areas Area { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

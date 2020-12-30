@@ -29,6 +29,7 @@ namespace PLGui
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
+            new Management().Show();
             lbErrPassword.Content = lbErrUsername.Content = "";
             _ = new BO.User();
             BO.User user;
@@ -36,7 +37,7 @@ namespace PLGui
             {
                 if (tbUsername.Text == string.Empty)
                 {
-                    lbErrUsername.Content = "Error: most be filld";
+                    lbErrUsername.Content = "most be filld";
                     return;
                 }
                 user = myBL.GetUser(tbUsername.Text);
@@ -49,7 +50,7 @@ namespace PLGui
 
             if (tbPassword.Password == string.Empty)
             {
-                lbErrPassword.Content = "Error: most be filld";
+                lbErrPassword.Content = "most be filld";
                 return;
             }
             if(tbPassword.Password != user.Password)
@@ -62,6 +63,11 @@ namespace PLGui
                 new Management().Show();
             else
                 new Traveling().Show();
+        }
+
+        private void btnAddUser_Click(object sender, RoutedEventArgs e)
+        {
+            new AddUserWin().Show();
         }
     }
 }

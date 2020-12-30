@@ -4,11 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DO
+namespace PO
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class LineStation
     {
         public int LineId { get; set; }

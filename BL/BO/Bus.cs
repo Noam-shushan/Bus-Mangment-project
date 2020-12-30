@@ -12,8 +12,9 @@ namespace BO
         public DateTime FromDate { get; set; }
         public double TotalTrip { get; set; }
         public double FuelRemain { get; set; }
-        public Enums.BusStatus Status { get; set; }
+        public BusStatus Status { get; set; }
         public int KilometersAfterFueling { get; set; }
         public int KilometersAfterTreatment { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

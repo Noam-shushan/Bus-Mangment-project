@@ -45,6 +45,7 @@
     <Compile Include="BLImp.cs" />
     <Compile Include="BO\Bus.cs" />
     <Compile Include="BO\Enums.cs" />
+    <Compile Include="BO\LineStation.cs" />
     <Compile Include="BO\MyException.cs" />
     <Compile Include="BO\Station.cs" />
     <Compile Include="BO\User.cs" />

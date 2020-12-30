@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +20,16 @@ namespace PLGui
     /// </summary>
     public partial class LinesListWin : Window
     {
-        public LinesListWin()
+        public LinesListWin(ObservableCollection<PO.Line> lineList)
         {
             InitializeComponent();
+            lvLineList.ItemsSource = lineList;
+        }
+
+        private void lvLineList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var line = lvLineList.SelectedItem as PO.Line;
+            new LineViewInfo(line).Show();
         }
     }
 }

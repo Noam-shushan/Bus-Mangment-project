@@ -44,5 +44,8 @@ namespace BlApi
         void RemmoveStation(BO.Station station);
         #endregion
 
+        IEnumerable<BO.LineStation> GetAllLineStationsByLineID(int lineId);
+        IEnumerable<BO.Line> GetAllLinePassByStation(int stationCode);
+
     }
 }

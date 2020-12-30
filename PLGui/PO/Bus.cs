@@ -10,11 +10,11 @@ namespace PO
 {
     public class Bus : INotifyPropertyChanged
     {
-        private BO.Enums.BusStatus _status;
+        private BO.BusStatus _status;
         private SolidColorBrush _statusColor;
         private bool _isReady;
         private double _kilometers;
-        public string LicenseNum { get; set; }
+        public string LicenseNumber { get; set; }
         public DateTime FromDate { get; set; }
         public double TotalTrip 
         {
@@ -57,25 +57,25 @@ namespace PO
         /// <summary>
         /// Current status of the bus
         /// </summary>
-        public BO.Enums.BusStatus Status
+        public BO.BusStatus Status
         {
             get => _status;
             set
             {
                 _status = value;
-                IsReady = Status == BO.Enums.BusStatus.READY;
+                IsReady = Status == BO.BusStatus.READY;
                 switch (value)
                 {
-                    case BO.Enums.BusStatus.READY:
+                    case BO.BusStatus.READY:
                         StatusColor = Brushes.Green;
                         break;
-                    case BO.Enums.BusStatus.REFUELING:
+                    case BO.BusStatus.REFUELING:
                         StatusColor = Brushes.Orange;
                         break;
-                    case BO.Enums.BusStatus.RIDE:
+                    case BO.BusStatus.RIDE:
                         StatusColor = Brushes.Blue;
                         break;
-                    case BO.Enums.BusStatus.TREATMENT:
+                    case BO.BusStatus.TREATMENT:
                         StatusColor = Brushes.Red;
                         break;
 
@@ -86,7 +86,7 @@ namespace PO
 
         public override string ToString()
         {
-            return $"License Number: {LicenseNum}\n" +
+            return $"License Number: {LicenseNumber}\n" +
                 $"Total kilometers: {TotalTrip}\n" +
                 $"Kilometers since last treatment: {KilometersAfterTreatment}\n" +
                 $"Start activity: {FromDate.Date:dd/MM/yyyy}";

@@ -48,4 +48,20 @@ namespace BO
         public override string ToString() =>
             base.ToString() + $", bad Station Code: {_stationCode}";
     }
+
+    public class BadLineStationException : Exception
+    {
+        int _stationCode;
+        int _lineId;
+
+        public BadLineStationException(int stationCode, int lineId, string message)
+            : base(message)
+        {
+            _stationCode = stationCode;
+            _lineId = lineId;
+        }
+
+        public override string ToString() =>
+            base.ToString() + $", bad Line Station: {_stationCode}, {_lineId}";
+    }
 }

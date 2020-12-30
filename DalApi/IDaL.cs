@@ -52,5 +52,12 @@ namespace DalApi
         void UpdateUser(DO.User userName);
         void RemmoveUser(DO.User user);
         #endregion
+
+        #region AdjacentStations
+        //IEnumerable<DO.AdjacentStations> GetAllAdjacentStations();
+        //IEnumerable<DO.AdjacentStations> GetAllAdjacentStationsBy(Predicate<DO.AdjacentStations> predicate);
+        //void AddAdjacentStations(DO.AdjacentStations adjacentStations);
+        //void UpdateAdjacentStations(DO.AdjacentStations adjacentStations);
+        #endregion
     }
 }

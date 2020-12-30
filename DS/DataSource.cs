@@ -12,9 +12,9 @@ namespace DS
         public static List<DO.Bus> BussList; // did
         public static List<DO.Line> LinesList; // did
         public static List<DO.BusOnTrip> BusesOnTripList; 
-        public static List<DO.AdjacentStations> AdjacentStationsList;
+        public static List<DO.AdjacentStations> AdjacentStationsList; // did
         public static List<DO.Station> StationsList; // did
-        public static List<DO.LineStation> LineStationsList;
+        public static List<DO.LineStation> LineStationsList; // did
         public static List<DO.Trip> TripsList;
         public static List<DO.LineTrip> LineTripsList;
 
@@ -29,6 +29,7 @@ namespace DS
             initializLines();
             initializBuss();
             initializUsers();
+            initializAdjacentStationsList();
         }
 
         static void initializUsers()
@@ -39,31 +40,36 @@ namespace DS
                 {
                     UserName = "David_Hamelch",
                     Password = "David1234",
-                    Admin = false
+                    Admin = false,
+                    IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Yossi_Sossi",
                     Password = "Yossi1234",
-                    Admin = true
+                    Admin = true,
+                    IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Honi_Hamehagel",
                     Password = "Honi1234",
-                    Admin = false
+                    Admin = false,
+                    IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Nach_Nachma_Nachman",
                     Password = "Breslev1234",
-                    Admin = true
+                    Admin = true,
+                    IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Rashbi-in-Mirom",
                     Password = "Rashbi1234",
-                    Admin = false
+                    Admin = false,
+                    IsDeleted = false
                 },
             };
         }
@@ -80,7 +86,8 @@ namespace DS
                     Code = RandomValues.getUniqueStationKey(),
                     Latitude = latitude,
                     Longitude = longitude,
-                    Area = RandomValues.getArea(longitude, latitude)
+                    Area = RandomValues.getArea(longitude, latitude),
+                    IsDeleted = false
                 });
             }
         }
@@ -93,8 +100,9 @@ namespace DS
             {
                 var newLine = new DO.Line()
                 {
-                    Id = RandomValues.getLineCounter(),
-                    Code = RandomValues.getLineCode()                   
+                    Id = DO.Counters.LineCounter,
+                    Code = RandomValues.getLineCode(),
+                    IsDeleted = false
                 };
                 var firstAndLastStationCode = initializLineStations(newLine.Id);
                 newLine.FirstStation = firstAndLastStationCode[0];
@@ -115,6 +123,7 @@ namespace DS
                 Station = RandomValues.getStation(stationTemp),
                 LineStationIndex = 0,
                 PrevStation = 0,
+                IsDeleted = false
             };
             var area = StationsList.Find(s => s.Code == first.Station).Area;
             stationTemp.Add(first);
@@ -126,6 +135,7 @@ namespace DS
                     Station = RandomValues.getStation(stationTemp, area),
                     LineStationIndex = i,
                     PrevStation = stationTemp.ElementAt(i - 1).Station,
+                    IsDeleted = false
                 }) ;
             }
             foreach(var ls in stationTemp)
@@ -153,8 +163,39 @@ namespace DS
                     LicenseNum = RandomValues.randomLicenseNumber(dateFrom),
                     Status = DO.BusStatus.READY,
                     TotalTrip = RandomValues.getKilometers(),
-                    FuelRemain = RandomValues.getFuelLiters()
+                    FuelRemain = RandomValues.getFuelLiters(),
+                    IsDeleted = false
                 });
+            }
+        }
+
+        static void initializAdjacentStationsList()
+        {
+            AdjacentStationsList = new List<DO.AdjacentStations>();
+            foreach(var line in LinesList)
+            {
+                var temp = from ls in LineStationsList
+                           where ls.LineId == line.Code
+                           orderby ls.LineStationIndex
+                           select ls;
+                foreach(var ls in temp)
+                {
+                    if (ls.NextStation == -1)
+                        break; // last station in the line
+                    
+                    var station1 = StationsList.Find(s => s.Code == ls.Station);
+                    var station2 = StationsList.Find(s => s.Code == ls.NextStation);
+                    var dist = RandomValues.getDisteance(station1.Latitude, station1.Longitude,
+                        station2.Latitude, station2.Longitude);
+                    AdjacentStationsList.Add(new DO.AdjacentStations()
+                    {
+                        Station1 = ls.Station,
+                        Station2 = ls.NextStation,
+                        Distance = dist,
+                        Time = RandomValues.getTimeBetweenStations(dist),
+                        IsDeleted = false
+                    }) ;
+                }
             }
         }
     }

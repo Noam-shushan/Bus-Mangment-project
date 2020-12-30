@@ -5,8 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
-        Title="LinesListWin" Height="450" Width="800">
+        Title="Lines" Height="400" Width="600">
     <Grid>
-        
+        <ListView x:Name="lvLineList"
+                  ItemsSource="{Binding}"
+                  Margin="20"
+                  Width="200"
+                  HorizontalAlignment="Left"
+                  MouseDoubleClick="lvLineList_MouseDoubleClick"
+                  >
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Line Number" 
+                                        DisplayMemberBinding="{Binding Path=Code}">
+                        </GridViewColumn>
+                        <GridViewColumn Header="Area" 
+                                        DisplayMemberBinding="{Binding Path=Area}">
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

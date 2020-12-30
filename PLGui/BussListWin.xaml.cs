@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,9 +20,31 @@ namespace PLGui
     /// </summary>
     public partial class BussListWin : Window
     {
-        public BussListWin()
+        public BussListWin(ObservableCollection<PO.Bus> busList)
         {
             InitializeComponent();
+            lvBusList.ItemsSource = busList;
+        }
+
+        private void lvBusList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+        }
+
+        private void lvBusList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var bus = lvBusList.SelectedItem as PO.Bus;
+            new BusViewInfo(bus).Show();
+        }
+
+        private void btnTreatment_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnRefueling_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -16,5 +16,6 @@ namespace DO
         public Areas Area { get; set; }
         public int FirstStation { get; set; }
         public int LastStation { get; set; }
+        public bool IsDeleted { get; set; }
     }   
 }

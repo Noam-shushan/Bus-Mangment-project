@@ -5,8 +5,60 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
-        Title="BussListWin" Height="450" Width="800">
+        Title="Buss" Height="450" Width="800">
     <Grid>
-        
+        <TextBlock Text="Buss" Margin="20,0"/>
+        <ListView 
+            x:Name="lvBusList"
+            ItemsSource="{Binding}"
+            SelectionChanged="lvBusList_SelectionChanged"
+            MouseDoubleClick="lvBusList_MouseDoubleClick"
+            Margin="20">
+            <ListView.View >
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Service">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button x:Name="btnTreatment"
+                                            Content="Treatment"
+                                            IsEnabled="{Binding Path=IsReady}"
+                                            Click="btnTreatment_Click"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button x:Name="btnRefueling"
+                                            Content="Refueling"
+                                            IsEnabled="{Binding Path=IsReady}"
+                                            Click="btnRefueling_Click"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=LicenseNumber}"
+                                        Header="License Number">
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=TotalTrip}"
+                                        Header="Kilometers">
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=FromDate}"
+                                        Header="Start activity">
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}"
+                                            Header="Kilometers since last treatment">
+                        </GridViewColumn>
+                        <GridViewColumn>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ProgressBar x:Name="pbServiceProgres"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using BL;
 
 namespace PLGui
 {
@@ -21,7 +22,9 @@ namespace PLGui
     public partial class Management : Window
     {
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
-        ObservableCollection<PO.Bus> myBusList { get; } = new ObservableCollection<PO.Bus>();
+        ObservableCollection<PO.Bus> myBusList = new ObservableCollection<PO.Bus>();
+        ObservableCollection<PO.Line> myLineList = new ObservableCollection<PO.Line>();
+        ObservableCollection<PO.Station> myStationList = new ObservableCollection<PO.Station>();
 
         public Management()
         {
@@ -29,31 +32,43 @@ namespace PLGui
             
             foreach(var bus in myBL.GetAllBuss())
             {
-                myBusList.Add(Tools.CopyBusBOToPO(bus));
+                var busPo = bus.CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
+                busPo.LicenseNumber = bus.FormatLiscenseNumber();
+                myBusList.Add(busPo);
             }
             cbBuss.ItemsSource = myBusList;
-            cbBuss.DisplayMemberPath = "LicenseNum";
+            cbBuss.DisplayMemberPath = "LicenseNumber";
 
-            cbLinse.ItemsSource = myBL.GetAllLines();
+            foreach(var line in myBL.GetAllLines())
+            {
+                var linePo = line.CopyPropertiesToNew(typeof(PO.Line)) as PO.Line;
+                linePo.LineStations = myBL.GetAllLineStationsByLineID(line.Id);
+                myLineList.Add(linePo);
+            }
+            cbLinse.ItemsSource = myLineList;
             cbLinse.DisplayMemberPath = "Id";
 
-            cbStations.ItemsSource = myBL.GetAllStations();
+            foreach(var station in myBL.GetAllStations())
+            {
+                myStationList.Add(station.CopyPropertiesToNew(typeof(PO.Station)) as PO.Station);
+            }
+            cbStations.ItemsSource = myStationList;
             cbStations.DisplayMemberPath = "Code";
         }
 
         private void btnBuss_Click(object sender, RoutedEventArgs e)
         {
-            new BussListWin().Show();
+            new BussListWin(myBusList).Show();
         }
 
         private void btnLines_Click(object sender, RoutedEventArgs e)
         {
-            new LinesListWin().Show();
+            new LinesListWin(myLineList).Show();
         }
 
         private void btnStations_Click(object sender, RoutedEventArgs e)
         {
-            new StationListWin().Show();
+            new StationListWin(myStationList).Show();
         }
 
         private void cbBuss_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -64,7 +79,8 @@ namespace PLGui
 
         private void cbLinse_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            var line = cbLinse.SelectedItem as PO.Line;
+            new LineViewInfo(line).Show();
         }
 
         private void cbStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
