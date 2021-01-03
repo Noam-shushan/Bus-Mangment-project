@@ -47,7 +47,7 @@ namespace Dal
                 throw new DO.BadBusException(licenseNum, "bus not found");
         }
 
-        public void RemmoveBus(DO.Bus bus)
+        public void RemoveBus(DO.Bus bus)
         {
             var busToRem = DS.DataSource.BussList.Find(b => b.LicenseNum == bus.LicenseNum);
 
@@ -93,13 +93,11 @@ namespace Dal
                 throw new DO.BadLineException(lineId, "Line not found");
         }
 
-        public void AddLine(DO.Line line)
+        public int AddLine(DO.Line line)
         {
-            if (DS.DataSource.LinesList.FirstOrDefault(l => l.Code == line.Code) != null
-               && !line.IsDeleted)
-                throw new DO.BadLineException(line.Code, "Duplicate line id");
-            else
-                DS.DataSource.LinesList.Add(line.Clone());
+            line.Id = DS.Counters.LineCounter;
+            DS.DataSource.LinesList.Add(line.Clone());
+            return line.Id;
         }
 
         public void UpdateLine(DO.Line line)
@@ -112,12 +110,15 @@ namespace Dal
                 throw new DO.BadLineException(line.Id, "Line not found");
         }
 
-        public void RemmoveLine(DO.Line line)
+        public void RemoveLine(DO.Line line)
         {
             var lineToRem = DS.DataSource.LinesList.Find(l => l.Id == line.Id);
 
-            if (lineToRem != null && !lineToRem.IsDeleted)
-                lineToRem.IsDeleted = true;
+            if (lineToRem != null && !lineToRem.IsDeleted) 
+            {
+                GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStation);
+                lineToRem.IsDeleted = true;     
+            }              
             else
                 throw new DO.BadLineException(line.Id, "Line not found");
         }
@@ -166,12 +167,17 @@ namespace Dal
                 throw new DO.BadStationException(station.Code, "Station not found");
         }
 
-        public void RemmoveStation(DO.Station station)
+        public void RemoveStation(DO.Station station)
         {
             var stationToRem = DS.DataSource.StationsList.Find(s => s.Code == station.Code);
 
             if (stationToRem != null && !stationToRem.IsDeleted)
+            {
+                GetAllLineStationBy(s => s.Station == stationToRem.Code).ToList().ForEach(RemoveLineStation);
+                GetAllAdjacentStationsBy(s => s.Station1 == stationToRem.Code 
+                || s.Station2 == stationToRem.Code).ToList().ForEach(RemoveAdjacentStations);
                 stationToRem.IsDeleted = true;
+            }            
             else
                 throw new DO.BadStationException(station.Code, "Station not found");
         }
@@ -189,6 +195,7 @@ namespace Dal
         {
             return from lineStation in DS.DataSource.LineStationsList
                    where predicate(lineStation) && !lineStation.IsDeleted
+                   orderby lineStation.LineId, lineStation.LineStationIndex
                    select lineStation;
         }
 
@@ -210,9 +217,38 @@ namespace Dal
              && !lineStation.IsDeleted)
             {
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
-                                                    "Duplicate station line");
+                                                    "Duplicate line station");
             }
-            DS.DataSource.LineStationsList.Add(lineStation);
+
+            var station = DS.DataSource.StationsList.Find(s => s.Code == lineStation.Station);
+            if(station == null)
+            {
+                throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
+                    $"Station '{lineStation.Station}' does not exist");
+            }
+
+            var line = DS.DataSource.LinesList.Find(l => l.Id == lineStation.LineId);
+            if(line == null)
+            {
+                throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
+                    $"Line '{lineStation.LineId}' does not exist");
+            }
+
+            foreach(var s in GetAllLineStationBy(s => s.LineId == line.Id))
+            {
+                if(lineStation.PrevStation == s.Station)
+                {
+                    lineStation.LineStationIndex = s.LineStationIndex + 1;
+                    continue;
+                }
+                if (lineStation.LineStationIndex != -1)
+                {
+                    s.LineStationIndex += 1;
+                    UpdateLineStation(s);
+                }
+            } 
+            lineStation.Name = station.Name; 
+            DS.DataSource.LineStationsList.Add(lineStation.Clone());
         }
 
         public void UpdateLineStation(DO.LineStation lineStation)
@@ -228,7 +264,7 @@ namespace Dal
                                                 lineStation.LineId, "Station line not found");
         }
 
-        public void RemmoveLineStation(DO.LineStation lineStation)
+        public void RemoveLineStation(DO.LineStation lineStation)
         {
             var ls =
                 DS.DataSource.LineStationsList.Find(s => s.Station == lineStation.Station
@@ -285,7 +321,7 @@ namespace Dal
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
         }
 
-        public void RemmoveUser(DO.User user)
+        public void RemoveUser(DO.User user)
         {
             var findUser = DS.DataSource.UsersList.Find(u => u.UserName == user.UserName);
 
@@ -293,7 +329,68 @@ namespace Dal
                 findUser.IsDeleted = true;
             else
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
-        } 
+        }
+        #endregion
+
+        #region AdjacentStations
+        public IEnumerable<DO.AdjacentStations> GetAllAdjacentStations()
+        {
+            return from adst in DS.DataSource.AdjacentStationsList
+                   where !adst.IsDeleted
+                   select adst.Clone();
+        }
+
+        public IEnumerable<DO.AdjacentStations> GetAllAdjacentStationsBy(Predicate<DO.AdjacentStations> predicate)
+        {
+            return from adst in DS.DataSource.AdjacentStationsList
+                   where !adst.IsDeleted && predicate(adst)
+                   select adst.Clone();
+        }
+
+        public void AddAdjacentStations(DO.AdjacentStations adjacentStations)
+        {
+            var adst = DS.DataSource.AdjacentStationsList.Find(s =>
+            s.Station1 == adjacentStations.Station1 && s.Station2 == adjacentStations.Station2);
+            if(adst != null) 
+            {
+                if(adst.IsDeleted)
+                    throw new DO.BadAdjacentStationsException(adst.Station1, adst.Station2,
+                        "Duplicate adjacent stations");
+            }
+
+            var s1 = GetStation(adjacentStations.Station1);
+            var s2 = GetStation(adjacentStations.Station2);
+            adjacentStations.Distance = DS.AuxiliaryFunctions.GetDisteance(s1.Latitude, s1.Longitude,
+                s2.Latitude, s2.Longitude);
+            adjacentStations.Time = DS.AuxiliaryFunctions.GetTimeBetweenStations(adjacentStations.Distance);
+            DS.DataSource.AdjacentStationsList.Add(adjacentStations);
+        }
+
+        public void RemoveAdjacentStations(DO.AdjacentStations adjacentStations)
+        {
+            var adst =
+                DS.DataSource.AdjacentStationsList.Find(s => s.Station1 == adjacentStations.Station1
+                && s.Station2 == adjacentStations.Station2);
+
+            if (adst != null && !adst.IsDeleted)
+                adst.IsDeleted = true;
+            else
+                throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2
+                    , "Adjacent Stations not found");
+        }
+
+        public void UpdateAdjacentStations(DO.AdjacentStations adjacentStations)
+        {
+            var adst =
+                DS.DataSource.AdjacentStationsList.Find(s => s.Station1 == adjacentStations.Station1
+                && s.Station2 == adjacentStations.Station2);
+
+            if (adst != null && !adst.IsDeleted)
+                adst = adjacentStations;
+            else
+                throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2
+                    , "Adjacent Stations not found");
+        }
         #endregion
     }
 }

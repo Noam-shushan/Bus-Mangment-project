@@ -14,8 +14,13 @@ namespace PO
         private SolidColorBrush _statusColor;
         private bool _isReady;
         private double _kilometers;
+
         public string LicenseNumber { get; set; }
         public DateTime FromDate { get; set; }
+        public string FromDateAsDate
+        {
+            get => $"{FromDate.ToString("d")}";
+        }
         public double TotalTrip 
         {
             get => _kilometers;

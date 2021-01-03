@@ -25,7 +25,8 @@ namespace DS
 
         static void initAllLists()
         {
-            initializStations();
+            InitializStations.Initializ50Stations();
+            //initializStations();
             initializLines();
             initializBuss();
             initializUsers();
@@ -74,23 +75,23 @@ namespace DS
             };
         }
 
-        static void initializStations(int numOfStation = 100)
-        {
-            StationsList = new List<DO.Station>();
-            for (int i = 0; i < numOfStation; i++)
-            {
-                double latitude, longitude;
-                RandomValues.getLocation(out latitude, out longitude);
-                StationsList.Add(new DO.Station()
-                {
-                    Code = RandomValues.getUniqueStationKey(),
-                    Latitude = latitude,
-                    Longitude = longitude,
-                    Area = RandomValues.getArea(longitude, latitude),
-                    IsDeleted = false
-                });
-            }
-        }
+        //static void initializStations(int numOfStation = 100)
+        //{
+        //    StationsList = new List<DO.Station>();
+        //    for (int i = 0; i < numOfStation; i++)
+        //    {
+        //        double latitude, longitude;
+        //        RandomValues.getLocation(out latitude, out longitude);
+        //        StationsList.Add(new DO.Station()
+        //        {
+        //            Code = RandomValues.getUniqueStationKey(),
+        //            Latitude = latitude,
+        //            Longitude = longitude,
+        //            Area = RandomValues.getArea(longitude, latitude),
+        //            IsDeleted = false
+        //        });
+        //    }
+        //}
 
         static void initializLines(int numOfLins = 10)
         {
@@ -100,17 +101,19 @@ namespace DS
             {
                 var newLine = new DO.Line()
                 {
-                    Id = DO.Counters.LineCounter,
+                    Id = Counters.LineCounter,
                     Code = RandomValues.getLineCode(),
                     IsDeleted = false
                 };
                 var firstAndLastStationCode = initializLineStations(newLine.Id);
                 newLine.FirstStation = firstAndLastStationCode[0];
                 newLine.LastStation = firstAndLastStationCode[1];
-                double latitude = StationsList.Find(s => s.Code == newLine.FirstStation).Latitude;
-                double longitude = StationsList.Find(s => s.Code == newLine.FirstStation).Longitude;
-                newLine.Area = RandomValues.getArea(latitude, longitude);
+                newLine.Area = StationsList.Find(s => s.Code == newLine.FirstStation).Area;
                 LinesList.Add(newLine);
+            }
+            foreach (var ls in LineStationsList)
+            {
+                ls.Name = StationsList.Find(s => s.Code == ls.Station).Name;
             }
         }
 
@@ -174,10 +177,9 @@ namespace DS
             AdjacentStationsList = new List<DO.AdjacentStations>();
             foreach(var line in LinesList)
             {
-                var temp = from ls in LineStationsList
-                           where ls.LineId == line.Code
-                           orderby ls.LineStationIndex
-                           select ls;
+                var temp = (from ls in LineStationsList
+                           where ls.LineId == line.Id
+                           select ls).ToList();
                 foreach(var ls in temp)
                 {
                     if (ls.NextStation == -1)
@@ -185,14 +187,15 @@ namespace DS
                     
                     var station1 = StationsList.Find(s => s.Code == ls.Station);
                     var station2 = StationsList.Find(s => s.Code == ls.NextStation);
-                    var dist = RandomValues.getDisteance(station1.Latitude, station1.Longitude,
+                    var dist = AuxiliaryFunctions.GetDisteance(station1.Latitude, station1.Longitude,
                         station2.Latitude, station2.Longitude);
                     AdjacentStationsList.Add(new DO.AdjacentStations()
                     {
                         Station1 = ls.Station,
                         Station2 = ls.NextStation,
+                        LineCode = line.Code,
                         Distance = dist,
-                        Time = RandomValues.getTimeBetweenStations(dist),
+                        Time = AuxiliaryFunctions.GetTimeBetweenStations(dist),
                         IsDeleted = false
                     }) ;
                 }

@@ -14,5 +14,14 @@ namespace BO
         public int FirstStation { get; set; }
         public int LastStation { get; set; }
         public bool IsDeleted { get; set; }
+        public IEnumerable<LineStation> LineStations { get; set; }
+        public string FirstStationName
+        {
+            get => LineStations.ToList().First().Name;
+        }
+        public string LastStationName
+        {
+            get => LineStations.ToList().Last().Name;
+        }
     }
 }

@@ -5,34 +5,90 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
-        Title="LineViewInfo" Height="450" Width="500">
+        Title="Line info" Height="450" Width="730">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Margin" Value="0,0,3,0"/>
+        </Style>
+    </Window.Resources>
     <Grid>
-        <StackPanel>
-            <TextBlock x:Name="textBlockLineInfo" 
-                       HorizontalAlignment="Center"
-                       FontSize="20"/>
-            <TextBlock x:Name="textBlockArea"
-                       FontSize="15"
-                       Margin="20,0,0,5"/>
-            <TextBlock Text="Line stations:" FontSize="15" Margin="20,0,5,0"/>
-            <ListView Name="lbLineStations"  
-                      ItemsSource="{Binding}"
-                      Width="300"
-                      Margin="20,0,0,20"
-                      HorizontalAlignment="Left">
-                <ListView.View>
-                    <GridView>
-                        <GridView.Columns>
-                            <GridViewColumn DisplayMemberBinding="{Binding Path=Station}"
-                                            Header="Station Code" Width="150">
-                            </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding Path=LineStationIndex}"
-                                            Header="Station number" Width="150">
-                            </GridViewColumn>
-                        </GridView.Columns>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </StackPanel>
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock 
+            x:Name="textBlockLineInfo" 
+            Grid.Column="0" Grid.Row="0"
+            FontSize="18" Margin="20,10,0,5"/>
+        <TextBlock x:Name="textBlockArea"
+                    FontSize="15" Grid.Column="0" Grid.Row="1"
+                    Margin="20,0,0,5"/>
+        <TextBlock Text="Line stations:" 
+                    FontSize="15" 
+                    Margin="20,0,5,0"
+                    Grid.Column="0" Grid.Row="2"/>
+        <ListView 
+            Name="lvLineStations"  
+            ItemsSource="{Binding}"
+            Width="400" Height="300"
+            Margin="20,3,0,20" Grid.Column="0" Grid.Row="3"
+            HorizontalAlignment="Left"
+            MouseDoubleClick="lvLineStations_MouseDoubleClick">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=Name}"
+                            Header="Name" Width="180"/>
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=Station}"
+                            Header="Code" Width="80">
+                        </GridViewColumn>
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=LineStationIndex}"
+                            Header="Station number" Width="140">
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <Button 
+            x:Name="btnAddLineStation" Content="Add new Line Station"
+            Grid.Column="1" Grid.Row="3" Margin="63.333,0,-33,294.333"
+            Click="btnAddLineStation_Click"/>
+        <Grid 
+            x:Name="gridAddStation"
+            Grid.Column="1" Grid.Row="3" Margin="4.333,52,-115,190.667"
+            Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="The new station number:"  Grid.Column="0" Grid.Row="0" FontSize="13"/>
+            <TextBlock Text="Select previous station and click" Grid.Column="0" Grid.Row="1" Margin="0,5" FontSize="13"/>
+            <TextBox x:Name="tbNewStationNumber" Grid.Column="1" Grid.Row="0"/>
+            <Button 
+                x:Name="btnPreviousStation" Content="here" 
+                Grid.Column="1" Grid.Row="1" Width="50" Margin="0,5"
+                Click="btnPreviousStation_Click"/>
+        </Grid>
+        <Button 
+            x:Name="btnUpdete" Content="Update" Height="25" Visibility="Hidden"
+            Grid.Column="1" Grid.Row="3" Margin="83.333,140,-33,161"  
+            Click="btnUpdete_Click" RenderTransformOrigin="0.471,-0.493"/>
     </Grid>
 </Window>

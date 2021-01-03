@@ -71,9 +71,6 @@
       <DependentUpon>LineViewInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="PO\Bus.cs" />
-    <Compile Include="PO\Line.cs" />
-    <Compile Include="PO\LineStation.cs" />
-    <Compile Include="PO\Station.cs" />
     <Compile Include="StationListWin.xaml.cs">
       <DependentUpon>StationListWin.xaml</DependentUpon>
     </Compile>

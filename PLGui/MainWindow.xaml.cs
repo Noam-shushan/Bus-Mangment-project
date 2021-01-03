@@ -29,15 +29,15 @@ namespace PLGui
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
         {
-            new Management().Show();
             lbErrPassword.Content = lbErrUsername.Content = "";
-            _ = new BO.User();
+            tbPassword.BorderBrush = tbUsername.BorderBrush = Brushes.Black;
+           _ = new BO.User();
             BO.User user;
             try
             {
                 if (tbUsername.Text == string.Empty)
                 {
-                    lbErrUsername.Content = "most be filld";
+                    tbUsername.BorderBrush = Brushes.Red;
                     return;
                 }
                 user = myBL.GetUser(tbUsername.Text);
@@ -50,7 +50,7 @@ namespace PLGui
 
             if (tbPassword.Password == string.Empty)
             {
-                lbErrPassword.Content = "most be filld";
+                tbPassword.BorderBrush = Brushes.Red;
                 return;
             }
             if(tbPassword.Password != user.Password)

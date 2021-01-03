@@ -29,17 +29,18 @@ namespace PLGui
         private void btnApply_Click(object sender, RoutedEventArgs e)
         {
             errLabUesrname.Content = errLabPassword.Content = "";
+            tbPassword.BorderBrush = tbUsername.BorderBrush = Brushes.Black;
             var newUser = new BO.User();
             try
             {
                 if(tbUsername.Text == string.Empty)
                 {
-                    errLabUesrname.Content = "most be filld";
+                    tbUsername.BorderBrush = Brushes.Red;
                     return;
                 }
                 if (tbPassword.Password == string.Empty)
                 {
-                    errLabPassword.Content = "most be filld";
+                    tbPassword.BorderBrush = Brushes.Red;
                     return;
                 }
 

@@ -64,4 +64,20 @@ namespace BO
         public override string ToString() =>
             base.ToString() + $", bad Line Station: {_stationCode}, {_lineId}";
     }
+
+    public class BadAdjacentStationsException : Exception
+    {
+        int _station1;
+        int _station2;
+
+        public BadAdjacentStationsException(int station1, int station2, string message)
+            : base(message)
+        {
+            _station1 = station1;
+            _station2 = station2;
+        }
+
+        public override string ToString() =>
+            base.ToString() + $", bad adjacent stations: {_station1}, {_station2}";
+    }
 }

@@ -13,7 +13,7 @@ namespace BlApi
         IEnumerable<BO.User> GetAllUsers();
         IEnumerable<BO.User> GetAllUsersBy(Predicate<BO.User> predicate);
         void AddUser(BO.User newUser);
-        void RemmoveUser(BO.User user);
+        void RemoveUser(BO.User user);
         void UpdateUser(BO.User user);
         #endregion
 
@@ -23,29 +23,36 @@ namespace BlApi
         BO.Bus GetBus(int licenseNum);
         void AddBus(BO.Bus bus);
         void UpdateBus(BO.Bus bus);
-        void RemmoveBus(BO.Bus bus);
+        void RemoveBus(BO.Bus bus);
         #endregion
 
         #region Line
         IEnumerable<BO.Line> GetAllLines();
         IEnumerable<BO.Line> GetAllLinesBy(Predicate<BO.Line> predicate);
+        IEnumerable<BO.Line> GetAllLinePassByStation(int stationCode);
         BO.Line GetLine(int lineId);
-        void AddLine(BO.Line newLine);
+        int AddLine(BO.Line newLine);
         void UpdateLine(BO.Line line);
-        void RemmoveLine(BO.Line line);
+        void RemoveLine(BO.Line line);
         #endregion
 
         #region Station
         IEnumerable<BO.Station> GetAllStations();
         IEnumerable<BO.Station> GetAllStationsBy(Predicate<BO.Station> predicate);
+        IEnumerable<BO.LineStation> GetAllLineStationsByLineID(int lineId);
         BO.Station GetStation(int code);
         void AddStation(BO.Station newStation);
         void UpdateStation(BO.Station station);
-        void RemmoveStation(BO.Station station);
+        void RemoveStation(BO.Station station);
         #endregion
 
-        IEnumerable<BO.LineStation> GetAllLineStationsByLineID(int lineId);
-        IEnumerable<BO.Line> GetAllLinePassByStation(int stationCode);
+        void AddLineStation(BO.LineStation newLineStation);
+
+        #region AdjacentStations
+        IEnumerable<BO.AdjacentStations> GetAdjacentStations(int stationCode);
+        void UpdateAdjacentStations(BO.AdjacentStations adjacentStations);
+        void AddAdjacentStations(BO.AdjacentStations adjacentStations);
+        #endregion
 
     }
 }

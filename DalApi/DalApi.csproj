@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DO\Counters.cs" />
     <Compile Include="DalFactory.cs" />
     <Compile Include="DLConfig.cs" />
     <Compile Include="DO\Bus.cs" />

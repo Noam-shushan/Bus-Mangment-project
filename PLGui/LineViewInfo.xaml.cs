@@ -21,19 +21,128 @@ namespace PLGui
     /// </summary>
     public partial class LineViewInfo : Window
     {
-        ObservableCollection<PO.LineStation> myLineStationsList = new ObservableCollection<PO.LineStation>();
+        BlApi.IBL myBL = BlApi.BlFactory.GetBL();
+        ObservableCollection<BO.LineStation> myLineStationsList = new ObservableCollection<BO.LineStation>();
+        BO.LineStation newLineStation; 
 
-        public LineViewInfo(PO.Line line)
+        public LineViewInfo(BO.Line line)
         {
             InitializeComponent();
+            try
+            {
+                if (line == null)
+                    return;
+                line = myBL.GetLine(line.Id);
+            }
+            catch (BO.BadLineException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             textBlockLineInfo.Text = $"Line number: {line.Code}";
             textBlockArea.Text = $"Area: {line.Area.ToString().ToLower()}";
             foreach(var ls in line.LineStations)
             {
-                myLineStationsList.Add(ls.CopyPropertiesToNew(typeof(PO.LineStation)) as PO.LineStation);
+                myLineStationsList.Add(ls);
             }
-            
-            lbLineStations.ItemsSource = myLineStationsList;
+
+            newLineStation = new BO.LineStation()
+            {
+                LineId = line.Id,
+                LineStationIndex = -1,
+                IsDeleted = false,
+                NextStation = -1,
+                PrevStation = -1,
+                Station = -1
+            };
+            lvLineStations.ItemsSource = myLineStationsList;
+        }
+
+        private void lvLineStations_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var stationLine = lvLineStations.SelectedItem as BO.LineStation;
+            if (stationLine == null)
+                return;
+            var station = myBL.GetStation(stationLine.Station);
+            new StationViewInfo(station).Show();
+        }
+
+        private void btnUpdete_Click(object sender, RoutedEventArgs e)
+        {
+            if(tbNewStationNumber.Text == string.Empty)
+            {
+                tbNewStationNumber.BorderBrush = Brushes.Red;
+                return;
+            }
+            try
+            {
+                newLineStation.Station = int.Parse(tbNewStationNumber.Text);
+                int lineCode = myBL.GetLine(newLineStation.LineId).Code;
+                myBL.AddLineStation(newLineStation);
+                myBL.AddAdjacentStations(new BO.AdjacentStations()
+                {
+                    Station1 = newLineStation.Station,
+                    Station2 = newLineStation.NextStation,
+                    IsDeleted = false,
+                    LineCode = lineCode,
+                });
+                myBL.AddAdjacentStations(new BO.AdjacentStations()
+                {
+                    Station1 = newLineStation.PrevStation,
+                    Station2 = newLineStation.Station,
+                    IsDeleted = false,
+                    LineCode = lineCode,
+                });
+                myLineStationsList.Clear();
+                foreach (var s in myBL.GetLine(newLineStation.LineId).LineStations)
+                    myLineStationsList.Add(s);
+            }
+            catch (BO.BadLineStationException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch(BO.BadAdjacentStationsException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            clearGridAddSation();
+        }
+
+        private void clearGridAddSation()
+        {
+            tbNewStationNumber.Text = "";
+            tbNewStationNumber.BorderBrush = Brushes.Black;
+            gridAddStation.Visibility = Visibility.Hidden;
+            btnUpdete.Visibility = Visibility.Hidden;
+            newLineStation.LineStationIndex = -1;
+            newLineStation.NextStation = -1;
+            newLineStation.PrevStation = -1;
+            newLineStation.Station = -1;
+        }
+
+        private void btnAddLineStation_Click(object sender, RoutedEventArgs e)
+        {
+            gridAddStation.Visibility = Visibility.Visible;
+            btnUpdete.Visibility = Visibility.Visible;
+        }
+
+        private void btnPreviousStation_Click(object sender, RoutedEventArgs e)
+        {
+            var prev = lvLineStations.SelectedItem as BO.LineStation;
+            if(prev == null)
+            {
+                MessageBox.Show("Please select a previous station", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            newLineStation.PrevStation = prev.Station;
+            newLineStation.NextStation = prev.NextStation;
         }
     }
 }

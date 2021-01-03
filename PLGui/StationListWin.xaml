@@ -40,8 +40,7 @@
             Width="350"
             Height="350"
             HorizontalAlignment="Left"
-            MouseDoubleClick="lvStationList_MouseDoubleClick"
-            SelectionChanged="lvStationList_SelectionChanged">
+            MouseDoubleClick="lvStationList_MouseDoubleClick">
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
@@ -68,15 +67,15 @@
             x:Name="btnAddStation" 
             Content="Add new Station"
             Grid.Column="1" Grid.Row="2"
-            Margin="15,10"
+            Margin="15,10,0,0"
             VerticalAlignment="Bottom"
             Height="35" Width="100"
             Click="btnAddStation_Click"/>
-        
+
         <Grid        
-            x:Name="gridAddNew" Visibility="Hidden" 
+            x:Name="gridAddNew"  
             Grid.Column="1" Grid.Row="3"
-            Grid.RowSpan="4">
+            Grid.RowSpan="4" Visibility="Hidden">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
@@ -103,5 +102,10 @@
                 Width="60"
                 Click="btnAdd_Click"/>
         </Grid>
+        <Button 
+            x:Name="btnRemove" Content="Remove Station" 
+            Grid.Column="1" Margin="15,0,0,0" 
+            Grid.Row="2" Width="100" Height="30"
+            Click="btnRemove_Click"/>
     </Grid>
 </Window>

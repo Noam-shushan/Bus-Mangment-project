@@ -23,8 +23,8 @@ namespace PLGui
     {
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
         ObservableCollection<PO.Bus> myBusList = new ObservableCollection<PO.Bus>();
-        ObservableCollection<PO.Line> myLineList = new ObservableCollection<PO.Line>();
-        ObservableCollection<PO.Station> myStationList = new ObservableCollection<PO.Station>();
+        ObservableCollection<BO.Line> myLineList = new ObservableCollection<BO.Line>();
+        ObservableCollection<BO.Station> myStationList = new ObservableCollection<BO.Station>();
 
         public Management()
         {
@@ -41,16 +41,14 @@ namespace PLGui
 
             foreach(var line in myBL.GetAllLines())
             {
-                var linePo = line.CopyPropertiesToNew(typeof(PO.Line)) as PO.Line;
-                linePo.LineStations = myBL.GetAllLineStationsByLineID(line.Id);
-                myLineList.Add(linePo);
+                myLineList.Add(line);
             }
             cbLinse.ItemsSource = myLineList;
-            cbLinse.DisplayMemberPath = "Id";
+            cbLinse.DisplayMemberPath = "Code";
 
             foreach(var station in myBL.GetAllStations())
             {
-                myStationList.Add(station.CopyPropertiesToNew(typeof(PO.Station)) as PO.Station);
+                myStationList.Add(station);
             }
             cbStations.ItemsSource = myStationList;
             cbStations.DisplayMemberPath = "Code";
@@ -79,13 +77,14 @@ namespace PLGui
 
         private void cbLinse_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var line = cbLinse.SelectedItem as PO.Line;
+            var line = cbLinse.SelectedItem as BO.Line;
             new LineViewInfo(line).Show();
         }
 
         private void cbStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            var station = cbStations.SelectedItem as BO.Station;
+            new StationViewInfo(station).Show();
         }
     }
 }

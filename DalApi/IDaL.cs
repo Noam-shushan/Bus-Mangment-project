@@ -14,16 +14,16 @@ namespace DalApi
         DO.Bus GetBus(int licenseNum);
         void AddBus(DO.Bus bus);
         void UpdateBus(DO.Bus bus);
-        void RemmoveBus(DO.Bus bus);
+        void RemoveBus(DO.Bus bus);
         #endregion
 
         #region Line
         IEnumerable<DO.Line> GetAllLines();
         IEnumerable<DO.Line> GetAllLinesBy(Predicate<DO.Line> predicate);
         DO.Line GetLine(int lineId);
-        void AddLine(DO.Line newLine);
+        int AddLine(DO.Line newLine);
         void UpdateLine(DO.Line line);
-        void RemmoveLine(DO.Line line);
+        void RemoveLine(DO.Line line);
         #endregion
 
         #region Station
@@ -32,7 +32,7 @@ namespace DalApi
         DO.Station GetStation(int code);
         void AddStation(DO.Station newStation);
         void UpdateStation(DO.Station station);
-        void RemmoveStation(DO.Station station);
+        void RemoveStation(DO.Station station);
         #endregion
 
         #region LineStation
@@ -41,7 +41,7 @@ namespace DalApi
         DO.LineStation GetLineStation(int stationCode, int lineId);
         void AddLineStation(DO.LineStation lineStation);
         void UpdateLineStation(DO.LineStation lineStation);
-        void RemmoveLineStation(DO.LineStation lineStation);
+        void RemoveLineStation(DO.LineStation lineStation);
         #endregion
 
         #region User
@@ -50,14 +50,15 @@ namespace DalApi
         DO.User GetUser(string userName);
         void AddUser(DO.User newUser);
         void UpdateUser(DO.User userName);
-        void RemmoveUser(DO.User user);
+        void RemoveUser(DO.User user);
         #endregion
 
         #region AdjacentStations
-        //IEnumerable<DO.AdjacentStations> GetAllAdjacentStations();
-        //IEnumerable<DO.AdjacentStations> GetAllAdjacentStationsBy(Predicate<DO.AdjacentStations> predicate);
-        //void AddAdjacentStations(DO.AdjacentStations adjacentStations);
-        //void UpdateAdjacentStations(DO.AdjacentStations adjacentStations);
+        IEnumerable<DO.AdjacentStations> GetAllAdjacentStations();
+        IEnumerable<DO.AdjacentStations> GetAllAdjacentStationsBy(Predicate<DO.AdjacentStations> predicate);
+        void AddAdjacentStations(DO.AdjacentStations adjacentStations);
+        void RemoveAdjacentStations(DO.AdjacentStations adjacentStations);
+        void UpdateAdjacentStations(DO.AdjacentStations adjacentStations);
         #endregion
     }
 }

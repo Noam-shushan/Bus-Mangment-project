@@ -17,5 +17,6 @@ namespace DO
         public int PrevStation { get; set; }
         public int NextStation { get; set; }
         public bool IsDeleted { get; set; }
+        public string Name { get; set; }
     }
 }

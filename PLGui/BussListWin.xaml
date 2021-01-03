@@ -7,49 +7,73 @@
         mc:Ignorable="d"
         Title="Buss" Height="450" Width="800">
     <Grid>
-        <TextBlock Text="Buss" Margin="20,0"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Buss" Margin="20,0,20,5" FontSize="18"
+                   Grid.Row="0" Grid.Column="0"/>
         <ListView 
             x:Name="lvBusList"
             ItemsSource="{Binding}"
             SelectionChanged="lvBusList_SelectionChanged"
             MouseDoubleClick="lvBusList_MouseDoubleClick"
-            Margin="20">
+            Margin="20"  Width="640" Height="350"
+            Grid.Column="0" Grid.Row="1" Grid.RowSpan="4">
             <ListView.View >
                 <GridView>
                     <GridView.Columns>
-                        <GridViewColumn Header="Service">
+                        <GridViewColumn Header="Service" Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button x:Name="btnTreatment"
-                                            Content="Treatment"
-                                            IsEnabled="{Binding Path=IsReady}"
-                                            Click="btnTreatment_Click"/>
+                                    <Button 
+                                        x:Name="btnTreatment"
+                                        Content="Treatment"
+                                        IsEnabled="{Binding Path=IsReady}"
+                                        Click="btnTreatment_Click"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn>
+                        <GridViewColumn Width="60">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button x:Name="btnRefueling"
+                                    <Button 
+                                        x:Name="btnRefueling"
                                             Content="Refueling"
                                             IsEnabled="{Binding Path=IsReady}"
                                             Click="btnRefueling_Click"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=LicenseNumber}"
-                                        Header="License Number">
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=LicenseNumber}"
+                            Header="License Number" Width="100">
                         </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=TotalTrip}"
-                                        Header="Kilometers">
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=TotalTrip}"
+                            Header="Kilometers" Width="90">
                         </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=FromDate}"
-                                        Header="Start activity">
+                        <GridViewColumn 
+                            DisplayMemberBinding="{Binding Path=FromDateAsDate}"
+                            Header="Start activity" Width="100">
                         </GridViewColumn>
-                        <GridViewColumn DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}"
-                                            Header="Kilometers since last treatment">
-                        </GridViewColumn>
-                        <GridViewColumn>
+                        <GridViewColumn 
+                            Width="130"
+                            DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}">
+                            <GridViewColumn.Header>
+                                <TextBlock><Run Text="Kilometers since"/>
+                                    <LineBreak/><Run Text="last treatment"/>
+                                </TextBlock>
+                            </GridViewColumn.Header>
+                        </GridViewColumn > 
+                        <GridViewColumn Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <ProgressBar x:Name="pbServiceProgres"/>

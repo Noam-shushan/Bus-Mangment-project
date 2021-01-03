@@ -42,7 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuxiliaryFunctions.cs" />
+    <Compile Include="Counters.cs" />
     <Compile Include="DataSource.cs" />
+    <Compile Include="InitializStations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomValues.cs" />
   </ItemGroup>
