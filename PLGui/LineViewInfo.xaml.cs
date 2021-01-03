@@ -76,7 +76,13 @@ namespace PLGui
             }
             try
             {
-                newLineStation.Station = int.Parse(tbNewStationNumber.Text);
+                int stationCode;
+                if(!int.TryParse(tbNewStationNumber.Text, out stationCode))
+                {
+                    MessageBox.Show("Erorr: not valid station number", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                newLineStation.Station = stationCode;
                 int lineCode = myBL.GetLine(newLineStation.LineId).Code;
                 myBL.AddLineStation(newLineStation);
                 myBL.AddAdjacentStations(new BO.AdjacentStations()
@@ -93,9 +99,7 @@ namespace PLGui
                     IsDeleted = false,
                     LineCode = lineCode,
                 });
-                myLineStationsList.Clear();
-                foreach (var s in myBL.GetLine(newLineStation.LineId).LineStations)
-                    myLineStationsList.Add(s);
+                refreshMyList();
             }
             catch (BO.BadLineStationException ex)
             {
@@ -107,7 +111,7 @@ namespace PLGui
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            catch (FormatException ex)
+            catch(BO.BadLineException ex)
             {
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -143,6 +147,38 @@ namespace PLGui
             }
             newLineStation.PrevStation = prev.Station;
             newLineStation.NextStation = prev.NextStation;
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            var stationToRem = lvLineStations.SelectedItem as BO.LineStation;
+            if (stationToRem == null)
+            {
+                MessageBox.Show("Please select station to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            try
+            {
+                myBL.RemoveLineStation(stationToRem);
+                refreshMyList();
+            }
+            catch(BO.BadLineException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch (BO.BadLineStationException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void refreshMyList()
+        {
+            myLineStationsList.Clear();
+            foreach (var s in myBL.GetLine(newLineStation.LineId).LineStations)
+                myLineStationsList.Add(s);
         }
     }
 }

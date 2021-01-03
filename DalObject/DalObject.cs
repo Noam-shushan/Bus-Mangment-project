@@ -270,9 +270,20 @@ namespace Dal
                 DS.DataSource.LineStationsList.Find(s => s.Station == lineStation.Station
                     && s.LineId == lineStation.LineId);
 
-            if (ls != null && !ls.IsDeleted)
-                ls.IsDeleted = true;
-            else
+            if (ls != null)
+            {
+                if (!ls.IsDeleted)
+                {
+                    foreach(var lineS in GetAllLineStationBy(s => s.LineId == ls.LineId 
+                    && s.LineStationIndex > ls.LineStationIndex))
+                    {
+                        lineS.LineStationIndex -= 1;
+                        UpdateLineStation(lineS);
+                    }
+                    ls.IsDeleted = true;
+                }     
+            }
+            else  
                 throw new DO.BadLineStationException(lineStation.Station,
                                                 lineStation.LineId, "Station line not found");
         }

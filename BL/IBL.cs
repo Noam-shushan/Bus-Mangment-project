@@ -46,7 +46,10 @@ namespace BlApi
         void RemoveStation(BO.Station station);
         #endregion
 
+        #region LineStation
         void AddLineStation(BO.LineStation newLineStation);
+        void RemoveLineStation(BO.LineStation station); 
+        #endregion
 
         #region AdjacentStations
         IEnumerable<BO.AdjacentStations> GetAdjacentStations(int stationCode);

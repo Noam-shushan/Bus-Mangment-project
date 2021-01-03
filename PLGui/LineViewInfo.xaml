@@ -63,12 +63,12 @@
 
         <Button 
             x:Name="btnAddLineStation" Content="Add new Line Station"
-            Grid.Column="1" Grid.Row="3" Margin="63.333,0,-33,294.333"
+            Grid.Column="1" Grid.Row="3" Margin="65,57,-35,237"
             Click="btnAddLineStation_Click"/>
         <Grid 
             x:Name="gridAddStation"
-            Grid.Column="1" Grid.Row="3" Margin="4.333,52,-115,190.667"
-            Visibility="Hidden">
+            Grid.Column="1" Grid.Row="3" Margin="4,91,-115,151"
+       >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
@@ -85,10 +85,15 @@
                 x:Name="btnPreviousStation" Content="here" 
                 Grid.Column="1" Grid.Row="1" Width="50" Margin="0,5"
                 Click="btnPreviousStation_Click"/>
+            <Button 
+            x:Name="btnUpdete" Content="Update" Height="25"
+            Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" 
+            Click="btnUpdete_Click"/>
         </Grid>
         <Button 
-            x:Name="btnUpdete" Content="Update" Height="25" Visibility="Hidden"
-            Grid.Column="1" Grid.Row="3" Margin="83.333,140,-33,161"  
-            Click="btnUpdete_Click" RenderTransformOrigin="0.471,-0.493"/>
+            Content="Remove line station" x:Name="btnRemove"
+            Grid.Column="1" Grid.Row="3" Height="25" Width="120" Margin="65,27,-30,271" 
+            Click="btnRemove_Click"/>
+
     </Grid>
 </Window>

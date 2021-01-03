@@ -179,6 +179,19 @@ namespace BL
                     ex.Message);
             }
         }
+
+        public void RemoveLineStation(BO.LineStation station)
+        {
+            try
+            {
+                var lineStationDo = station.CopyPropertiesToNew(typeof(DO.LineStation)) as DO.LineStation;
+                dl.RemoveLineStation(lineStationDo);
+            }
+            catch (DO.BadLineStationException ex)
+            {
+                throw new BO.BadLineStationException(station.Station, station.LineId, ex.Message);
+            }
+        }
         #endregion
 
         #region Line
