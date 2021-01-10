@@ -14,5 +14,21 @@ namespace BO
         public double Distance { get; set; }
         public TimeSpan Time { get; set; }
         public bool IsDeleted { get; set; }
+        public string DistanceFormat
+        {
+            get
+            {
+                if (Distance > 1000)
+                    return  String.Format("{0:0.0}", Distance / 1000) + " ק\"מ ";
+                return String.Format("{0:0.0}", Distance) + " מ' ";
+            }
+        }
+        public string TimeFormat
+        {
+            get
+            {
+                return Time.ToString(@"hh\:mm"); ;
+            }
+        }
     }
 }

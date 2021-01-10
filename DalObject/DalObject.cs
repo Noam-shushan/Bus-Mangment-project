@@ -20,7 +20,7 @@ namespace Dal
                 && !bus.IsDeleted)
                 throw new DO.BadBusException(bus.LicenseNum, "Duplicate License number of bus");
             else
-                DS.DataSource.BussList.Add(bus);
+                DS.DataSource.BussList.Add(bus.Clone());
         }
 
         public IEnumerable<DO.Bus> GetAllBuss()
@@ -62,7 +62,10 @@ namespace Dal
             var busToUp = DS.DataSource.BussList.Find(b => b.LicenseNum == bus.LicenseNum);
 
             if (busToUp != null && !bus.IsDeleted)
-                busToUp = bus.Clone();
+            {
+                DS.DataSource.BussList.Remove(busToUp);
+                DS.DataSource.BussList.Add(bus);
+            }
             else
                 throw new DO.BadBusException(bus.LicenseNum, "bus not found");
         }
@@ -105,7 +108,7 @@ namespace Dal
             var lineToUp = DS.DataSource.LinesList.Find(l => l.Id == line.Id);
 
             if (lineToUp != null && !lineToUp.IsDeleted)
-                lineToUp = line.Clone();
+                lineToUp = line;
             else
                 throw new DO.BadLineException(line.Id, "Line not found");
         }
@@ -162,7 +165,10 @@ namespace Dal
             var stationToUp = DS.DataSource.StationsList.Find(s => s.Code == station.Code);
 
             if (stationToUp != null && !stationToUp.IsDeleted)
-                stationToUp = station.Clone();
+            {
+                DS.DataSource.StationsList.Remove(stationToUp);
+                DS.DataSource.StationsList.Add(station);
+            }
             else
                 throw new DO.BadStationException(station.Code, "Station not found");
         }
@@ -222,19 +228,21 @@ namespace Dal
 
             var station = DS.DataSource.StationsList.Find(s => s.Code == lineStation.Station);
             if(station == null)
-            {
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Station '{lineStation.Station}' does not exist");
-            }
+            if(station.IsDeleted)
+                throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
+                    $"Station '{lineStation.Station}' does not exist");
 
             var line = DS.DataSource.LinesList.Find(l => l.Id == lineStation.LineId);
             if(line == null)
-            {
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Line '{lineStation.LineId}' does not exist");
-            }
+            if(line.IsDeleted)
+                throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
+                    $"Line '{lineStation.LineId}' does not exist");
 
-            foreach(var s in GetAllLineStationBy(s => s.LineId == line.Id))
+            foreach (var s in GetAllLineStationBy(s => s.LineId == line.Id))
             {
                 if(lineStation.PrevStation == s.Station)
                 {
@@ -258,7 +266,7 @@ namespace Dal
                 && s.LineId == lineStation.LineId);
 
             if (ls != null && !ls.IsDeleted)
-                ls = lineStation.Clone();
+                ls = lineStation;
             else
                 throw new DO.BadLineStationException(lineStation.Station,
                                                 lineStation.LineId, "Station line not found");
@@ -327,7 +335,7 @@ namespace Dal
             var findUser = DS.DataSource.UsersList.Find(u => u.UserName == user.UserName);
 
             if (findUser != null && !findUser.IsDeleted)
-                findUser = user.Clone();
+                findUser = user;
             else
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
         }
@@ -358,22 +366,29 @@ namespace Dal
                    select adst.Clone();
         }
 
+        public DO.AdjacentStations GetAdjacentStations(int station1, int station2)
+        {
+            var adst = DS.DataSource.AdjacentStationsList.Find(s =>
+                                        s.Station1 == station1 && s.Station2 == station2);
+            if (adst != null && !adst.IsDeleted)
+            {
+                return adst.Clone();
+            }
+                
+            throw new DO.BadAdjacentStationsException(station1, station2,
+                    "Adjacent stations not found");
+        }
+
         public void AddAdjacentStations(DO.AdjacentStations adjacentStations)
         {
             var adst = DS.DataSource.AdjacentStationsList.Find(s =>
             s.Station1 == adjacentStations.Station1 && s.Station2 == adjacentStations.Station2);
             if(adst != null) 
             {
-                if(adst.IsDeleted)
-                    throw new DO.BadAdjacentStationsException(adst.Station1, adst.Station2,
-                        "Duplicate adjacent stations");
+                if (!adst.IsDeleted)
+                    throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2,
+                       "Duplicate adjacent stations");
             }
-
-            var s1 = GetStation(adjacentStations.Station1);
-            var s2 = GetStation(adjacentStations.Station2);
-            adjacentStations.Distance = DS.AuxiliaryFunctions.GetDisteance(s1.Latitude, s1.Longitude,
-                s2.Latitude, s2.Longitude);
-            adjacentStations.Time = DS.AuxiliaryFunctions.GetTimeBetweenStations(adjacentStations.Distance);
             DS.DataSource.AdjacentStationsList.Add(adjacentStations);
         }
 
@@ -397,7 +412,10 @@ namespace Dal
                 && s.Station2 == adjacentStations.Station2);
 
             if (adst != null && !adst.IsDeleted)
-                adst = adjacentStations;
+            {
+                DS.DataSource.AdjacentStationsList.Remove(adst);
+                DS.DataSource.AdjacentStationsList.Add(adjacentStations.Clone());
+            }
             else
                 throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2
                     , "Adjacent Stations not found");

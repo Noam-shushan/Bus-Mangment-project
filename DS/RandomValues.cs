@@ -72,14 +72,14 @@ namespace DS
             return getUniqueLicenseNumber(100000000);
         }
 
-        internal static double getKilometers()
+        internal static double getKilometers(int min = 2000, int max = 100000)
         {
-            return random.Next(2000, 100000);
+            return random.Next(min, max);
         }
 
         internal static double getFuelLiters()
         {
-            return random.Next(500);
+            return random.Next(DO.Bus.FULL_CONTAINER);
         }
     }
 }

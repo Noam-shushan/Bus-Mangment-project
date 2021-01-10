@@ -24,6 +24,7 @@ namespace PLGui
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
         ObservableCollection<BO.Line> myLineList = new ObservableCollection<BO.Line>();
         ObservableCollection<BO.AdjacentStations> myAdjacentStationsList = new ObservableCollection<BO.AdjacentStations>();
+        BO.Station _currStation;
 
         public StationViewInfo(BO.Station station)
         {
@@ -32,21 +33,21 @@ namespace PLGui
             {
                 if (station == null)
                     return;
-                station = myBL.GetStation(station.Code);
+                _currStation = myBL.GetStation(station.Code);
             }
             catch (BO.BadStationException ex)
             {
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            textBoxStationInfo.Text = station.ToString();
-            foreach (var line in station.LinesPassBy)
+            textBoxStationInfo.Text = _currStation.ToString();
+            foreach (var line in _currStation.LinesPassBy)
             {
                 myLineList.Add(line);
             }
             lvLinesPassBy.ItemsSource = myLineList;
 
-            foreach (var adst in station.MyAdjacentStations)
+            foreach (var adst in _currStation.MyAdjacentStations)
             {
                 myAdjacentStationsList.Add(adst);
             }
@@ -59,7 +60,7 @@ namespace PLGui
             new LineViewInfo(line).Show();
         }
 
-        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        private void btnUpdateTimeAndDist_Click(object sender, RoutedEventArgs e)
         {
             if (isEmptyBoxs())
                 return;
@@ -90,6 +91,8 @@ namespace PLGui
             }
 
             gridUpdate.Visibility = Visibility.Hidden;
+            tbUpdateDistanc.BorderBrush = tbUpdateTime.BorderBrush = Brushes.Black;
+            tbUpdateTime.Text = "00:00:00";
         }
 
         private void lvAdjacentStationsList_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -102,8 +105,6 @@ namespace PLGui
                 return;
             }
             textBlockUpdate.Text = $"Update distance and time\nfrom station {station.Station2}";
-            tbUpdateDistanc.BorderBrush = tbUpdateTime.BorderBrush = Brushes.Black;
-            tbUpdateDistanc.Text = tbUpdateTime.Text = string.Empty;
         }
 
         bool isEmptyBoxs()
@@ -122,13 +123,58 @@ namespace PLGui
             return isEmptyBox;
         }
 
-        private void tbUpdateTime_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            TextBox txtBox = sender as TextBox;
-            if (txtBox.Text == "hh:mm:ss")
+            if (tbNewName.Text != string.Empty)
             {
-                txtBox.Text = string.Empty;
+                _currStation.Name = tbNewName.Text;
             }
+            double lat, lon;
+            if(validLatLon(out lat, out lon))
+            {
+                _currStation.Latitude = lat;
+                _currStation.Longitude = lon;
+            }
+            try
+            {
+                myBL.UpdateStation(_currStation);
+                refreshMe(_currStation.Code);
+                Management mywin = null;
+                foreach (var win in Application.Current.Windows)
+                {
+                    if (win.GetType().Name == "Management")
+                        mywin = win as Management;
+                }
+                if (mywin != null)
+                    mywin.refreshMyStationList();
+            }
+            catch(BO.BadStationException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            spUpdate.Visibility = Visibility.Hidden;
+        }
+
+        private void btnUpdateStation_Click(object sender, RoutedEventArgs e)
+        {
+            spUpdate.Visibility = Visibility.Visible;
+        }
+
+        bool validLatLon(out double lat, out double lon)
+        {
+            bool valid = true;
+            if (!double.TryParse(tbLatitude.Text, out lat))
+                valid = false;
+            if (!double.TryParse(tbLongitude.Text, out lon))
+                valid = false;
+            return valid;
+        }
+
+        void refreshMe(int code)
+        {
+            _currStation = myBL.GetStation(code);
+            textBoxStationInfo.Text = _currStation.ToString();
         }
     }
 }

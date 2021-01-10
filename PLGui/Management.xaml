@@ -5,13 +5,79 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
-        FontFamily="Consolas"
-        Title="Management" Height="400" Width="600">
+        FontFamily="Consolas" Background="WhiteSmoke"
+        Icon="yellow bus icon.png"
+        Title="Management" Height="550" Width="780">
     <Window.Resources>
-        <Style TargetType="Button">
+        <Color x:Key="ControlNormalColor">DarkSeaGreen</Color>
+        <Color x:Key="ControlMouseOverColor">#FFAFA3B9</Color>
+        <Color x:Key="DisabledControlColor">#FFF2F2F2</Color>
+        <Color x:Key="DisabledForegroundColor">#FFBFBFBF</Color>
+        <Color x:Key="ControlPressedColor">#FF211AA9</Color>
+        <Style TargetType="{x:Type Button}" x:Key="curdBtnStyle">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="MinHeight" Value="29px"/>
+            <Setter Property="MinWidth"  Value="103px"/>
+            <Setter Property="Foreground" Value="#FFFFFFFF"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border">
+                            <Border.Background>
+                                <SolidColorBrush  Color="{DynamicResource ControlNormalColor}" />
+                            </Border.Background>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualStateGroup.Transitions>
+                                        <VisualTransition GeneratedDuration="0:0:0.5" />
+                                        <VisualTransition GeneratedDuration="0" To="Pressed" />
+                                    </VisualStateGroup.Transitions>
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
+                                                Storyboard.TargetName="Border">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource ControlMouseOverColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
+                                                Storyboard.TargetName="Border">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource ControlPressedColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
+                                                Storyboard.TargetName="Border">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledControlColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                                Storyboard.TargetName="Border">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledForegroundColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter Margin="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="headLinsBtn">
             <Setter Property="Height" Value="35"/>
-            <Setter Property="Width" Value="70"/>
-            <Setter Property="Margin" Value="60,20,60,5"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Margin" Value="10,10,10,5"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="18"/>
@@ -22,47 +88,414 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="40,0,40,20"/>
-            <Setter Property="Width" Value="120"/>
+        <Style x:Key="alternatingListViewItemStyle" TargetType="{x:Type ListViewItem}">
             <Setter Property="Height" Value="30"/>
+            <Style.Triggers>
+                <!-- setting up triggers for alternate background colors -->
+                <Trigger Property="IsSelected" Value="true" >
+                    <Setter Property="Background" Value="Plum" />
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="Gainsboro"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="2">
+                    <Setter Property="Background" Value="White"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="columnHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
+                        <Border BorderThickness="0,0,0,1" BorderBrush="Black" Background="Transparent">
+                            <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="5,5,5,0" Width="{TemplateBinding Width}" TextAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5, 2"/>
+            <Setter Property="Width" Value="120"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5, 2"/>
+            <Setter Property="Width" Value="120"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="5,0,0,0"/>
+        </Style>
+        <Style x:Key="busServiceStyle" TargetType="Button">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="Lavender"/>
+            <Setter Property="Background" Value="SteelBlue"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
     <Grid>
-        <StackPanel>
-            <TextBlock Text="Managment"
-                       FontSize="35"
-                       HorizontalAlignment="Center"
-                       Margin="10"
-                       />
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="btnBuss"
-                        Content="Buss"
-                        Click="btnBuss_Click"
-                        />
-                <Button x:Name="btnLines"
-                        Content="Lines"
-                        Click="btnLines_Click"
-                        />
-                <Button x:Name="btnStations"
-                        Content="Stations"
-                        Click="btnStations_Click"
-                        />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock 
+            Text="Managment"
+            FontSize="35" Grid.ColumnSpan="2"
+            Grid.Row="0" Grid.Column="1" Margin="189,10,274.333,9.667" Width="180" />
+
+        <!--#region Main Grig -->
+        <Grid  Grid.Column="0" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button 
+                x:Name="btnBuss" Grid.Column="0" Grid.Row="0"
+                Content="Buss"
+                Click="btnBuss_Click"
+                Style="{StaticResource headLinsBtn}"/>
+            <Button 
+                x:Name="btnLines" Grid.Column="0" Grid.Row="1"
+                Content="Lines"
+                Click="btnLines_Click"
+                Style="{StaticResource headLinsBtn}"/>
+            <Button 
+                x:Name="btnStations" Grid.Column="0" Grid.Row="2"
+                Content="Stations"
+                Click="btnStations_Click"
+                Style="{StaticResource headLinsBtn}"/>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Lines -->
+        <Grid 
+            x:Name="gridLines" Visibility="Collapsed" 
+            Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListView 
+                x:Name="lvLineList"
+                ItemsSource="{Binding}"
+                Grid.Column="0" Grid.Row="0"
+                Grid.RowSpan="2"
+                Width="400" Height="400"
+                HorizontalAlignment="Left"
+                MouseDoubleClick="lvLineList_MouseDoubleClick"
+                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
+                AlternationCount="2"
+                >
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                        <GridView.Columns>
+                            <GridViewColumn 
+                            Header="Line Number" Width="90" 
+                            DisplayMemberBinding="{Binding Path=Code}">
+                            </GridViewColumn>
+                            <GridViewColumn 
+                            Header="From" Width="155" 
+                            DisplayMemberBinding="{Binding Path=FirstStationName}">
+                            </GridViewColumn>
+                            <GridViewColumn
+                            Header="To" Width="155"
+                            DisplayMemberBinding="{Binding Path=LastStationName}"/>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Button 
+                x:Name="btnRemove" Content="Remove Line"
+                Grid.Column="1" Grid.Row="0"
+                VerticalAlignment="Top"
+                Grid.ColumnSpan="2" Margin="67,0,29.333,0"
+                Click="btnRemove_Click" Style="{StaticResource curdBtnStyle}"/>
+
+            <Button 
+                x:Name="btnAddNewLine" Content="Add Line"
+                Grid.Column="1" Grid.Row="0"
+                Margin="67,48,29.333,63.333" RenderTransformOrigin="0.439,-0.699" Grid.ColumnSpan="2"
+                Style="{StaticResource curdBtnStyle}"
+                VerticalAlignment="Center"
+                Click="btnAddNewLine_Click"/>
+            <Grid 
+                x:Name="gridAddNewLine" Visibility="Hidden"
+                Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" 
+                Margin="0,9.667,-0.333,95">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Line Number" Grid.Column="0" Grid.Row="0"/>
+                <TextBox x:Name="tbLineNumber" Grid.Column="1" Grid.Row="0"/>
+                <TextBlock Text="First Station" Grid.Column="0" Grid.Row="1"/>
+                <ComboBox 
+                    x:Name="cbFirstStation" 
+                    Grid.Column="1" Grid.Row="1"/>
+                <TextBlock Text="Last Station" Grid.Column="0" Grid.Row="2"/>
+                <ComboBox 
+                    x:Name="cbLastStation" Grid.Column="1" Grid.Row="2"/>
+                <Button 
+                    x:Name="btnAdd" Content="Add" 
+                    Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                    Width="40" Margin="0,5" Click="btnAdd_Click" Style="{StaticResource curdBtnStyle}"/>
+            </Grid>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Stations -->
+        <Grid 
+            x:Name="gridStations" Visibility="Collapsed"
+            Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListView 
+                x:Name="lvStationList"
+                ItemsSource="{Binding}"
+                Grid.Column="0" Grid.Row="0"
+                Grid.RowSpan="2"
+                Width="400" Height="400"
+                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
+                MouseDoubleClick="lvStationList_MouseDoubleClick"
+                AlternationCount="2"
+                >
+                <ListView.View>
+                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                        <GridView.Columns>
+                            <GridViewColumn 
+                                Header="Station Code" 
+                                DisplayMemberBinding="{Binding Path=Code}"
+                                Width="90">
+                            </GridViewColumn>
+                            <GridViewColumn 
+                                Header="Area" 
+                                DisplayMemberBinding="{Binding Path=Area}"
+                                Width="80">
+                            </GridViewColumn>
+                            <GridViewColumn 
+                                Header="Name" 
+                                DisplayMemberBinding="{Binding Path=Name}"
+                                Width="230">
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Button 
+                x:Name="btnRemoveStation" Content="Remove Station" 
+                Grid.Column="1" Grid.Row="0"
+                VerticalAlignment="Top"
+                Style="{StaticResource curdBtnStyle}"
+                Click="btnRemoveStation_Click" 
+                Grid.ColumnSpan="2" Margin="67,0,29.333,0"/>
+            <Button 
+                x:Name="btnAddStation" 
+                Content="Add Station"
+                Grid.Column="1" Grid.Row="0"
+                VerticalAlignment="Center"
+                Style="{StaticResource curdBtnStyle}"
+                Click="btnAddStation_Click" Margin="67,48,29.333,63.333" RenderTransformOrigin="0.439,-0.699" Grid.ColumnSpan="2"/>
+            <Grid        
+                x:Name="gridAddNewStation" Visibility="Hidden" 
+                Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,9.667,-0.333,95">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Code" Grid.Column="0" Grid.Row="0"/>
+                <TextBox x:Name="tbCode" Grid.Column="1" Grid.Row="0"/>
+                <TextBlock Text="Name" Grid.Column="0" Grid.Row="1"/>
+                <TextBox x:Name="tbName" Grid.Column="1" Grid.Row="1"/>
+                <TextBlock Text="Latitude" Grid.Column="0" Grid.Row="2"/>
+                <TextBox x:Name="tbLatitude" Grid.Column="1" Grid.Row="2"/>
+                <TextBlock Text="Longitude" Grid.Column="0" Grid.Row="3"/>
+                <TextBox x:Name="tbLongitude" Grid.Column="1" Grid.Row="3"/>
+                <Button 
+                    x:Name="btnAddStationExecution" Content="Add" 
+                    Grid.Column="0" Grid.Row="4" Width="10"
+                    Grid.ColumnSpan="2" Height="20" Style="{StaticResource curdBtnStyle}"
+                    Click="btnAddStationExecution_Click"/>
+            </Grid>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Buss -->
+        <Grid 
+            x:Name="gridBuss" Visibility="Hidden"
+            Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10"
+             >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListView 
+                x:Name="lvBusList"
+                ItemsSource="{Binding}"
+                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
+                AlternationCount="2"
+                MouseDoubleClick="lvBusList_MouseDoubleClick"
+                Margin="20,0,10,10"  Width="500" Height="350"
+                Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                <ListView.View >
+                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                        <GridView.Columns>
+                            <GridViewColumn  Header="License Number" Width="100">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock 
+                                            Text="{Binding Path= LicenseNumFormat}"
+                                            Foreground="{Binding Path=StatusColor}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn 
+                                DisplayMemberBinding="{Binding Path=TotalTrip}"
+                                Header="Kilometers" Width="90">
+                            </GridViewColumn>
+                            <GridViewColumn 
+                                DisplayMemberBinding="{Binding Path=FromDateAsDate}"
+                                Header="Start activity" Width="100">
+                            </GridViewColumn>
+                            <GridViewColumn 
+                                Header="km after treatment" Width="130"
+                                DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}">
+                            </GridViewColumn >
+                            <GridViewColumn Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ProgressBar x:Name="pbServiceProgres"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2">
+                <Button 
+                    x:Name="btnTreatment"
+                    Content="Treatment"
+                    Style="{StaticResource busServiceStyle}"
+                    Margin="20,0" 
+                    IsEnabled="{Binding Path=IsReady}"
+                    Click="btnTreatment_Click"/>
+                <Button 
+                    x:Name="btnRefueling"
+                    Content="Refueling"
+                    Style="{StaticResource busServiceStyle}"
+                    Margin="0,0,20,0"
+                    IsEnabled="{Binding Path=IsReady}"
+                    Click="btnRefueling_Click"/>
+                <Button 
+                    x:Name="btnRide"
+                    Margin="0,0,20,0"
+                    Content="Make trip" 
+                    Style="{StaticResource busServiceStyle}"
+                    IsEnabled="{Binding Path=IsReady}"
+                    Click="btnRide_Click"/>
+                <TextBox 
+                    x:Name="tbKilometr" 
+                    PreviewTextInput="numberValidationTextBox"
+                    KeyDown="tbKilometr_KeyDown"
+                    TextChanged="tbKilometr_TextChanged"
+                    Visibility="Hidden"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <ComboBox x:Name="cbBuss"
-                          ItemsSource="{Binding}"
-                          SelectionChanged="cbBuss_SelectionChanged"
-                          />
-                <ComboBox x:Name="cbLinse"
-                          ItemsSource="{Binding}"
-                          SelectionChanged="cbLinse_SelectionChanged"
-                          />
-                <ComboBox x:Name="cbStations"
-                          ItemsSource="{Binding}"
-                          SelectionChanged="cbStations_SelectionChanged"
-                          />
-            </StackPanel>
-        </StackPanel>
+            <Button 
+                x:Name="btnRemoveBus" Content="Remove Bus"
+                Grid.Column="1" Grid.Row="0"
+                VerticalAlignment="Top" 
+                Style="{StaticResource curdBtnStyle}"
+                Click="btnRemoveBus_Click" Margin="5,5,10.333,0"/>
+            <Button 
+                x:Name="btnAddeBus" Content="Add Bus"
+                Grid.Column="1" Grid.Row="0"
+                VerticalAlignment="Center" 
+                Style="{StaticResource curdBtnStyle}"
+                Click="btnAddeBus_Click" Margin="5,30,10,220"/>
+            
+            <Grid 
+                x:Name="gridAddBus" Visibility="Hidden"
+                Grid.Column="1" RenderTransformOrigin="0.529,-2.525" Margin="0,109,0.333,146">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>    
+                <DatePicker x:Name="dpDateFrom" Grid.Row="0"/>
+                <TextBox x:Name="tbLicenseNum" Margin="0,8,0,0" Text="License Number" Grid.Row="1"/>
+                <Button 
+                    x:Name="btnAddNewBus" Click="btnAddNewBus_Click" 
+                    Margin="0,8" Content="Add" Grid.Row="3" Style="{StaticResource busServiceStyle}"/>
+            </Grid>
+        </Grid>
+        <!--#endregion-->
     </Grid>
 </Window>

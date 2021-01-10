@@ -39,6 +39,13 @@ namespace DS
             {
                 new DO.User
                 {
+                    UserName = "noam",
+                    Password = "1234",
+                    Admin = true,
+                    IsDeleted = false
+                },
+                new DO.User
+                {
                     UserName = "David_Hamelch",
                     Password = "David1234",
                     Admin = false,
@@ -166,6 +173,9 @@ namespace DS
                     LicenseNum = RandomValues.randomLicenseNumber(dateFrom),
                     Status = DO.BusStatus.READY,
                     TotalTrip = RandomValues.getKilometers(),
+                    LastTreatment = RandomValues.randomDate(2018),
+                    KilometersAfterFueling = RandomValues.getKilometers(0, DO.Bus.MAX_KILOMETER_AFTER_REFUELING),
+                    KilometersAfterTreatment = RandomValues.getKilometers(0, DO.Bus.KILOMETER_BEFORE_TREATMENT),
                     FuelRemain = RandomValues.getFuelLiters(),
                     IsDeleted = false
                 });

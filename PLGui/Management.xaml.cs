@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,66 +26,507 @@ namespace PLGui
         ObservableCollection<PO.Bus> myBusList = new ObservableCollection<PO.Bus>();
         ObservableCollection<BO.Line> myLineList = new ObservableCollection<BO.Line>();
         ObservableCollection<BO.Station> myStationList = new ObservableCollection<BO.Station>();
+        PO.Bus _selectedBus;
+        Random rand = new Random(1000);
 
         public Management()
         {
             InitializeComponent();
-            
-            foreach(var bus in myBL.GetAllBuss())
+            foreach (var bus in myBL.GetAllBuss())
             {
                 var busPo = bus.CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
-                busPo.LicenseNumber = bus.FormatLiscenseNumber();
+                busPo.LicenseNumFormat = bus.FormatLiscenseNumber();
                 myBusList.Add(busPo);
             }
-            cbBuss.ItemsSource = myBusList;
-            cbBuss.DisplayMemberPath = "LicenseNumber";
+             lvBusList.ItemsSource = myBusList;
 
-            foreach(var line in myBL.GetAllLines())
+
+            foreach (var line in myBL.GetAllLines())
             {
                 myLineList.Add(line);
             }
-            cbLinse.ItemsSource = myLineList;
-            cbLinse.DisplayMemberPath = "Code";
+            lvLineList.ItemsSource = myLineList;
 
             foreach(var station in myBL.GetAllStations())
             {
                 myStationList.Add(station);
             }
-            cbStations.ItemsSource = myStationList;
-            cbStations.DisplayMemberPath = "Code";
+            lvStationList.ItemsSource = myStationList;
+            
+            cbFirstStation.ItemsSource = myStationList;
+            cbLastStation.ItemsSource = myStationList;
         }
 
         private void btnBuss_Click(object sender, RoutedEventArgs e)
         {
-            new BussListWin(myBusList).Show();
+            gridStations.Visibility = Visibility.Collapsed;
+            gridLines.Visibility = Visibility.Collapsed;
+            gridBuss.Visibility = Visibility.Visible;
         }
 
         private void btnLines_Click(object sender, RoutedEventArgs e)
         {
-            new LinesListWin(myLineList).Show();
+            gridStations.Visibility = Visibility.Collapsed;
+            gridBuss.Visibility = Visibility.Collapsed;
+            gridLines.Visibility = Visibility.Visible;    
         }
 
         private void btnStations_Click(object sender, RoutedEventArgs e)
         {
-            new StationListWin(myStationList).Show();
+            gridLines.Visibility = Visibility.Collapsed;
+            gridBuss.Visibility = Visibility.Collapsed;
+            gridStations.Visibility = Visibility.Visible;  
         }
 
-        private void cbBuss_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        #region Lines
+        internal void refreshMyLineList()
         {
-            var bus = cbBuss.SelectedItem as PO.Bus;
-            new BusViewInfo(bus).Show();
+            myLineList.Clear();
+            foreach (var line in myBL.GetAllLines())
+            {
+                myLineList.Add(line);
+            }
+            lvLineList.Items.Refresh();
         }
 
-        private void cbLinse_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void lvLineList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var line = cbLinse.SelectedItem as BO.Line;
+            var line = lvLineList.SelectedItem as BO.Line;
             new LineViewInfo(line).Show();
         }
 
-        private void cbStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnAddNewLine_Click(object sender, RoutedEventArgs e)
         {
-            var station = cbStations.SelectedItem as BO.Station;
-            new StationViewInfo(station).Show();
+            gridAddNewLine.Visibility = Visibility.Visible;
         }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (tbLineNumber.Text == string.Empty)
+            {
+                tbLineNumber.BorderBrush = Brushes.Red;
+                return;
+            }
+            try
+            {
+                addLine();
+            }
+            catch (BO.BadLineException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            catch (BO.BadLineStationException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            finally
+            {
+                refreshAddGrig();
+            }
+        }
+
+        private void addLine()
+        {
+            int code;
+            if (!int.TryParse(tbLineNumber.Text, out code))
+            {
+                MessageBox.Show("Erorr: not a valid code line", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var firstStation = cbFirstStation.SelectedItem as BO.Station;
+            if(firstStation == null)
+            {
+                MessageBox.Show("Please select first station", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            var lastStation = cbLastStation.SelectedItem as BO.Station;
+            if (lastStation == null)
+            {
+                MessageBox.Show("Please select last station", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if(firstStation.Code == lastStation.Code)
+            {
+                MessageBox.Show("Erorr: select diffrent stations\n to the first and the last", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var newLine = new BO.Line()
+            {
+                Code = code,
+                FirstStation = firstStation.Code,
+                LastStation = lastStation.Code,
+                IsDeleted = false
+            };
+            int id = myBL.AddLine(newLine);
+            myBL.AddLineStation(new BO.LineStation()
+            {
+                IsDeleted = false,
+                LineId = id,
+                LineStationIndex = 0,
+                Station = newLine.FirstStation,
+                NextStation = newLine.LastStation,
+                PrevStation = 0
+            });
+            myBL.AddLineStation(new BO.LineStation()
+            {
+                IsDeleted = false,
+                LineId = id,
+                LineStationIndex = 1,
+                Station = newLine.LastStation,
+                NextStation = -1,
+                PrevStation = newLine.FirstStation
+            });
+            newLine = myBL.GetLine(id);
+            myLineList.Add(newLine);
+            lvLineList.Items.Refresh();
+        }
+
+        private void refreshAddGrig()
+        {
+            gridAddNewLine.Visibility = Visibility.Hidden;
+            tbLineNumber.Text = string.Empty;
+            tbLineNumber.BorderBrush =  Brushes.Black;
+        }
+
+        private void btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            var lineToDel = lvLineList.SelectedItem as BO.Line;
+            if (lineToDel == null)
+            {
+                MessageBox.Show("Please select line to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (MessageBox.Show($"You sure you want to delete line '{lineToDel.Code}'",
+                "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    myBL.RemoveLine(lineToDel);
+                    myLineList.Remove(lineToDel);
+                    lvLineList.Items.Refresh();
+                }
+                catch (BO.BadLineException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+        }
+        #endregion
+
+        #region Stations
+
+        internal void refreshMyStationList()
+        {
+            myStationList.Clear();
+            foreach (var station in myBL.GetAllStations())
+            {
+                myStationList.Add(station);
+            }
+            lvStationList.Items.Refresh();
+        } 
+
+        private void lvStationList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+            var station = lvStationList.SelectedItem as BO.Station;
+            new StationViewInfo(station).Show();
+            lvStationList.Items.Refresh();
+        }
+
+        private void btnAddStation_Click(object sender, RoutedEventArgs e)
+        {
+            gridAddNewStation.Visibility = Visibility.Visible;
+        }
+
+        private void btnAddStationExecution_Click(object sender, RoutedEventArgs e)
+        {
+            tbCode.BorderBrush = tbName.BorderBrush =
+                tbLatitude.BorderBrush = tbLongitude.BorderBrush = Brushes.Black;
+            if (isEmptyBoxs())
+                return;
+            try
+            {
+                int code;
+                if (!int.TryParse(tbCode.Text, out code) || code <= 0)
+                {
+                    MessageBox.Show("Erorr: not valid station code", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                double lat, lon;
+                if (!double.TryParse(tbLatitude.Text, out lat))
+                {
+                    MessageBox.Show("Erorr: not valid latitude", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                if (!double.TryParse(tbLongitude.Text, out lon))
+                {
+                    MessageBox.Show("Erorr: not valid longitude", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                var newStation = new BO.Station()
+                {
+                    Code = code,
+                    IsDeleted = false,
+                    Name = tbName.Text,
+                    Latitude = lat,
+                    Longitude = lon
+                };
+                myBL.AddStation(newStation);
+                myStationList.Add(newStation);
+            }
+            catch (BO.BadStationException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            gridAddNewStation.Visibility = Visibility.Hidden;
+        }
+
+        bool isEmptyBoxs()
+        {
+            bool emtyBox = false;
+            if (tbCode.Text == string.Empty)
+            {
+                tbCode.BorderBrush = Brushes.Red;
+                emtyBox = true;
+            }
+            if (tbName.Text == string.Empty)
+            {
+                tbName.BorderBrush = Brushes.Red;
+                emtyBox = true;
+            }
+            if (tbLatitude.Text == string.Empty)
+            {
+                tbLatitude.BorderBrush = Brushes.Red;
+                emtyBox = true;
+            }
+            if (tbLongitude.Text == string.Empty)
+            {
+                tbLongitude.BorderBrush = Brushes.Red;
+                emtyBox = true;
+            }
+            return emtyBox;
+        }
+
+        private void btnRemoveStation_Click(object sender, RoutedEventArgs e)
+        {
+            var stationToRem = lvStationList.SelectedItem as BO.Station;
+            if (stationToRem == null)
+            {
+                MessageBox.Show("Please select station to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            if (MessageBox.Show($"You sure you want to delete station '{stationToRem.Code}'",
+                        "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    myBL.RemoveStation(stationToRem);
+                    myStationList.Remove(stationToRem);
+                    lvStationList.Items.Refresh();
+                    lvLineList.Items.Refresh();
+                }
+                catch (BO.BadStationException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                catch(BO.BadAdjacentStationsException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                catch(BO.BadLineStationException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+        }
+        #endregion
+
+        #region Buss
+   
+        private void lvBusList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var bus = lvBusList.SelectedItem as PO.Bus;
+            new BusViewInfo(bus).Show();
+        }
+
+        private void btnTreatment_Click(object sender, RoutedEventArgs e)
+        {
+            _selectedBus = lvBusList.SelectedItem as PO.Bus;
+            if(_selectedBus == null)
+            {
+                MessageBox.Show("Please select bus to send to a treatment", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+            try
+            {
+                myBL.BusServices(busBo, "Treatment");
+            }
+            catch (BO.BadBusException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void btnRefueling_Click(object sender, RoutedEventArgs e)
+        {
+            var bus = (lvBusList.SelectedItem as PO.Bus);
+            if (bus == null)
+            {
+                MessageBox.Show("Please select bus to send to a refueling", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            _selectedBus = bus.CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
+            var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+            try
+            {
+                myBL.BusServices(busBo, "Refueling");
+            }
+            catch (BO.BadBusException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+        private void btnRide_Click(object sender, RoutedEventArgs e)
+        {
+            var bus = (lvBusList.SelectedItem as PO.Bus);
+            if (bus == null)
+            {
+                MessageBox.Show("Please select bus to send to a Ride", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            _selectedBus = bus;
+            tbKilometr.Visibility = Visibility.Visible;
+        }
+
+        private void numberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9+]");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private async void tbKilometr_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                if (tbKilometr.Text == string.Empty)
+                {
+                    tbKilometr.BorderBrush = Brushes.Red;
+                    return;
+                }
+
+                var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+                int kilometers = int.Parse(tbKilometr.Text);
+                try
+                {
+                    myBL.BusServices(busBo, "Ride", kilometers);
+                    myBL.GetBus(busBo.LicenseNum).CopyPropertiesTo(_selectedBus);
+                    lvBusList.Items.Refresh();
+                    await Task.Delay(Constans.MY_SECONDS * (kilometers / rand.Next(20, 50)));
+                    busBo.Status = BO.BusStatus.READY;
+                    myBL.UpdateBus(busBo);
+                    myBL.GetBus(busBo.LicenseNum).CopyPropertiesTo(_selectedBus);
+                    lvBusList.Items.Refresh();
+                }
+                catch (BO.BadBusException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                finally
+                {
+                    _selectedBus = null;
+                    tbKilometr.Text = "";
+                    tbKilometr.Visibility = Visibility.Hidden;
+                }
+            }
+        }
+
+        private void tbKilometr_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            tbKilometr.BorderBrush = Brushes.Black;
+        }
+        
+
+        private void btnRemoveBus_Click(object sender, RoutedEventArgs e)
+        {
+            var bus = lvBusList.SelectedItem as PO.Bus;
+            if(bus == null)
+            {
+                MessageBox.Show("Please select bus to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            try
+            {
+                var busBo = bus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+                myBL.RemoveBus(busBo);
+                myBusList.Remove(bus);
+                lvBusList.Items.Refresh();
+            }
+            catch (BO.BadBusException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void btnAddeBus_Click(object sender, RoutedEventArgs e)
+        {
+            gridAddBus.Visibility = Visibility.Visible;
+        }
+        
+
+        private void btnAddNewBus_Click(object sender, RoutedEventArgs e)
+        {
+            if(dpDateFrom.SelectedDate == null)
+            {
+                dpDateFrom.BorderBrush = Brushes.Red;
+                return;
+            }
+            if(tbLicenseNum.Text == string.Empty)
+            {
+                tbLicenseNum.BorderBrush = Brushes.Red;
+                return;
+            }
+
+            int licenseNum;
+            if(!int.TryParse(tbLicenseNum.Text, out licenseNum) || licenseNum < 0)
+            {
+                MessageBox.Show("Erorr: not valid number", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            BO.Bus newBus = new BO.Bus()
+            {
+                FromDate = dpDateFrom.SelectedDate.Value,
+                LicenseNum = licenseNum,
+                IsDeleted = false        
+            };
+            try
+            {
+                myBL.AddBus(newBus);
+                var bus = myBL.GetBus(newBus.LicenseNum).CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
+                myBusList.Add(bus);
+                lvBusList.Items.Refresh();
+            }
+            catch (BO.BadBusException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            dpDateFrom.BorderBrush = tbLicenseNum.BorderBrush = Brushes.Black;
+            tbLicenseNum.Text = "";
+            gridAddBus.Visibility = Visibility.Hidden;
+        }
+        #endregion
     }
 }

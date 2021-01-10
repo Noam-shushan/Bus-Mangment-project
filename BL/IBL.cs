@@ -24,6 +24,7 @@ namespace BlApi
         void AddBus(BO.Bus bus);
         void UpdateBus(BO.Bus bus);
         void RemoveBus(BO.Bus bus);
+        void BusServices(BO.Bus bus, string service, double tripKm = 0);
         #endregion
 
         #region Line
@@ -47,12 +48,14 @@ namespace BlApi
         #endregion
 
         #region LineStation
-        void AddLineStation(BO.LineStation newLineStation);
+        BO.LineStation GetLineStation(int stationCode, int lineId);
+        void AddLineStation(BO.LineStation newLineStation, bool needAddAdjacentStations = false);
         void RemoveLineStation(BO.LineStation station); 
         #endregion
 
         #region AdjacentStations
-        IEnumerable<BO.AdjacentStations> GetAdjacentStations(int stationCode);
+        IEnumerable<BO.AdjacentStations> GetAllAdjacentStationsOf(int stationCode);
+        BO.AdjacentStations GetAdjacentStations(int station1, int station2);
         void UpdateAdjacentStations(BO.AdjacentStations adjacentStations);
         void AddAdjacentStations(BO.AdjacentStations adjacentStations);
         #endregion

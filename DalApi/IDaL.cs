@@ -56,6 +56,7 @@ namespace DalApi
         #region AdjacentStations
         IEnumerable<DO.AdjacentStations> GetAllAdjacentStations();
         IEnumerable<DO.AdjacentStations> GetAllAdjacentStationsBy(Predicate<DO.AdjacentStations> predicate);
+        DO.AdjacentStations GetAdjacentStations(int station1, int station2);
         void AddAdjacentStations(DO.AdjacentStations adjacentStations);
         void RemoveAdjacentStations(DO.AdjacentStations adjacentStations);
         void UpdateAdjacentStations(DO.AdjacentStations adjacentStations);

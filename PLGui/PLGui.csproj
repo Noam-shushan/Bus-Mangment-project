@@ -58,22 +58,14 @@
     <Compile Include="AddUserWin.xaml.cs">
       <DependentUpon>AddUserWin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BussListWin.xaml.cs">
-      <DependentUpon>BussListWin.xaml</DependentUpon>
-    </Compile>
     <Compile Include="BusViewInfo.xaml.cs">
       <DependentUpon>BusViewInfo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LinesListWin.xaml.cs">
-      <DependentUpon>LinesListWin.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Constans.cs" />
     <Compile Include="LineViewInfo.xaml.cs">
       <DependentUpon>LineViewInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="PO\Bus.cs" />
-    <Compile Include="StationListWin.xaml.cs">
-      <DependentUpon>StationListWin.xaml</DependentUpon>
-    </Compile>
     <Compile Include="StationViewInfo.xaml.cs">
       <DependentUpon>StationViewInfo.xaml</DependentUpon>
     </Compile>
@@ -84,15 +76,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="BussListWin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="BusViewInfo.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="LinesListWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -113,10 +97,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Management.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="StationListWin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -163,6 +143,9 @@
       <Project>{3db2e9e3-a283-4d4f-9d0b-1c3ed7da15b0}</Project>
       <Name>BL</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="yellow bus icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

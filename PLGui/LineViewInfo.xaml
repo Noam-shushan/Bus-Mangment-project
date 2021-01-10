@@ -4,18 +4,47 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PLGui"
-        mc:Ignorable="d"
-        Title="Line info" Height="450" Width="730">
+        mc:Ignorable="d" Background="WhiteSmoke"
+        Icon="yellow bus icon.png"
+        Title="Line info" Height="550" Width="850">
     <Window.Resources>
         <Style TargetType="TextBox">
             <Setter Property="Width" Value="80"/>
             <Setter Property="Margin" Value="0,0,3,0"/>
+            <Setter Property="Height" Value="25"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Text" Value=" "/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="textBlocks" TargetType="TextBlock">
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style x:Key="itemsStyle" TargetType="ListBoxItem">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Foreground" Value="Navy"/>
+            <Setter Property="Background" Value="OldLace"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="Lavender"/>
+            <Setter Property="Background" Value="SteelBlue"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions >
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -23,6 +52,15 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock 
             x:Name="textBlockLineInfo" 
@@ -38,9 +76,11 @@
         <ListView 
             Name="lvLineStations"  
             ItemsSource="{Binding}"
-            Width="400" Height="300"
-            Margin="20,3,0,20" Grid.Column="0" Grid.Row="3"
+            Width="600" Height="350"
+            Grid.RowSpan="9"
+            Margin="10,3,0,20" Grid.Column="0" Grid.Row="3"
             HorizontalAlignment="Left"
+            ItemContainerStyle="{StaticResource itemsStyle}"
             MouseDoubleClick="lvLineStations_MouseDoubleClick">
             <ListView.View>
                 <GridView>
@@ -54,46 +94,75 @@
                         </GridViewColumn>
                         <GridViewColumn 
                             DisplayMemberBinding="{Binding Path=LineStationIndex}"
-                            Header="Station number" Width="140">
+                            Header="Station number" Width="90">
                         </GridViewColumn>
+                        <GridViewColumn
+                            Header="Distance from next" Width="125"
+                            DisplayMemberBinding="{Binding Path=DistanceFormat}"/>
+                        <GridViewColumn
+                            Header="Time from next" Width="125"
+                            DisplayMemberBinding="{Binding Path=TimeFormat}"/>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
         </ListView>
-
         <Button 
-            x:Name="btnAddLineStation" Content="Add new Line Station"
-            Grid.Column="1" Grid.Row="3" Margin="65,57,-35,237"
+            Content="Remove line station" x:Name="btnRemove" VerticalAlignment="Top"
+            Grid.Column="1" Grid.Row="3" Height="25" Width="120" 
+            Click="btnRemove_Click" Margin="0,0,0,10"/>
+        <Button 
+            x:Name="btnAddLineStation" Content="Add new Line Station" VerticalAlignment="Bottom"
+            Grid.Column="1" Grid.Row="3" Width="125"
             Click="btnAddLineStation_Click"/>
         <Grid 
-            x:Name="gridAddStation"
-            Grid.Column="1" Grid.Row="3" Margin="4,91,-115,151"
-       >
+            x:Name="gridAddStation" Grid.RowSpan="4" Visibility="Hidden"
+            Grid.Column="1" Grid.Row="4" Margin="30, 10, 0, 10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="The new station number:"  Grid.Column="0" Grid.Row="0" FontSize="13"/>
-            <TextBlock Text="Select previous station and click" Grid.Column="0" Grid.Row="1" Margin="0,5" FontSize="13"/>
-            <TextBox x:Name="tbNewStationNumber" Grid.Column="1" Grid.Row="0"/>
+            <ComboBox x:Name="cbStations"
+                Grid.Column="0" Grid.Row="0"/>
+            <TextBlock 
+                Text="Select previous station and click"
+                Grid.Column="0" Grid.Row="2" Margin="0,5" FontSize="13"
+                Style="{StaticResource textBlocks}"/>
             <Button 
                 x:Name="btnPreviousStation" Content="here" 
-                Grid.Column="1" Grid.Row="1" Width="50" Margin="0,5"
+                Grid.Column="0" Grid.Row="3" Width="50" Margin="0,5"
                 Click="btnPreviousStation_Click"/>
             <Button 
-            x:Name="btnUpdete" Content="Update" Height="25"
-            Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center" 
+            x:Name="btnUpdete" Content="Update" Height="25" IsEnabled="False"
+            Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center" 
             Click="btnUpdete_Click"/>
         </Grid>
-        <Button 
-            Content="Remove line station" x:Name="btnRemove"
-            Grid.Column="1" Grid.Row="3" Height="25" Width="120" Margin="65,27,-30,271" 
-            Click="btnRemove_Click"/>
+        <StackPanel x:Name="spUpdateDistAndTime" Grid.Row="8" Margin="10,0,10,32" Grid.Column="1" Grid.RowSpan="4" Visibility="Hidden">
+            <TextBlock x:Name="textBlockUpdateTimeAndDist" Style="{StaticResource textBlocks}"/>
 
+            <TextBlock Text="Prev Station: "/>
+            <StackPanel Orientation="Horizontal" x:Name="spPrev" Visibility="Hidden">
+                <TextBlock x:Name="textBlockPrevName"/>
+                <TextBox x:Name="tbDistancePrevStation" Text="Distance"/>
+                <TextBox x:Name="tbTimePrevStation" Text="Time"/>
+            </StackPanel>
+
+            <TextBlock Text="Next Station: "/>
+            <StackPanel Orientation="Horizontal" x:Name="spNext" Visibility="Hidden">
+                <TextBlock x:Name="textBlockNextName"/>
+                <TextBox x:Name="tbDistanceNextStation" Text="Distance"/>
+                <TextBox x:Name="tbTimeNextStation" Text="Time"/>
+            </StackPanel>
+            <Button 
+                x:Name="btnUpdateDistAndTime"
+                Content="Update" Click="btnUpdateDistAndTime_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
