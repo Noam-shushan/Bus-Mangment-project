@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using BL;
 
 namespace PLGui
@@ -26,7 +27,8 @@ namespace PLGui
         ObservableCollection<PO.Bus> myBusList = new ObservableCollection<PO.Bus>();
         ObservableCollection<BO.Line> myLineList = new ObservableCollection<BO.Line>();
         ObservableCollection<BO.Station> myStationList = new ObservableCollection<BO.Station>();
-        PO.Bus _selectedBus;
+     
+        PO.Bus _selectedBusToRide;
         Random rand = new Random(1000);
 
         public Management()
@@ -57,6 +59,7 @@ namespace PLGui
             cbLastStation.ItemsSource = myStationList;
         }
 
+        #region Visibility of the grids (Lines, Buss, Stations)
         private void btnBuss_Click(object sender, RoutedEventArgs e)
         {
             gridStations.Visibility = Visibility.Collapsed;
@@ -68,15 +71,16 @@ namespace PLGui
         {
             gridStations.Visibility = Visibility.Collapsed;
             gridBuss.Visibility = Visibility.Collapsed;
-            gridLines.Visibility = Visibility.Visible;    
+            gridLines.Visibility = Visibility.Visible;
         }
 
         private void btnStations_Click(object sender, RoutedEventArgs e)
         {
             gridLines.Visibility = Visibility.Collapsed;
             gridBuss.Visibility = Visibility.Collapsed;
-            gridStations.Visibility = Visibility.Visible;  
-        }
+            gridStations.Visibility = Visibility.Visible;
+        } 
+        #endregion
 
         #region Lines
         internal void refreshMyLineList()
@@ -100,7 +104,7 @@ namespace PLGui
             gridAddNewLine.Visibility = Visibility.Visible;
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private void btnAddLine_Click(object sender, RoutedEventArgs e)
         {
             if (tbLineNumber.Text == string.Empty)
             {
@@ -113,7 +117,13 @@ namespace PLGui
             }
             catch (BO.BadLineException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (ex.Message.StartsWith("M"))
+                {
+                    MessageBox.Show(ex.Message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    spDistAndTime.Visibility = Visibility.Visible; 
+                }
+                else
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             catch (BO.BadLineStationException ex)
@@ -121,10 +131,7 @@ namespace PLGui
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            finally
-            {
-                refreshAddGrig();
-            }
+            refreshAddGrig();
         }
 
         private void addLine()
@@ -152,14 +159,16 @@ namespace PLGui
                 MessageBox.Show("Erorr: select diffrent stations\n to the first and the last", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            int id;
             var newLine = new BO.Line()
             {
                 Code = code,
                 FirstStation = firstStation.Code,
                 LastStation = lastStation.Code,
-                IsDeleted = false
+                IsDeleted = false,
             };
-            int id = myBL.AddLine(newLine);
+            id = myBL.AddLine(newLine);
             myBL.AddLineStation(new BO.LineStation()
             {
                 IsDeleted = false,
@@ -181,6 +190,54 @@ namespace PLGui
             newLine = myBL.GetLine(id);
             myLineList.Add(newLine);
             lvLineList.Items.Refresh();
+        }
+
+        private void btnUpdateDistAndTime_Click(object sender, RoutedEventArgs e)
+        {
+            var firstStation = cbFirstStation.SelectedItem as BO.Station;
+            var lastStation = cbLastStation.SelectedItem as BO.Station;
+
+            if(tbDistance.Text == string.Empty)
+            {
+                tbDistance.BorderBrush = Brushes.Red;
+                return;
+            }
+            
+            if (tbTimeForNewLineStation.Text == string.Empty)
+            {
+                tbTimeForNewLineStation.BorderBrush = Brushes.Red;
+                return;
+            }
+            
+            double dist;
+            if(!double.TryParse(tbDistance.Text, out dist))
+            {
+                MessageBox.Show("Erorr: not valid distance", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            TimeSpan time;
+            if(!TimeSpan.TryParse(tbTimeForNewLineStation.Text, out time))
+            {
+                MessageBox.Show("Erorr: not valid time", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            try
+            {
+                myBL.AddAdjacentStations(new BO.AdjacentStations()
+                {
+                    Distance = dist,
+                    IsDeleted = false,
+                    Station1 = firstStation.Code,
+                    Station2 = lastStation.Code,
+                    Time = time,
+                });
+            }
+            catch(BO.BadAdjacentStationsException ex)
+            {
+                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            spDistAndTime.Visibility = Visibility.Hidden;
         }
 
         private void refreshAddGrig()
@@ -356,28 +413,36 @@ namespace PLGui
             new BusViewInfo(bus).Show();
         }
 
-        private void btnTreatment_Click(object sender, RoutedEventArgs e)
+        private async void btnTreatment_Click(object sender, RoutedEventArgs e)
         {
-            _selectedBus = lvBusList.SelectedItem as PO.Bus;
-            if(_selectedBus == null)
+            var bus = lvBusList.SelectedItem as PO.Bus;
+            if(bus == null)
             {
                 MessageBox.Show("Please select bus to send to a treatment", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+            var busBo = bus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
             try
             {
                 myBL.BusServices(busBo, "Treatment");
+                spService.Visibility = Visibility.Hidden;
+                bus.MaxProgressValue = Constans.TIME_FOR_TREATMENT;
+                _selectedBusToTreat = bus;
+                refreshMyBussList();
+                await Task.Delay(Constans.TIME_FOR_TREATMENT);
+                busBo.Status = BO.BusStatus.READY;
+                myBL.UpdateBus(busBo);
+                refreshMyBussList();
             }
             catch (BO.BadBusException ex)
             {
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
             }
+            spService.Visibility = Visibility.Hidden;
         }
 
-        private void btnRefueling_Click(object sender, RoutedEventArgs e)
+        private async void btnRefueling_Click(object sender, RoutedEventArgs e)
         {
             var bus = (lvBusList.SelectedItem as PO.Bus);
             if (bus == null)
@@ -385,18 +450,26 @@ namespace PLGui
                 MessageBox.Show("Please select bus to send to a refueling", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            _selectedBus = bus.CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
-            var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+            var busBo = bus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
             try
             {
                 myBL.BusServices(busBo, "Refueling");
+                spService.Visibility = Visibility.Hidden;
+                bus.MaxProgressValue = Constans.TIME_FOR_FUELING;
+                _selectedBusToRefuil = bus;
+                refreshMyBussList();
+                await Task.Delay(Constans.TIME_FOR_FUELING);
+                busBo.Status = BO.BusStatus.READY;
+                myBL.UpdateBus(busBo);
+                refreshMyBussList();
             }
             catch (BO.BadBusException ex)
             {
                 MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
             }
+            spService.Visibility = Visibility.Hidden;
         }
+
         private void btnRide_Click(object sender, RoutedEventArgs e)
         {
             var bus = (lvBusList.SelectedItem as PO.Bus);
@@ -405,7 +478,7 @@ namespace PLGui
                 MessageBox.Show("Please select bus to send to a Ride", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            _selectedBus = bus;
+            _selectedBusToRide = bus;
             tbKilometr.Visibility = Visibility.Visible;
         }
 
@@ -425,18 +498,19 @@ namespace PLGui
                     return;
                 }
 
-                var busBo = _selectedBus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+                var busBo = _selectedBusToRide.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
                 int kilometers = int.Parse(tbKilometr.Text);
                 try
                 {
                     myBL.BusServices(busBo, "Ride", kilometers);
-                    myBL.GetBus(busBo.LicenseNum).CopyPropertiesTo(_selectedBus);
-                    lvBusList.Items.Refresh();
-                    await Task.Delay(Constans.MY_SECONDS * (kilometers / rand.Next(20, 50)));
+                    spService.Visibility = Visibility.Hidden;
+                    var timeToRide = Constans.MY_SECONDS * (kilometers / rand.Next(20, 50));
+                    _selectedBusToRide.MaxProgressValue = timeToRide;
+                    refreshMyBussList();
+                    await Task.Delay(timeToRide);
                     busBo.Status = BO.BusStatus.READY;
                     myBL.UpdateBus(busBo);
-                    myBL.GetBus(busBo.LicenseNum).CopyPropertiesTo(_selectedBus);
-                    lvBusList.Items.Refresh();
+                    refreshMyBussList();
                 }
                 catch (BO.BadBusException ex)
                 {
@@ -445,9 +519,10 @@ namespace PLGui
                 }
                 finally
                 {
-                    _selectedBus = null;
+                    _selectedBusToRide = null;
                     tbKilometr.Text = "";
                     tbKilometr.Visibility = Visibility.Hidden;
+                    spService.Visibility = Visibility.Hidden;
                 }
             }
         }
@@ -466,17 +541,21 @@ namespace PLGui
                 MessageBox.Show("Please select bus to remove", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            try
+            if (MessageBox.Show($"You sure you want to delete bus '{bus.LicenseNumFormat}'",
+            "Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                var busBo = bus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
-                myBL.RemoveBus(busBo);
-                myBusList.Remove(bus);
-                lvBusList.Items.Refresh();
-            }
-            catch (BO.BadBusException ex)
-            {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                try
+                {
+                    var busBo = bus.CopyPropertiesToNew(typeof(BO.Bus)) as BO.Bus;
+                    myBL.RemoveBus(busBo);
+                    myBusList.Remove(bus);
+                    lvBusList.Items.Refresh();
+                }
+                catch (BO.BadBusException ex)
+                {
+                    MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
             }
         }
 
@@ -509,12 +588,19 @@ namespace PLGui
             {
                 FromDate = dpDateFrom.SelectedDate.Value,
                 LicenseNum = licenseNum,
-                IsDeleted = false        
+                IsDeleted = false,
+                FuelRemain = 0,
+                KilometersAfterFueling = 0,
+                KilometersAfterTreatment = 0,
+                LastTreatment = DateTime.Now,
+                Status = BO.BusStatus.READY,
+                TotalTrip = 0
             };
             try
             {
                 myBL.AddBus(newBus);
                 var bus = myBL.GetBus(newBus.LicenseNum).CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
+                bus.LicenseNumFormat = newBus.FormatLiscenseNumber();
                 myBusList.Add(bus);
                 lvBusList.Items.Refresh();
             }
@@ -527,6 +613,28 @@ namespace PLGui
             tbLicenseNum.Text = "";
             gridAddBus.Visibility = Visibility.Hidden;
         }
+
+        internal void refreshMyBussList()
+        {
+            myBusList.Clear();
+            foreach (var bus in myBL.GetAllBuss())
+            {
+                var busPo = bus.CopyPropertiesToNew(typeof(PO.Bus)) as PO.Bus;
+                busPo.LicenseNumFormat = bus.FormatLiscenseNumber();
+                myBusList.Add(busPo);
+            }
+            lvBusList.Items.Refresh();
+        }
+
+        private void lvBusList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = lvBusList.SelectedItem as PO.Bus;
+            if (item != null && item.IsReady)
+                spService.Visibility = Visibility.Visible;
+            else
+                spService.Visibility = Visibility.Hidden;
+        }
         #endregion
+
     }
 }

@@ -157,6 +157,12 @@ namespace BL
         /// <param name="bus"></param>
         public void AddBus(BO.Bus bus)
         {
+            if(bus.FromDate.Year >= 2018 && bus.LicenseNum.ToString().Length != 8)
+                throw new BO.BadBusException(bus.LicenseNum, "not valid lisense number for bus from year 2018");
+            
+            if (bus.FromDate.Year <= 2017 && bus.LicenseNum.ToString().Length != 7)
+                throw new BO.BadBusException(bus.LicenseNum, "not valid lisense number for bus from year under 2017");
+            
             var busDo = bus.CopyPropertiesToNew(typeof(DO.Bus)) as DO.Bus;
             try
             {
@@ -255,8 +261,8 @@ namespace BL
         public IEnumerable<BO.LineStation> GetAllLineStationsByLineID(int lineId)
         {
             return from ls1 in dl.GetAllLineStationBy(ls2 => ls2.LineId == lineId)
-                   let lsBo = GetLineStation(ls1.Station, lineId)
-                   select lsBo;
+                    let lsBo = GetLineStation(ls1.Station, lineId)
+                    select lsBo;
         }
         /// <summary>
         /// 
@@ -266,16 +272,24 @@ namespace BL
         /// <returns></returns>
         public BO.LineStation GetLineStation(int stationCode, int lineId)
         {
-            BO.LineStation stationBo = new BO.LineStation();
+            BO.LineStation stationBo;
             try
             {
                 var stationDo = dl.GetLineStation(stationCode, lineId);
                 stationBo = stationDo.CopyPropertiesToNew(typeof(BO.LineStation)) as BO.LineStation;
                 if (stationBo.NextStation != -1) // last station in the line
                 {
-                    var next = GetAdjacentStations(stationCode, stationBo.NextStation);
-                    stationBo.DistanceFromNext = next.Distance;
-                    stationBo.TimeFromNext = next.Time; 
+                    try
+                    {
+                        var next = GetAdjacentStations(stationCode, stationBo.NextStation);
+                        stationBo.DistanceFromNext = next.Distance;
+                        stationBo.TimeFromNext = next.Time;
+                    }
+                    catch (BO.BadAdjacentStationsException)
+                    {
+                        throw new BO.BadLineStationException(stationCode, lineId,
+                                $"Missing distance and time information from station {stationBo.NextStation}");
+                    }
                 }
                 return stationBo;
             }
@@ -283,61 +297,22 @@ namespace BL
             {
                 throw new BO.BadLineStationException(stationCode, lineId, ex.Message);
             }
-            catch (BO.BadAdjacentStationsException)
-            {
-                throw new BO.BadLineStationException(stationCode, lineId,
-                        $"Missing distance and time information from station {stationBo.NextStation}");
-            }
-
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="newLineStation"></param>
-        public void AddLineStation(BO.LineStation newLineStation, bool needAddAdjacentStations = false)
+        public void AddLineStation(BO.LineStation newLineStation)
         {
             try
             {
                 var lineStationDo = newLineStation.CopyPropertiesToNew(typeof(DO.LineStation)) as DO.LineStation;
                 dl.AddLineStation(lineStationDo);
-
-                if (needAddAdjacentStations)
-                {
-                    // Adds two adjacent stations 
-                    int lineCode = GetLine(newLineStation.LineId).Code; // Get the line number (code)
-                    AddAdjacentStations(new BO.AdjacentStations()
-                    { // to the new station from the next of here prev station
-                        Station1 = newLineStation.Station,
-                        Station2 = newLineStation.NextStation,
-                        IsDeleted = false,
-                        Distance = newLineStation.DistanceFromNext,
-                        Time = newLineStation.TimeFromNext,
-                        LineCode = lineCode,
-                    });
-                    AddAdjacentStations(new BO.AdjacentStations()
-                    { // to the prev station to the here new next station
-                        Station1 = newLineStation.PrevStation,
-                        Station2 = newLineStation.Station,
-                        IsDeleted = false,
-                        Distance = newLineStation.DistanceFromPrev,
-                        Time = newLineStation.TimeFromPrev,
-                        LineCode = lineCode,
-                    });
-                }
             }
             catch (DO.BadLineStationException ex)
             {
                 throw new BO.BadLineStationException(newLineStation.Station, newLineStation.LineId,
                     ex.Message);
-            }
-            catch (BO.BadLineStationException ex)
-            {
-                throw new BO.BadLineStationException(newLineStation.Station, newLineStation.LineId,
-                    ex.Message);
-            }
-            catch (BO.BadAdjacentStationsException ex)
-            {
-                throw ex;
             }
         }
 
@@ -393,16 +368,26 @@ namespace BL
             {
                 throw new BO.BadLineException(lineId, ex.Message);
             }
+            catch(BO.BadLineStationException ex)
+            {
+                throw ex;
+            }
             return lineBo;
         }
 
         public int AddLine(BO.Line newLine)
         {
             if (!dl.GetAllStations().Any(s => s.Code == newLine.FirstStation))
-                throw new BO.BadLineException(newLine.Code, $"Station '{newLine.FirstStation}' does not exist");
+                throw new BO.BadLineException(newLine.Id, $"Station '{newLine.FirstStation}' does not exist");
             
             if (!dl.GetAllStations().Any(s => s.Code == newLine.LastStation))
-                throw new BO.BadLineException(newLine.Code, $"Station '{newLine.LastStation}' does not exist");
+                throw new BO.BadLineException(newLine.Id, $"Station '{newLine.LastStation}' does not exist");
+
+            if (!dl.GetAllAdjacentStations().Any(s => s.Station1 == newLine.FirstStation
+             && s.Station2 == newLine.LastStation))
+                throw new BO.BadLineException(newLine.Id,
+                    $"Missing distance and time information between {newLine.FirstStation}" +
+                    $" and {newLine.LastStation}");
             
             var lineDo = newLine.CopyPropertiesToNew(typeof(DO.Line)) as DO.Line;
             return dl.AddLine(lineDo);

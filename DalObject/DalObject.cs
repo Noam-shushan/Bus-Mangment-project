@@ -10,6 +10,7 @@ namespace Dal
     {
         #region singelton
         public static DalApi.IDaL Instance { get; } = new DalObject();
+        
         DalObject() { } 
         #endregion
 

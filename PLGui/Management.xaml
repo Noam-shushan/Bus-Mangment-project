@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         FontFamily="Consolas" Background="WhiteSmoke"
         Icon="yellow bus icon.png"
-        Title="Management" Height="550" Width="780">
+        Title="Management" Height="550" Width="800">
     <Window.Resources>
         <Color x:Key="ControlNormalColor">DarkSeaGreen</Color>
         <Color x:Key="ControlMouseOverColor">#FFAFA3B9</Color>
@@ -142,6 +142,9 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="bussListViewItemStyle" BasedOn="{StaticResource alternatingListViewItemStyle}" TargetType="{x:Type ListViewItem}">
+
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -196,7 +199,7 @@
 
         <!--#region Lines -->
         <Grid 
-            x:Name="gridLines" Visibility="Collapsed" 
+            x:Name="gridLines"  Visibility="Collapsed"
             Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -265,6 +268,8 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -278,9 +283,24 @@
                 <ComboBox 
                     x:Name="cbLastStation" Grid.Column="1" Grid.Row="2"/>
                 <Button 
-                    x:Name="btnAdd" Content="Add" 
+                    x:Name="btnAddLine" Content="Add" 
                     Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                    Width="40" Margin="0,5" Click="btnAdd_Click" Style="{StaticResource curdBtnStyle}"/>
+                    Width="40" Margin="0,5" Click="btnAddLine_Click" Style="{StaticResource curdBtnStyle}"/>
+                
+                <StackPanel x:Name="spDistAndTime" Grid.Row="4" Grid.RowSpan="3" Grid.ColumnSpan="2" Visibility="Hidden">
+                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                        <TextBlock Text="Distance" />
+                        <TextBox x:Name="tbDistance" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0">
+                        <TextBlock Text="Time"/>
+                        <TextBox x:Name="tbTimeForNewLineStation" Margin="33,0,0,0" Text="00:00"/>
+                    </StackPanel>
+                    
+                    <Button 
+                        x:Name="btnUpdateDistAndTime" Click="btnUpdateDistAndTime_Click"
+                        Content="Update" Style="{StaticResource curdBtnStyle}" Width="40"/>
+                </StackPanel>
             </Grid>
         </Grid>
         <!--#endregion-->
@@ -378,7 +398,7 @@
 
         <!--#region Buss -->
         <Grid 
-            x:Name="gridBuss" Visibility="Hidden"
+            x:Name="gridBuss" Visibility="Collapsed"
             Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10"
              >
             <Grid.ColumnDefinitions>
@@ -395,10 +415,11 @@
             <ListView 
                 x:Name="lvBusList"
                 ItemsSource="{Binding}"
-                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
+                SelectionChanged="lvBusList_SelectionChanged"
+                ItemContainerStyle="{StaticResource bussListViewItemStyle}"
                 AlternationCount="2"
                 MouseDoubleClick="lvBusList_MouseDoubleClick"
-                Margin="20,0,10,10"  Width="500" Height="350"
+                Margin="20,0,10,10"  Width="520" Height="350"
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
                 <ListView.View >
                     <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
@@ -424,10 +445,10 @@
                                 Header="km after treatment" Width="130"
                                 DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}">
                             </GridViewColumn >
-                            <GridViewColumn Width="80">
+                            <GridViewColumn Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ProgressBar x:Name="pbServiceProgres"/>
+                                        <ProgressBar x:Name="pbServiceProgres" Value="{Binding Path=Progress}" Maximum="{Binding Path=MaxProgressValue}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -435,7 +456,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2">
+            <StackPanel x:Name="spService" Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Visibility="Collapsed">
                 <Button 
                     x:Name="btnTreatment"
                     Content="Treatment"
@@ -464,6 +485,14 @@
                     TextChanged="tbKilometr_TextChanged"
                     Visibility="Hidden"/>
             </StackPanel>
+            <TextBlock Grid.Column="1" Margin="0,278,4.333,0" Grid.RowSpan="2" 
+                   >
+            <Run Text="Status colors:" FontSize="13"/><LineBreak/>
+            <Run Text="Ready" Foreground="Green"/> <LineBreak/>
+            <Run Text="Ride" Foreground="Blue"/> <LineBreak/>
+            <Run Text="Refueling" Foreground="Orange"/> <LineBreak/>
+            <Run Text="Treatment" Foreground="Red"/>
+            </TextBlock>
             <Button 
                 x:Name="btnRemoveBus" Content="Remove Bus"
                 Grid.Column="1" Grid.Row="0"
@@ -476,7 +505,7 @@
                 VerticalAlignment="Center" 
                 Style="{StaticResource curdBtnStyle}"
                 Click="btnAddeBus_Click" Margin="5,30,10,220"/>
-            
+
             <Grid 
                 x:Name="gridAddBus" Visibility="Hidden"
                 Grid.Column="1" RenderTransformOrigin="0.529,-2.525" Margin="0,109,0.333,146">
@@ -488,7 +517,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>    
+                </Grid.RowDefinitions>
                 <DatePicker x:Name="dpDateFrom" Grid.Row="0"/>
                 <TextBox x:Name="tbLicenseNum" Margin="0,8,0,0" Text="License Number" Grid.Row="1"/>
                 <Button 

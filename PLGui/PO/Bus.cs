@@ -13,6 +13,8 @@ namespace PO
         private BO.BusStatus _status;
         private SolidColorBrush _statusColor;
         private bool _isReady;
+        private double _progress;
+        private int _maxProgressValue;
 
         public int LicenseNum { get; set; }
         public string LicenseNumFormat { get; set; }
@@ -81,6 +83,26 @@ namespace PO
             }
         }
 
+        public double Progress 
+        {
+            get => _progress;
+            set
+            {
+                _progress = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Progress"));
+            } 
+        }
+
+        public int MaxProgressValue
+        {
+            get => _maxProgressValue;
+            set
+            {
+                _maxProgressValue = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MaxProgressValue"));
+            }
+        }
+
         public override string ToString()
         {
             return $"License Number: {LicenseNumFormat}\n" +
@@ -89,6 +111,7 @@ namespace PO
                 $"Start activity: {FromDate.Date:dd/MM/yyyy}\n" +
                 $"Last treatment: {LastTreatment.Date:dd/MM/yyyy}";
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

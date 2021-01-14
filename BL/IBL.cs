@@ -49,7 +49,7 @@ namespace BlApi
 
         #region LineStation
         BO.LineStation GetLineStation(int stationCode, int lineId);
-        void AddLineStation(BO.LineStation newLineStation, bool needAddAdjacentStations = false);
+        void AddLineStation(BO.LineStation newLineStation);
         void RemoveLineStation(BO.LineStation station); 
         #endregion
 
