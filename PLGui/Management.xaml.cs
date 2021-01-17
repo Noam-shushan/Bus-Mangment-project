@@ -428,7 +428,6 @@ namespace PLGui
                 myBL.BusServices(busBo, "Treatment");
                 spService.Visibility = Visibility.Hidden;
                 bus.MaxProgressValue = Constans.TIME_FOR_TREATMENT;
-                _selectedBusToTreat = bus;
                 refreshMyBussList();
                 await Task.Delay(Constans.TIME_FOR_TREATMENT);
                 busBo.Status = BO.BusStatus.READY;
@@ -456,7 +455,6 @@ namespace PLGui
                 myBL.BusServices(busBo, "Refueling");
                 spService.Visibility = Visibility.Hidden;
                 bus.MaxProgressValue = Constans.TIME_FOR_FUELING;
-                _selectedBusToRefuil = bus;
                 refreshMyBussList();
                 await Task.Delay(Constans.TIME_FOR_FUELING);
                 busBo.Status = BO.BusStatus.READY;

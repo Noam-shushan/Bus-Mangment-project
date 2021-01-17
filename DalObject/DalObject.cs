@@ -17,11 +17,15 @@ namespace Dal
         #region Bus
         public void AddBus(DO.Bus bus)
         {
-            if (DS.DataSource.BussList.FirstOrDefault(b => b.LicenseNum == bus.LicenseNum) != null
-                && !bus.IsDeleted)
-                throw new DO.BadBusException(bus.LicenseNum, "Duplicate License number of bus");
-            else
-                DS.DataSource.BussList.Add(bus.Clone());
+            var findBus = DS.DataSource.BussList.FirstOrDefault(b => b.LicenseNum == bus.LicenseNum);
+            
+            if(findBus != null)
+            {
+                if (!bus.IsDeleted)
+                    throw new DO.BadBusException(bus.LicenseNum, "Duplicate License number of bus");
+            }
+
+            DS.DataSource.BussList.Add(bus.Clone());
         }
 
         public IEnumerable<DO.Bus> GetAllBuss()
@@ -99,7 +103,7 @@ namespace Dal
 
         public int AddLine(DO.Line line)
         {
-            line.Id = DS.Counters.LineCounter;
+            line.Id = DalApi.Counters.LineCounter;
             DS.DataSource.LinesList.Add(line.Clone());
             return line.Id;
         }
@@ -109,7 +113,10 @@ namespace Dal
             var lineToUp = DS.DataSource.LinesList.Find(l => l.Id == line.Id);
 
             if (lineToUp != null && !lineToUp.IsDeleted)
-                lineToUp = line;
+            {
+                DS.DataSource.LinesList.Remove(lineToUp);
+                DS.DataSource.LinesList.Add(line);
+            }
             else
                 throw new DO.BadLineException(line.Id, "Line not found");
         }
@@ -121,7 +128,9 @@ namespace Dal
             if (lineToRem != null && !lineToRem.IsDeleted) 
             {
                 GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStation);
-                lineToRem.IsDeleted = true;     
+                DS.DataSource.LinesList.Remove(lineToRem);
+                lineToRem.IsDeleted = true;
+                DS.DataSource.LinesList.Add(lineToRem);
             }              
             else
                 throw new DO.BadLineException(line.Id, "Line not found");
@@ -154,8 +163,8 @@ namespace Dal
 
         public void AddStation(DO.Station station)
         {
-            if (DS.DataSource.StationsList.FirstOrDefault(s => s.Code == station.Code) != null
-                && !station.IsDeleted)
+            var st = DS.DataSource.StationsList.FirstOrDefault(s => s.Code == station.Code);
+             if(st != null && !st.IsDeleted)
                 throw new DO.BadStationException(station.Code, "Duplicate Station");
             else
                 DS.DataSource.StationsList.Add(station.Clone());
@@ -183,7 +192,10 @@ namespace Dal
                 GetAllLineStationBy(s => s.Station == stationToRem.Code).ToList().ForEach(RemoveLineStation);
                 GetAllAdjacentStationsBy(s => s.Station1 == stationToRem.Code 
                 || s.Station2 == stationToRem.Code).ToList().ForEach(RemoveAdjacentStations);
+                
+                DS.DataSource.StationsList.Remove(stationToRem);
                 stationToRem.IsDeleted = true;
+                DS.DataSource.StationsList.Add(stationToRem);
             }            
             else
                 throw new DO.BadStationException(station.Code, "Station not found");
@@ -219,11 +231,12 @@ namespace Dal
 
         public void AddLineStation(DO.LineStation lineStation)
         {
-            if (DS.DataSource.LineStationsList.FirstOrDefault(s =>
-             s.Station == lineStation.Station && s.LineId == lineStation.LineId) != null
-             && !lineStation.IsDeleted)
+            var ls = DS.DataSource.LineStationsList.FirstOrDefault(s =>
+             s.Station == lineStation.Station && s.LineId == lineStation.LineId);
+            if(ls != null)
             {
-                throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
+                if(!lineStation.IsDeleted)
+                    throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                                                     "Duplicate line station");
             }
 
@@ -267,7 +280,10 @@ namespace Dal
                 && s.LineId == lineStation.LineId);
 
             if (ls != null && !ls.IsDeleted)
-                ls = lineStation;
+            {
+                DS.DataSource.LineStationsList.Remove(ls);
+                DS.DataSource.LineStationsList.Add(lineStation);
+            }
             else
                 throw new DO.BadLineStationException(lineStation.Station,
                                                 lineStation.LineId, "Station line not found");
@@ -289,7 +305,11 @@ namespace Dal
                         lineS.LineStationIndex -= 1;
                         UpdateLineStation(lineS);
                     }
+                    DS.DataSource.LineStationsList.Remove(ls);
                     ls.IsDeleted = true;
+                    DS.DataSource.LineStationsList.Add(ls);
+
+
                 }     
             }
             else  
@@ -325,9 +345,10 @@ namespace Dal
 
         public void AddUser(DO.User newUser)
         {
-            if (DS.DataSource.UsersList.FirstOrDefault(u => u.UserName == newUser.UserName) != null
-                && !newUser.IsDeleted)
+            var user = DS.DataSource.UsersList.FirstOrDefault(u => u.UserName == newUser.UserName);
+            if(user != null && !newUser.IsDeleted)
                 throw new DO.BadUsernameException(newUser.UserName, "Duplicate user username");
+            
             DS.DataSource.UsersList.Add(newUser.Clone());
         }
 
@@ -336,7 +357,10 @@ namespace Dal
             var findUser = DS.DataSource.UsersList.Find(u => u.UserName == user.UserName);
 
             if (findUser != null && !findUser.IsDeleted)
-                findUser = user;
+            {
+                DS.DataSource.UsersList.Remove(findUser);
+                DS.DataSource.UsersList.Add(user);
+            }
             else
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
         }
@@ -346,7 +370,11 @@ namespace Dal
             var findUser = DS.DataSource.UsersList.Find(u => u.UserName == user.UserName);
 
             if (findUser != null && !findUser.IsDeleted)
+            {
+                DS.DataSource.UsersList.Remove(findUser);
                 findUser.IsDeleted = true;
+                DS.DataSource.UsersList.Add(findUser);
+            }
             else
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
         }
@@ -400,7 +428,12 @@ namespace Dal
                 && s.Station2 == adjacentStations.Station2);
 
             if (adst != null && !adst.IsDeleted)
+            {
+                DS.DataSource.AdjacentStationsList.Remove(adst);
                 adst.IsDeleted = true;
+                DS.DataSource.AdjacentStationsList.Add(adst);
+            }
+                
             else
                 throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2
                     , "Adjacent Stations not found");

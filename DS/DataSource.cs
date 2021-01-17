@@ -108,7 +108,7 @@ namespace DS
             {
                 var newLine = new DO.Line()
                 {
-                    Id = Counters.LineCounter,
+                    Id = DalApi.Counters.LineCounter,
                     Code = RandomValues.getLineCode(),
                     IsDeleted = false
                 };
