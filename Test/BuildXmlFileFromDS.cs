@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 
 namespace Test
 {
-    public static class Program
+    public static class BuildXmlFileFromDS
     {
         static string linesPath = @"LinesXml.xml";
         static string adjacentStationsPath = @"AdjacentStationsXml.xml";
@@ -21,44 +21,6 @@ namespace Test
         static string bussPath = @"BussXml.xml";
         static string usersPath = @"UserXml.xml";
 
-        public static XElement CreateElement<T>(T obj)
-        {
-            var res = new XElement(typeof(T).Name);
-            foreach (PropertyInfo prop in obj.GetType().GetProperties())
-            {
-                res.Add(new XElement(prop.Name, prop.GetValue(obj)));
-            }
-            return res;
-        } 
-
-        static void creatXmls<T>(List<T> list, string path, string name)
-        {
-            XElement root = new XElement(name);
-            foreach (var item in list)
-            {
-                root.Add(CreateElement(item));
-            }
-            root.Save(path);
-        }
-
-        private static string hashPassword(string password)
-        {
-            SHA512 shaM = new SHA512Managed();
-            return Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(password)));
-        }
-
-        private static string readPassword()
-        {
-            Console.WriteLine("Please enter password");
-            return Console.ReadLine();
-        }
-
-        public class User
-        {
-            public int Id { get; set; }
-            public string HashedPassword { get; set; }
-        }
-        static Random rnd = new Random();
         static void Main(string[] args)
         {
             SaveListToXMLSerializer(DataSource.LinesList, linesPath);
@@ -77,6 +39,25 @@ namespace Test
             Console.ReadKey();
         }
 
+        public static XElement CreateElement<T>(T obj)
+        {
+            var res = new XElement(typeof(T).Name);
+            foreach (PropertyInfo prop in obj.GetType().GetProperties())
+            {
+                res.Add(new XElement(prop.Name, prop.GetValue(obj)));
+            }
+            return res;
+        }
+
+        static void creatXmls<T>(List<T> list, string path, string name)
+        {
+            XElement root = new XElement(name);
+            foreach (var item in list)
+            {
+                root.Add(CreateElement(item));
+            }
+            root.Save(path);
+        }
 
         public static XElement LoadListFromXMLElement(string filePath)
         {

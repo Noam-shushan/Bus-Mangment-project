@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BL", "BL\BL.csproj", "{3DB2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DalXml", "DalXml\DalXml.csproj", "{E396BD11-EB36-4692-9B00-C8EE3843E4FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{719C46E7-ECED-4ED5-B914-CBF3C2878AA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildXmlFileFromDS", "Test\BuildXmlFileFromDS.csproj", "{719C46E7-ECED-4ED5-B914-CBF3C2878AA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
