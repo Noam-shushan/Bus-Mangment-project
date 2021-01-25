@@ -3,10 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://schemas.microsoft.com/netfx/2009/xaml/presentation" 
+        xmlns:materialDesign1="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PLGui"
-        mc:Ignorable="d" Background="WhiteSmoke"
+        mc:Ignorable="d"
         Icon="yellow bus icon.png"
-        Title="Line info" Height="550" Width="850">
+        Title="Line info" Height="550" Width="1000">
     <Window.Resources>
         <Style TargetType="TextBox">
             <Setter Property="Width" Value="80"/>
@@ -76,7 +78,7 @@
         <ListView 
             Name="lvLineStations"  
             ItemsSource="{Binding}"
-            Width="600" Height="350"
+            Height="350"
             Grid.RowSpan="9"
             Margin="10,3,0,20" Grid.Column="0" Grid.Row="3"
             HorizontalAlignment="Left"
@@ -87,20 +89,20 @@
                     <GridView.Columns>
                         <GridViewColumn 
                             DisplayMemberBinding="{Binding Path=Name}"
-                            Header="Name" Width="180"/>
+                            Header="Name"/>
                         <GridViewColumn 
                             DisplayMemberBinding="{Binding Path=Station}"
-                            Header="Code" Width="80">
+                            Header="Code">
                         </GridViewColumn>
                         <GridViewColumn 
                             DisplayMemberBinding="{Binding Path=LineStationIndex}"
-                            Header="Station number" Width="90">
+                            Header="Station number">
                         </GridViewColumn>
                         <GridViewColumn
                             Header="Distance from next" Width="125"
                             DisplayMemberBinding="{Binding Path=DistanceFormat}"/>
                         <GridViewColumn
-                            Header="Time from next" Width="125"
+                            Header="Time from next"
                             DisplayMemberBinding="{Binding Path=TimeFormat}"/>
                     </GridView.Columns>
                 </GridView>
@@ -150,15 +152,15 @@
             <TextBlock Text="Prev Station: "/>
             <StackPanel Orientation="Horizontal" x:Name="spPrev" Visibility="Hidden">
                 <TextBlock x:Name="textBlockPrevName"/>
-                <TextBox x:Name="tbDistancePrevStation" Text="Distance"/>
-                <TextBox x:Name="tbTimePrevStation" Text="Time"/>
+                <TextBox x:Name="tbDistancePrevStation" Text="Distance" PreviewTextInput="numberValidationTextBox"/>
+                <materialDesign1:TimePicker x:Name="tbTimePrevStation" Text="Time" Is24Hours="True"/>
             </StackPanel>
 
             <TextBlock Text="Next Station: "/>
             <StackPanel Orientation="Horizontal" x:Name="spNext" Visibility="Hidden">
                 <TextBlock x:Name="textBlockNextName"/>
-                <TextBox x:Name="tbDistanceNextStation" Text="Distance"/>
-                <TextBox x:Name="tbTimeNextStation" Text="Time"/>
+                <TextBox x:Name="tbDistanceNextStation" Text="Distance" PreviewTextInput="numberValidationTextBox"/>
+                <materialDesign1:TimePicker x:Name="tbTimeNextStation" Text="Time"/>
             </StackPanel>
             <Button 
                 x:Name="btnUpdateDistAndTime"

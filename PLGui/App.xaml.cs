@@ -13,5 +13,17 @@ namespace PLGui
     /// </summary>
     public partial class App : Application
     {
+        BlApi.IBL myBL = BlApi.BlFactory.GetBL();
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try
+            {
+                myBL.SetBusStatusOnClosing();
+            }
+            finally
+            {
+                base.OnExit(e);
+            }
+        }
     }
 }

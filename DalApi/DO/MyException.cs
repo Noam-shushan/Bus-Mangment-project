@@ -94,4 +94,15 @@ namespace DO
 
         public override string ToString() => base.ToString() + $", fail to load or create xml file: {xmlFilePath}";
     }
+
+    public class BadLineTripException : Exception
+    {
+        int _id;
+
+        public BadLineTripException(int id, string message)
+            : base(message) => _id = id;
+
+        public override string ToString() =>
+            base.ToString() + $", bad line trip: {_id}";
+    }
 }

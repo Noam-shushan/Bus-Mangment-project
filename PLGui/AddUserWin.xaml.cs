@@ -45,7 +45,7 @@ namespace PLGui
                 }
 
                 newUser.UserName = tbUsername.Text;
-                newUser.Password = tbPassword.Password;
+                newUser.HashedPassword = myBL.GetHashPassword(tbPassword.Password);
                 if (cbIsAdmin.IsChecked.Value)
                     newUser.Admin = true;
                 
@@ -53,7 +53,7 @@ namespace PLGui
             }
             catch(BO.BadUsernameException ex)
             {
-                errLabUesrname.Content = $"Erorr: {ex.Message}";
+                errLabUesrname.Content = $"Error: {ex.Message}";
                 return;
             }
             Close();

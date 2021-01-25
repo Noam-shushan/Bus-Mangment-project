@@ -9,8 +9,7 @@ namespace DalApi
     public class Counters
     {
         static int _lineCounter = 0;
-        static int _busOnTripCounter = 0;
-        static int _tripCounter = 0;
+        static int _lineTripCounter = 0;
 
         public static int LineCounter
         {
@@ -19,24 +18,17 @@ namespace DalApi
                 _lineCounter++;
                 return _lineCounter;
             }
+            set => _lineCounter = value;
         }
 
-        public static int BusOnTripCounter
+        public static int LineTripCounter
         {
             get
             {
-                _busOnTripCounter++;
-                return _busOnTripCounter;
+                _lineTripCounter++;
+                return _lineTripCounter;
             }
-        }
-
-        public static int TripCounter
-        {
-            get
-            {
-                _tripCounter++;
-                return _tripCounter;
-            }
+            set => _lineTripCounter = value;
         }
     }
 }

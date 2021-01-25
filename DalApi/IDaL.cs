@@ -42,6 +42,7 @@ namespace DalApi
         void AddLineStation(DO.LineStation lineStation);
         void UpdateLineStation(DO.LineStation lineStation);
         void RemoveLineStation(DO.LineStation lineStation);
+        void RemoveLineStationOnRemoveline(DO.LineStation lineStation);
         #endregion
 
         #region User
@@ -61,5 +62,13 @@ namespace DalApi
         void RemoveAdjacentStations(DO.AdjacentStations adjacentStations);
         void UpdateAdjacentStations(DO.AdjacentStations adjacentStations);
         #endregion
+
+        #region LineTrip
+        int AddLineTrip(DO.LineTrip lineTrip);
+        DO.LineTrip GetLineTrip(int id);
+        IEnumerable<DO.LineTrip> GetAllLineTrips();
+        IEnumerable<DO.LineTrip> GetAllLineTripsBy(Predicate<DO.LineTrip> predicate); 
+        #endregion
+
     }
 }

@@ -80,4 +80,15 @@ namespace BO
         public override string ToString() =>
             base.ToString() + $", bad adjacent stations: {_station1}, {_station2}";
     }
+
+    public class BadLineTripException : Exception
+    {
+        int _id;
+
+        public BadLineTripException(int id, string message)
+            : base(message) => _id = id;
+
+        public override string ToString() =>
+            base.ToString() + $", bad line trip: {_id}";
+    }
 }

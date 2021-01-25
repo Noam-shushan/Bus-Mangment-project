@@ -3,9 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+         xmlns:materialDesign="http://schemas.microsoft.com/netfx/2009/xaml/presentation" 
+        xmlns:materialDesign1="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PLGui"
-        mc:Ignorable="d" Background="WhiteSmoke"
-        Title="Station Info" Height="450" Width="800">
+        mc:Ignorable="d" Icon="yellow bus icon.png"
+        Title="Station Info" Height="450" Width="1000">
     <Window.Resources>
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5, 2"/>
@@ -69,7 +71,7 @@
             MouseDoubleClick="lvLinesPassBy_MouseDoubleClick"
             Margin="10,0,20,0" Grid.Column="0" Grid.Row="2"
             Grid.RowSpan="4" Grid.ColumnSpan="2"
-            Width="215" Height="200"
+            Height="200"
             ItemContainerStyle="{StaticResource itemsStyle}"
             HorizontalAlignment="Left">
             <ListView.View>
@@ -77,12 +79,10 @@
                     <GridView.Columns>
                         <GridViewColumn 
                             Header="Line number"
-                            DisplayMemberBinding="{Binding Path=Code}"
-                            Width="90"/>
+                            DisplayMemberBinding="{Binding Path=Code}"/>
                         <GridViewColumn 
                             Header="Last station"
-                            DisplayMemberBinding="{Binding Path=LastStationName}"
-                            Width="125"/>
+                            DisplayMemberBinding="{Binding Path=LastStationName}"/>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
@@ -99,9 +99,10 @@
         <ListView
             x:Name="lvAdjacentStationsList"
             ItemsSource="{Binding}"
+            SelectionChanged="lvAdjacentStationsList_SelectionChanged"
             ItemContainerStyle="{StaticResource itemsStyle}"
             Grid.Row="2"
-            Width="320" Height="200" Grid.Column="2"
+            Height="200" Grid.Column="2"
             Grid.ColumnSpan="3" Grid.RowSpan="4"
             MouseLeftButtonUp="lvAdjacentStationsList_MouseLeftButtonUp">
             <ListView.View>
@@ -109,27 +110,23 @@
                     <GridView.Columns>
                         <GridViewColumn 
                             Header="Station code" 
-                            DisplayMemberBinding="{Binding Path=Station2}"
-                            Width="100"/>
+                            DisplayMemberBinding="{Binding Path=Station2}"/>
                         <GridViewColumn 
                             Header="In Line"
-                            DisplayMemberBinding="{Binding Path=LineCode}"
-                            Width="50"/>
+                            DisplayMemberBinding="{Binding Path=LineCode}"/>
                         <GridViewColumn
                             Header="Distance"
-                            DisplayMemberBinding="{Binding Path=DistanceFormat}"
-                            Width="85"/>
+                            DisplayMemberBinding="{Binding Path=DistanceFormat}"/>
                         <GridViewColumn
                             Header="Time" 
-                            DisplayMemberBinding="{Binding Path=TimeFormat}"
-                            Width="85"/>
+                            DisplayMemberBinding="{Binding Path=TimeFormat}"/>
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
         </ListView>
 
         <Grid 
-            x:Name="gridUpdate" Grid.Row="2" Grid.Column="5"  Visibility="Hidden"
+            x:Name="gridUpdate" Grid.Row="2" Grid.Column="5" Visibility="Hidden"
             Grid.RowSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -150,9 +147,9 @@
                 Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2"
                 FontSize="13"/>
             <TextBlock Text="New distance" Grid.Column="0" Grid.Row="2"/>
-            <TextBox x:Name="tbUpdateDistanc" Grid.Row="2" Grid.Column="1"/>
+            <materialDesign:TextBox x:Name="tbUpdateDistanc" Grid.Row="2" Grid.Column="1" PreviewTextInput="numberValidationTextBox"/>
             <TextBlock Text="New time" Grid.Column="0" Grid.Row="3"/>
-            <TextBox x:Name="tbUpdateTime" Grid.Column="1" Grid.Row="3" Text="00:00:00"/>
+            <materialDesign1:TimePicker x:Name="tbUpdateTime" Grid.Column="1" Grid.Row="3" Is24Hours="True"/>
             <Button x:Name="btnUpdateTimeAndDist" Grid.Column="0" Grid.Row="4"
                     Grid.ColumnSpan="2" Margin="5" Content="Updete time and distance"
                     Width="150" Click="btnUpdateTimeAndDist_Click"/>
@@ -169,11 +166,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="New latitude"/>
-                <TextBox x:Name="tbLatitude"/>
+                <TextBox x:Name="tbLatitude" PreviewTextInput="numberValidationTextBox"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="New longitude"/>
-                <TextBox x:Name="tbLongitude"/>
+                <TextBox x:Name="tbLongitude" PreviewTextInput="numberValidationTextBox"/>
             </StackPanel>
             <Button x:Name="btnUpdate" Content="update"
                     Click="btnUpdate_Click"/>

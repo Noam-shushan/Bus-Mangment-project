@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BL
@@ -36,6 +40,16 @@ namespace BL
                 throw new BO.BadUsernameException(userName, ex.Message);
             }
             return userBo;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public string GetHashPassword(string password)
+        {
+            SHA512 shaM = new SHA512Managed();
+            return Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(password)));
         }
         /// <summary>
         /// Add new User to my the Data Source
@@ -205,7 +219,12 @@ namespace BL
                 throw new BO.BadBusException(bus.LicenseNum, ex.Message);
             }
         }
-
+        /// <summary>
+        /// make a treatment, refueling, ride to the bus
+        /// </summary>
+        /// <param name="bus">the bus</param>
+        /// <param name="service">kind of service</param>
+        /// <param name="tripKm">if the sevice is ride that will be the kilometers</param>
         public void BusServices(BO.Bus bus, string service, double tripKm = 0)
         {
             switch (service)
@@ -249,6 +268,20 @@ namespace BL
             bus.KilometersAfterFueling += km;
             bus.KilometersAfterTreatment += km;
             bus.FuelRemain -= (BO.Bus.FULL_CONTAINER / BO.Bus.MAX_KILOMETER_AFTER_REFUELING) * km;
+        }
+
+        List<DO.Bus> getCopyBuss()
+        {
+            return new List<DO.Bus>(dl.GetAllBussBy(b => b.Status != DO.BusStatus.READY));
+        }
+
+        public void SetBusStatusOnClosing()
+        {
+            foreach(var bus in getCopyBuss())
+            {
+                bus.Status = DO.BusStatus.READY;
+                dl.UpdateBus(bus);
+            }
         }
         #endregion
 
@@ -320,12 +353,29 @@ namespace BL
         {
             try
             {
+                if (GetLine(station.LineId).LineStations.Count() <= 2)
+                    throw new BO.BadLineStationException(station.Station, station.LineId,
+                        "Its first or last stop line cannot be deleted");
+                
                 var lineStationDo = station.CopyPropertiesToNew(typeof(DO.LineStation)) as DO.LineStation;
                 dl.RemoveLineStation(lineStationDo);
             }
             catch (DO.BadLineStationException ex)
             {
                 throw new BO.BadLineStationException(station.Station, station.LineId, ex.Message);
+            }
+        }
+
+        public void UpdateLineStation(BO.LineStation lineStation)
+        {
+            try
+            {
+                var lineStationDo = lineStation.CopyPropertiesToNew(typeof(DO.LineStation)) as DO.LineStation;
+                dl.UpdateLineStation(lineStationDo);
+            }
+            catch(DO.BadLineStationException ex)
+            {
+                throw new BO.BadLineStationException(lineStation.Station, lineStation.LineId, ex.Message);
             }
         }
         #endregion
@@ -548,7 +598,6 @@ namespace BL
             }
             catch (DO.BadAdjacentStationsException ex)
             {
-
                 throw new BO.BadAdjacentStationsException(station1, station2, ex.Message);
             }
         }
@@ -569,5 +618,69 @@ namespace BL
         }
         #endregion
 
+        #region LineTrip
+        public int AddLineTrip(BO.LineTrip lineTrip)
+        {
+            var lineTripDo = lineTrip.CopyPropertiesToNew(typeof(DO.LineTrip)) as DO.LineTrip;
+            return dl.AddLineTrip(lineTripDo);
+        }
+        
+        public BO.LineTrip GetLineTrip(int id)
+        {
+            BO.LineTrip lineTripBo = new BO.LineTrip(); 
+            try
+            {
+                var lineTripDo = dl.GetLineTrip(id);
+                lineTripDo.CopyPropertiesTo(lineTripBo);
+                var line = GetLine(lineTripBo.LineId);
+                lineTripBo.LineCode = line.Code;
+                lineTripBo.LastStation = line.LastStationName;
+                return lineTripBo;
+            }
+            catch(DO.BadLineTripException ex)
+            {
+                throw new BO.BadLineTripException(id, ex.Message);
+            }
+        }
+
+        public IEnumerable<BO.LineTrip> GetAllLineTripsByStation(BO.Station station)
+        {
+            return from line in station.LinesPassBy
+                   from lineTrip in GetAllLineTrips()
+                   where lineTrip.LineId == line.Id
+                   let lineTripRes = SetArrivalTimeToStation(station, lineTrip)
+                   orderby lineTripRes.ArrivalTimeToStation
+                   select lineTripRes;
+        }
+
+        BO.LineTrip SetArrivalTimeToStation(BO.Station station, BO.LineTrip lineTrip)
+        {
+            TimeSpan arrivalTime = TimeSpan.Zero;
+            foreach(var lineStation in GetAllLineStationsByLineID(lineTrip.LineId))
+            {
+                arrivalTime += lineStation.TimeFromNext;
+                if (lineStation.Station == station.Code)
+                    break;
+            }
+            
+            lineTrip.ArrivalTimeToStation = lineTrip.CurrentTimeToStation = arrivalTime + lineTrip.StartAt;
+            return lineTrip;
+        }
+
+        public IEnumerable<BO.LineTrip> GetAllLineTrips()
+        {
+            return from line in dl.GetAllLineTrips()
+                   let lineBo = GetLineTrip(line.Id)
+                   select lineBo;
+        }
+
+        public IEnumerable<BO.LineTrip> GetAllLineTripsBy(Predicate<BO.LineTrip> predicate)
+        {
+            return from line in dl.GetAllLineTrips()
+                   let lineBo = GetLineTrip(line.Id)
+                   where predicate(lineBo)
+                   select lineBo;
+        }
+        #endregion
     }
 }

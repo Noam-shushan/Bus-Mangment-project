@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,7 +38,7 @@ namespace PLGui
             }
             catch (BO.BadStationException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             textBoxStationInfo.Text = _currStation.ToString();
@@ -68,31 +69,28 @@ namespace PLGui
             {
                 var adjacentStations = lvAdjacentStationsList.SelectedItem as BO.AdjacentStations;
                 double dist;
-                if (!double.TryParse(tbUpdateDistanc.Text, out dist) || dist < 0)
+                if (!double.TryParse(tbUpdateDistanc.Text, out dist))
                 {
-                    MessageBox.Show("Erorr: not a valid distanc", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Error: not a valid distanc", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
                 adjacentStations.Distance = dist;
-                TimeSpan time;
-                if (!TimeSpan.TryParse(tbUpdateTime.Text, out time))
-                {
-                    MessageBox.Show("Erorr: not a valid time", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                adjacentStations.Time = time;
+                TimeSpan time = tbUpdateTime.SelectedTime.Value.TimeOfDay;
+
+                adjacentStations.TimeInHours = time.Hours; 
+                adjacentStations.TimeInMinutes = time.Minutes;
                 myBL.UpdateAdjacentStations(adjacentStations);
                 lvAdjacentStationsList.Items.Refresh();
             }
             catch (BO.BadAdjacentStationsException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             gridUpdate.Visibility = Visibility.Hidden;
             tbUpdateDistanc.BorderBrush = tbUpdateTime.BorderBrush = Brushes.Black;
-            tbUpdateTime.Text = "00:00:00";
+            btnUpdateStation.Visibility = Visibility.Visible;
         }
 
         private void lvAdjacentStationsList_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -115,7 +113,7 @@ namespace PLGui
                 tbUpdateDistanc.BorderBrush = Brushes.Red;
                 isEmptyBox = true;
             }
-            if (tbUpdateTime.Text == string.Empty)
+            if (tbUpdateTime.SelectedTime == null)
             {
                 tbUpdateTime.BorderBrush = Brushes.Red;
                 isEmptyBox = true;
@@ -150,14 +148,16 @@ namespace PLGui
             }
             catch(BO.BadStationException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             spUpdate.Visibility = Visibility.Hidden;
+            btnUpdateStation.Visibility = Visibility.Visible;
         }
 
         private void btnUpdateStation_Click(object sender, RoutedEventArgs e)
         {
+            btnUpdateStation.Visibility = Visibility.Hidden;
             spUpdate.Visibility = Visibility.Visible;
         }
 
@@ -175,6 +175,17 @@ namespace PLGui
         {
             _currStation = myBL.GetStation(code);
             textBoxStationInfo.Text = _currStation.ToString();
+        }
+
+        private void lvAdjacentStationsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnUpdateStation.Visibility = Visibility.Hidden;
+        }
+
+        private void numberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9+.]");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

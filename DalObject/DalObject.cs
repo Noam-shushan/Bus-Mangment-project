@@ -15,6 +15,10 @@ namespace Dal
         #endregion
 
         #region Bus
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bus"></param>
         public void AddBus(DO.Bus bus)
         {
             var findBus = DS.DataSource.BussList.FirstOrDefault(b => b.LicenseNum == bus.LicenseNum);
@@ -57,7 +61,11 @@ namespace Dal
             var busToRem = DS.DataSource.BussList.Find(b => b.LicenseNum == bus.LicenseNum);
 
             if (busToRem != null && !bus.IsDeleted)
+            {
+                DS.DataSource.BussList.Remove(busToRem);
                 busToRem.IsDeleted = true;
+                DS.DataSource.BussList.Add(busToRem);
+            }
             else
                 throw new DO.BadBusException(bus.LicenseNum, "bus not found");
         }
@@ -127,7 +135,7 @@ namespace Dal
 
             if (lineToRem != null && !lineToRem.IsDeleted) 
             {
-                GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStation);
+                GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStationOnRemoveline);
                 DS.DataSource.LinesList.Remove(lineToRem);
                 lineToRem.IsDeleted = true;
                 DS.DataSource.LinesList.Add(lineToRem);
@@ -289,6 +297,19 @@ namespace Dal
                                                 lineStation.LineId, "Station line not found");
         }
 
+        public void RemoveLineStationOnRemoveline(DO.LineStation lineStation)
+        {
+            var ls =
+                DS.DataSource.LineStationsList.Find(s => s.Station == lineStation.Station
+                && s.LineId == lineStation.LineId);
+            if (ls != null && !ls.IsDeleted)
+            {
+                DS.DataSource.LineStationsList.Remove(ls);
+                ls.IsDeleted = true;
+                DS.DataSource.LineStationsList.Add(ls);
+            }
+        }
+
         public void RemoveLineStation(DO.LineStation lineStation)
         {
             var ls =
@@ -299,22 +320,64 @@ namespace Dal
             {
                 if (!ls.IsDeleted)
                 {
-                    foreach(var lineS in GetAllLineStationBy(s => s.LineId == ls.LineId 
-                    && s.LineStationIndex > ls.LineStationIndex))
-                    {
-                        lineS.LineStationIndex -= 1;
-                        UpdateLineStation(lineS);
-                    }
+                    updatePrevAndNextStationOnRemove(ls);
                     DS.DataSource.LineStationsList.Remove(ls);
                     ls.IsDeleted = true;
                     DS.DataSource.LineStationsList.Add(ls);
-
-
                 }     
             }
             else  
                 throw new DO.BadLineStationException(lineStation.Station,
                                                 lineStation.LineId, "Station line not found");
+        }
+
+        void updatePrevAndNextStationOnRemove(DO.LineStation lineStation)
+        {
+            if (lineStation.NextStation == -1 && lineStation.PrevStation == 0)
+                return;
+            foreach (var ls in GetAllLineStationBy(s => s.LineId == lineStation.LineId
+                    && s.LineStationIndex > lineStation.LineStationIndex))
+            {
+                ls.LineStationIndex -= 1;
+                UpdateLineStation(ls);
+            }
+            if (lineStation.PrevStation != 0 && lineStation.NextStation != -1)
+            {
+                var nextAdja = GetAdjacentStations(lineStation.Station, lineStation.NextStation);
+                var prevAdja = GetAdjacentStations(lineStation.PrevStation, lineStation.Station);
+                AddAdjacentStations(new DO.AdjacentStations
+                {
+                    Distance = nextAdja.Distance + nextAdja.Distance,
+                    IsDeleted = false,
+                    Station1 = prevAdja.Station1,
+                    Station2 = nextAdja.Station2,
+                    TimeInHours = prevAdja.TimeInHours + nextAdja.TimeInHours,
+                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes,
+                    LineCode = prevAdja.LineCode
+                });
+
+                var prev = GetLineStation(lineStation.PrevStation, lineStation.LineId);
+                var next = GetLineStation(lineStation.NextStation, lineStation.LineId);
+                prev.NextStation = lineStation.NextStation;
+                next.PrevStation = lineStation.PrevStation;
+                UpdateLineStation(prev);
+                UpdateLineStation(next);
+                return;
+            }
+            if (lineStation.PrevStation == 0)
+            {
+                var next = GetLineStation(lineStation.NextStation, lineStation.LineId);
+                next.PrevStation = 0;
+                UpdateLineStation(next);
+                return;
+            }
+            if (lineStation.NextStation == -1)
+            {
+                var prev = GetLineStation(lineStation.PrevStation, lineStation.LineId);
+                prev.NextStation = -1;
+                UpdateLineStation(prev);
+                return;
+            }
         }
         #endregion
 
@@ -453,6 +516,38 @@ namespace Dal
             else
                 throw new DO.BadAdjacentStationsException(adjacentStations.Station1, adjacentStations.Station2
                     , "Adjacent Stations not found");
+        }
+        #endregion
+
+        #region LineTrip
+        public int AddLineTrip(DO.LineTrip lineTrip)
+        {
+            lineTrip.Id = DalApi.Counters.LineTripCounter;
+            DS.DataSource.LineTripsList.Add(lineTrip);
+            return lineTrip.Id;
+        }
+
+        public DO.LineTrip GetLineTrip(int id)
+        {
+            var lineTrip = DS.DataSource.LineTripsList.Find(l => l.Id == id);
+
+            if (lineTrip != null)
+                return lineTrip.Clone();
+            else
+                throw new DO.BadLineTripException(id, "line trip not found");
+        }
+
+        public IEnumerable<DO.LineTrip> GetAllLineTrips()
+        {
+            return from line in DS.DataSource.LineTripsList
+                   select line.Clone();
+        }
+
+        public IEnumerable<DO.LineTrip> GetAllLineTripsBy(Predicate<DO.LineTrip> predicate)
+        {
+            return from line in DS.DataSource.LineTripsList
+                   where predicate(line)
+                   select line.Clone();
         }
         #endregion
     }

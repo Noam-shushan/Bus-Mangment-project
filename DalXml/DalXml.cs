@@ -16,12 +16,14 @@ namespace Dal
         #endregion
 
         #region Paths
-        string linesPath = @"LinesXml.xml";
-        string adjacentStationsPath = @"AdjacentStationsXml.xml";
-        string lineStationsPath = @"LineStationsXml.xml";
-        string stationPath = @"StationsXml.xml";
-        string bussPath = @"BussXml.xml";
-        string usersPath = @"UserXml.xml";
+        readonly string linesPath = @"LinesXml.xml";
+        readonly string adjacentStationsPath = @"AdjacentStationsXml.xml";
+        readonly string lineStationsPath = @"LineStationsXml.xml";
+        readonly string stationPath = @"StationsXml.xml";
+        readonly string bussPath = @"BussXml.xml";
+        readonly string usersPath = @"UserXml.xml";
+        readonly string linesTripPath = @"LinesTripXml.xml";
+        readonly string countersPath = @"CountersXml.xml";
         #endregion
 
         #region Bus
@@ -78,8 +80,8 @@ namespace Dal
         public IEnumerable<DO.Bus> GetAllBuss()
         {
             var bussRootElem = XmlTools.LoadListFromXMLElement(bussPath);
-            return from b in bussRootElem.Elements()
-                   where b.Element("IsDeleted").Value == false.ToString()
+            var list = from b in bussRootElem.Elements()
+                   where !bool.Parse(b.Element("IsDeleted").Value)
                    select new DO.Bus()
                    {
                        LicenseNum = int.Parse(b.Element("LicenseNum").Value),
@@ -92,6 +94,7 @@ namespace Dal
                        Status = (DO.BusStatus)Enum.Parse(typeof(DO.BusStatus), b.Element("Status").Value),
                        TotalTrip = double.Parse(b.Element("TotalTrip").Value)
                    };
+            return list;
         }
 
         public IEnumerable<DO.Bus> GetAllBussBy(Predicate<DO.Bus> predicate)
@@ -166,8 +169,14 @@ namespace Dal
 
         public int AddLine(DO.Line line)
         {
+            var counters = XmlTools.LoadListFromXMLSerializer<int>(countersPath);
+            DalApi.Counters.LineCounter = counters[0];
+            
             line.Id = DalApi.Counters.LineCounter;
             
+            counters[0] = line.Id;
+            XmlTools.SaveListToXMLSerializer(counters, countersPath);
+
             var lineList = XmlTools.LoadListFromXMLSerializer<DO.Line>(linesPath);
             lineList.Add(line);
             XmlTools.SaveListToXMLSerializer(lineList, linesPath);
@@ -197,8 +206,8 @@ namespace Dal
 
             if (lineToRem != null && !lineToRem.IsDeleted)
             {
+                GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStationOnRemoveline);
                 lineList.Remove(lineToRem);
-                GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStation);
                 lineToRem.IsDeleted = true;
                 lineList.Add(lineToRem);
                 XmlTools.SaveListToXMLSerializer(lineList, linesPath);
@@ -269,12 +278,11 @@ namespace Dal
 
             if (stationToRem != null && !stationToRem.IsDeleted)
             {
-                stationList.Remove(stationToRem);
-                
                 GetAllLineStationBy(s => s.Station == stationToRem.Code).ToList().ForEach(RemoveLineStation);
                 GetAllAdjacentStationsBy(s => s.Station1 == stationToRem.Code
                 || s.Station2 == stationToRem.Code).ToList().ForEach(RemoveAdjacentStations);
-                
+
+                stationList.Remove(stationToRem);
                 stationToRem.IsDeleted = true;
                 stationList.Add(stationToRem);
                 XmlTools.SaveListToXMLSerializer(stationList, stationPath);
@@ -365,28 +373,87 @@ namespace Dal
                                                 lineStation.LineId, "Station line not found");
         }
 
-        public void RemoveLineStation(DO.LineStation lineStation)
+        public void RemoveLineStationOnRemoveline(DO.LineStation lineStation)
         {
             var lineStationList = XmlTools.LoadListFromXMLSerializer<DO.LineStation>(lineStationsPath);
             var ls = lineStationList.Find(s => s.Station == lineStation.Station
                                             && s.LineId == lineStation.LineId);
-
-            if (ls != null && !ls.IsDeleted)
+            if(ls != null && !ls.IsDeleted)
             {
-                foreach (var lineS in GetAllLineStationBy(s => s.LineId == ls.LineId
-                    && s.LineStationIndex > ls.LineStationIndex))
-                {
-                    lineS.LineStationIndex -= 1;
-                    UpdateLineStation(lineS);
-                }
                 lineStationList.Remove(ls);
                 ls.IsDeleted = true;
                 lineStationList.Add(ls);
                 XmlTools.SaveListToXMLSerializer(lineStationList, lineStationsPath);
             }
+        }
+
+        public void RemoveLineStation(DO.LineStation lineStation)
+        {
+            var lineStationList = XmlTools.LoadListFromXMLSerializer<DO.LineStation>(lineStationsPath);
+            var ls = lineStationList.Find(s => s.Station == lineStation.Station
+                                            && s.LineId == lineStation.LineId);
+            if (ls != null)
+            {
+                if (!ls.IsDeleted)
+                { 
+                    updatePrevAndNextStationOnRemove(ls, lineStationList);
+                    lineStationList.Remove(ls);
+                    ls.IsDeleted = true;
+                    lineStationList.Add(ls);
+                    XmlTools.SaveListToXMLSerializer(lineStationList, lineStationsPath);
+                }
+            }
             else
                 throw new DO.BadLineStationException(lineStation.Station,
                                                 lineStation.LineId, "Station line not found");
+        }
+
+        void updatePrevAndNextStationOnRemove(DO.LineStation lineStation, List<DO.LineStation> lineStationList)
+        {
+            if (lineStation.NextStation == -1 && lineStation.PrevStation == 0)
+                return;
+            foreach (var ls in lineStationList.FindAll(s => s.LineId == lineStation.LineId
+                    && s.LineStationIndex > lineStation.LineStationIndex && !s.IsDeleted).OrderBy(s => s.LineStationIndex))
+            {
+                ls.LineStationIndex -= 1;
+            }
+            if(lineStation.PrevStation != 0 && lineStation.NextStation != -1)
+            {
+                var nextAdja = GetAdjacentStations(lineStation.Station, lineStation.NextStation);
+                var prevAdja = GetAdjacentStations(lineStation.PrevStation, lineStation.Station);
+                AddAdjacentStations(new DO.AdjacentStations
+                {
+                    Distance = nextAdja.Distance + nextAdja.Distance,
+                    IsDeleted = false,
+                    Station1 = lineStation.PrevStation,
+                    Station2 = lineStation.NextStation,
+                    TimeInHours = prevAdja.TimeInHours + nextAdja.TimeInHours,
+                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes,
+                    LineCode = prevAdja.LineCode
+                });
+                
+                var prev = lineStationList.Find(s => s.Station == lineStation.PrevStation 
+                && s.LineId == lineStation.LineId);
+                var next = lineStationList.Find(s => s.Station == lineStation.NextStation
+                && s.LineId == lineStation.LineId);
+                prev.NextStation = lineStation.NextStation;
+                next.PrevStation = lineStation.PrevStation;
+                return;
+            }
+            if(lineStation.PrevStation == 0)
+            {
+                var next = lineStationList.Find(s => s.Station == lineStation.NextStation
+                && s.LineId == lineStation.LineId);
+                next.PrevStation = 0;
+                return;
+            }
+            if (lineStation.NextStation == -1)
+            {
+                var prev = lineStationList.Find(s => s.Station == lineStation.PrevStation
+                && s.LineId == lineStation.LineId);
+                prev.NextStation = -1;
+                return;
+            }
         }
         #endregion
 
@@ -542,6 +609,50 @@ namespace Dal
             }
             else
                 throw new DO.BadUsernameException(user.UserName, $"User not found {user.UserName}");
+        }
+        #endregion
+
+        #region LineTrip
+        public int AddLineTrip(DO.LineTrip lineTrip)
+        {
+            var counters = XmlTools.LoadListFromXMLSerializer<int>(countersPath);
+            DalApi.Counters.LineTripCounter = counters[1];
+
+            lineTrip.Id = DalApi.Counters.LineTripCounter;
+
+            counters[1] = lineTrip.Id;
+            XmlTools.SaveListToXMLSerializer(counters, countersPath);
+
+            var lineTripList = XmlTools.LoadListFromXMLSerializer<DO.LineTrip>(linesTripPath);
+            lineTripList.Add(lineTrip);
+            XmlTools.SaveListToXMLSerializer(lineTripList, linesTripPath);
+            return lineTrip.Id;
+        }
+
+        public DO.LineTrip GetLineTrip(int id)
+        {
+            var lineTripList = XmlTools.LoadListFromXMLSerializer<DO.LineTrip>(linesTripPath);
+            var lineTrip = lineTripList.Find(b => b.Id == id);
+
+            if (lineTrip != null)
+                return lineTrip;
+            else
+                throw new DO.BadLineTripException(id, "line trip not found");
+        }
+
+        public IEnumerable<DO.LineTrip> GetAllLineTrips()
+        {
+            var lineTripList = XmlTools.LoadListFromXMLSerializer<DO.LineTrip>(linesTripPath);
+            return from lineTrip in lineTripList
+                   select lineTrip;
+        }
+
+        public IEnumerable<DO.LineTrip> GetAllLineTripsBy(Predicate<DO.LineTrip> predicate)
+        {
+            var lineTripList = XmlTools.LoadListFromXMLSerializer<DO.LineTrip>(linesTripPath);
+            return from lineTrip in lineTripList
+                   where predicate(lineTrip)
+                   select lineTrip;
         }
         #endregion
     }

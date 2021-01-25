@@ -207,7 +207,7 @@ namespace dotNet5781_02_7588_3756
                     Console.WriteLine($"station number {station.BusStationKey} remove successfully from bus line {busKey}");
                 }
                 else
-                    Console.WriteLine("Erorr: station not found in the line");
+                    Console.WriteLine("Error: station not found in the line");
 
             }
 

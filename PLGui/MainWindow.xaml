@@ -6,7 +6,13 @@
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
         Icon="yellow bus icon.png"
-        Background="WhiteSmoke"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         Title="Travel system" Height="400" Width="450">
     <Window.Resources>
         <Style TargetType="Label">
@@ -23,6 +29,8 @@
             <Setter Property="Margin" Value="10,10,3,10"/>
             <Setter Property="Height" Value="30"/>
             <Setter Property="Width" Value="120"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style TargetType="TextBox" BasedOn="{StaticResource box}"/>
         
@@ -37,24 +45,23 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Username"/>
                 <TextBox 
-                    x:Name="tbUsername"/>
+                    x:Name="tbUsername" KeyDown="tbUsername_KeyDown"/>
             </StackPanel>
             <Label  x:Name="lbErrUsername"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBlock Text="Password"/>
                 <PasswordBox 
                     x:Name="tbPassword"
-                    Style="{StaticResource box}"/>
+                    Style="{StaticResource box}" KeyDown="tbPassword_KeyDown"/>
             </StackPanel>
             <Label x:Name="lbErrPassword"/>
             <Button
                 x:Name="btnLogIn"
                 Content="Log in"
                 Margin="10"
-                Height="30"
-                Width="70"
                 HorizontalAlignment="Center"
                 Click="btnLogIn_Click"
+                KeyDown="btnLogIn_KeyDown"
             />
             <TextBlock Text="Don't have a user?" Margin="120,0,0,0"/>
             <Button x:Name="btnAddUser" 

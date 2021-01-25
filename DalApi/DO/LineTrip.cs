@@ -13,9 +13,7 @@ namespace DO
     {
         public int Id { get; set; }
         public int LineId { get; set; }
-        public TimeSpan StartAt { get; set; }
-        public TimeSpan FinishAt { get; set; }
-        public TimeSpan Frequency { get; set; }
-        public bool IsDeleted { get; set; }
+        public int StartAtInMinutes { get; set; }
+        public int StartAtInHours { get; set; }
     }
 }

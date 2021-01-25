@@ -8,74 +8,98 @@ namespace DS
 {
     public static class DataSource
     {
-        public static List<DO.User> UsersList; // did
-        public static List<DO.Bus> BussList; // did
-        public static List<DO.Line> LinesList; // did
-        public static List<DO.BusOnTrip> BusesOnTripList; 
-        public static List<DO.AdjacentStations> AdjacentStationsList; // did
-        public static List<DO.Station> StationsList; // did
-        public static List<DO.LineStation> LineStationsList; // did
-        public static List<DO.Trip> TripsList;
+        public static List<DO.User> UsersList;
+        public static List<DO.Bus> BussList; 
+        public static List<DO.Line> LinesList; 
+        public static List<DO.AdjacentStations> AdjacentStationsList; 
+        public static List<DO.Station> StationsList; 
+        public static List<DO.LineStation> LineStationsList; 
         public static List<DO.LineTrip> LineTripsList;
+
+        static Random random = new Random();
 
         static DataSource()
         {
-            initAllLists();
+            initializAllLists();
         }
 
-        static void initAllLists()
+        static void initializAllLists()
         {
             InitializStations.Initializ50Stations();
-            //initializStations();
             initializLines();
             initializBuss();
             initializUsers();
             initializAdjacentStationsList();
+            initializLinesTripList();
+        }
+
+        static void initializLinesTripList()
+        {
+            LineTripsList = new List<DO.LineTrip>();
+            foreach( var line in LinesList)
+            {
+                var time = RandomValues.getTime();
+                LineTripsList.Add(
+                    new DO.LineTrip
+                    {
+                        Id = DalApi.Counters.LineTripCounter,
+                        LineId = line.Id,
+                        StartAtInHours = time.Hours,
+                        StartAtInMinutes = time.Minutes
+                    }) ;
+            }
         }
 
         static void initializUsers()
         {
-            UsersList = new List<DO.User>()
+            UsersList = new List<DO.User>
             {
                 new DO.User
                 {
+                    UserName = "noam1",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("1234"),
+                    Admin = false,
+                    IsDeleted = false
+                },
+                new DO.User
+                {
                     UserName = "noam",
-                    Password = "1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("1234"),
                     Admin = true,
                     IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "David_Hamelch",
-                    Password = "David1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("David1234"),
                     Admin = false,
                     IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Yossi_Sossi",
-                    Password = "Yossi1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("Yossi1234"),
                     Admin = true,
                     IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Honi_Hamehagel",
-                    Password = "Honi1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("Honi1234"),
                     Admin = false,
                     IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Nach_Nachma_Nachman",
-                    Password = "Breslev1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("Breslev1234"),
                     Admin = true,
                     IsDeleted = false
                 },
                 new DO.User
                 {
                     UserName = "Rashbi-in-Mirom",
-                    Password = "Rashbi1234",
+                    HashedPassword = AuxiliaryFunctions.GetHashPassword("Rashbi1234"),
                     Admin = false,
                     IsDeleted = false
                 },
@@ -199,13 +223,15 @@ namespace DS
                     var station2 = StationsList.Find(s => s.Code == ls.NextStation);
                     var dist = AuxiliaryFunctions.GetDisteance(station1.Latitude, station1.Longitude,
                         station2.Latitude, station2.Longitude);
+                    var time = AuxiliaryFunctions.GetTimeBetweenStations(dist);
                     AdjacentStationsList.Add(new DO.AdjacentStations()
                     {
                         Station1 = ls.Station,
                         Station2 = ls.NextStation,
                         LineCode = line.Code,
                         Distance = dist,
-                        Time = AuxiliaryFunctions.GetTimeBetweenStations(dist),
+                        TimeInHours = time.Hours,
+                        TimeInMinutes = time.Minutes,
                         IsDeleted = false
                     }) ;
                 }

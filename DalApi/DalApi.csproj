@@ -46,17 +46,15 @@
     <Compile Include="DalFactory.cs" />
     <Compile Include="DLConfig.cs" />
     <Compile Include="DO\Bus.cs" />
-    <Compile Include="DO\BusOnTrip.cs" />
     <Compile Include="DO\Enums.cs" />
     <Compile Include="DO\Line.cs" />
     <Compile Include="DO\LineStation.cs" />
     <Compile Include="DO\LineTrip.cs" />
     <Compile Include="DO\Station.cs" />
-    <Compile Include="DO\Trip.cs" />
     <Compile Include="DO\User.cs" />
     <Compile Include="DO\AdjacentStations.cs" />
     <Compile Include="IDaL.cs" />
-    <Compile Include="MyException.cs" />
+    <Compile Include="DO\MyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

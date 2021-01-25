@@ -3,10 +3,105 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PLGui"
+        xmlns:materialDesign="http://schemas.microsoft.com/netfx/2009/xaml/presentation" 
+        xmlns:materialDesign1="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Traveling" Height="450" Width="800">
+        Icon="yellow bus icon.png"
+        Title="Traveling" Height="700" Width="1000">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas"/>
+        </Style>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="200*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="4" Grid.Row="0" Margin="10,10,10,0" Height="63" VerticalAlignment="Top" FontSize="15"><Run FontSize="17" FontFamily="Consolas" Text="Simulator"/><LineBreak/><Run FontSize="17" FontFamily="Consolas"/><LineBreak/><Run Text="Enter speed"/></TextBlock>
+
+        <TextBlock x:Name="txtLastLineArrive" Grid.Column="1" Grid.Row="1" FontSize="14"/>
+
+        <materialDesign:TextBox 
+            x:Name="tbSpeed" Grid.Row="1" Grid.Column="4"
+            Width="120" Height="30"
+            PreviewTextInput="numberValidationTextBox" FontSize="13.5"/>
+
+        <Grid Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2" Grid.RowSpan="8" >
+            <materialDesign1:Clock
+            DisplayAutomation="CycleWithSeconds" Is24Hours="True"
+            x:Name="clock" Width="Auto"/>
+        </Grid>
+
+
+        <TextBlock Text="Mode" Grid.Column="4" HorizontalAlignment="Center" Grid.Row="2" VerticalAlignment="Bottom"  FontSize="15"/>
+
+        <ToggleButton 
+            x:Name="btnPlayStop" Grid.Column="4" Grid.Row="3" Checked="btnPlayStop_Checked" Unchecked="btnPlayStop_Unchecked"/>
+
+        <TextBlock Text="Select Station" FontSize="15" HorizontalAlignment="Center" Margin="0,20,0,0" Height="30" />
+
+        <ComboBox Name="cbStations" Grid.Column="0" Grid.Row="1" SelectionChanged="cbStations_SelectionChanged" Margin="10,0,0,0" Width="180"/>
+
+        <ListView 
+            x:Name="lvLinesPassBy" 
+            ItemsSource="{Binding}"
+            Margin="10,1.667,0,1" Grid.Column="0" Grid.Row="2"
+            Grid.RowSpan="4" Grid.ColumnSpan="3"
+            Height="200">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn 
+                            Header="Line number"
+                            DisplayMemberBinding="{Binding Path=Code}"/>
+                        <GridViewColumn 
+                            Header="First station"
+                            DisplayMemberBinding="{Binding Path=FirstStationName}"/>
+                        <GridViewColumn 
+                            Header="Last station"
+                            DisplayMemberBinding="{Binding Path=LastStationName}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <ListView
+            x:Name="lvLinesTrip" ItemsSource="{Binding}" Grid.Column="0" Grid.Row="6"
+            Grid.ColumnSpan="3" Grid.RowSpan="4" Height="200" Visibility="Hidden">
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn 
+                            Header="Line" DisplayMemberBinding="{Binding Path=LineCode}"/>
+                        <GridViewColumn 
+                            Header="Last station" DisplayMemberBinding="{Binding Path=LastStation}"/>
+                        <GridViewColumn 
+                            Header="Arrival time" DisplayMemberBinding="{Binding Path=ArrivalTimeToStationFormat}"/>
+                        <GridViewColumn 
+                            Header="Estimated arrival time" DisplayMemberBinding="{Binding Path=CurrentTimeToStationFormat}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>

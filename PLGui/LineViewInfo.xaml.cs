@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using BL;
 
 namespace PLGui
 {
@@ -22,7 +22,7 @@ namespace PLGui
     public partial class LineViewInfo : Window
     {
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
-        ObservableCollection<BO.LineStation> myLineStationsList = new ObservableCollection<BO.LineStation>();
+        ObservableCollection<BO.LineStation> myLineStationsList;
         BO.LineStation newLineStation; // A line station that will be used to add a new station to the line 
         string _updatePrevOrNext;
 
@@ -37,17 +37,14 @@ namespace PLGui
             }
             catch (BO.BadLineException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
             }
             
             textBlockLineInfo.Text = $"Line number: {line.Code}";
             textBlockArea.Text = $"Area: {line.Area.ToString().ToLower()}";
-            
-            foreach(var ls in line.LineStations)
-            {
-                myLineStationsList.Add(ls);
-            }
+
+            myLineStationsList = new ObservableCollection<BO.LineStation>(line.LineStations);
             lvLineStations.ItemsSource = myLineStationsList;
             
             newLineStation = new BO.LineStation() // Set with defult values
@@ -61,15 +58,17 @@ namespace PLGui
             };
         }
 
+        // on double click on one line station in the list, show the station info
         private void lvLineStations_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var stationLine = lvLineStations.SelectedItem as BO.LineStation;
             if (stationLine == null)
                 return;
-            var station = myBL.GetStation(stationLine.Station);
+            var station = myBL.GetStation(stationLine.Station); // build the station
             new StationViewInfo(station).Show();
         }
 
+        // remove station from the line
         private void btnRemove_Click(object sender, RoutedEventArgs e)
         {
             var stationToRem = lvLineStations.SelectedItem as BO.LineStation;
@@ -82,6 +81,7 @@ namespace PLGui
             {
                 myBL.RemoveLineStation(stationToRem);
                 refreshMyList();
+                
                 Management mywin = null;
                 foreach (var win in Application.Current.Windows)
                 {
@@ -89,30 +89,33 @@ namespace PLGui
                         mywin = win as Management;
                 }
                 if (mywin != null)
-                    mywin.refreshMyLineList();
+                    mywin.refreshMyLineList(); // updete the main mangement window with the change
             }
             catch (BO.BadLineException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             catch (BO.BadLineStationException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
         }
 
         private void btnAddLineStation_Click(object sender, RoutedEventArgs e)
-        {
+        {   
+            // Fills the comboBox with all stations where the line does not pass
             cbStations.ItemsSource = (from s1 in myBL.GetAllStations()
                                       where !(from s2 in myLineStationsList
                                               select s2.Station).Contains(s1.Code)
-                                      select s1).Distinct().ToList();
+                                      select s1).Distinct().ToList();  
+
             gridAddStation.Visibility = Visibility.Visible;
             btnUpdete.Visibility = Visibility.Visible;
         }
 
+        // the prebious station that the user select for the new line station
         private void btnPreviousStation_Click(object sender, RoutedEventArgs e)
         {
             var prev = lvLineStations.SelectedItem as BO.LineStation;
@@ -135,7 +138,10 @@ namespace PLGui
                 return;
             }
             newLineStation.Station = station.Code;
+            
+            // Flags to know if there infromation of distance and time in the database
             bool prevMiss = false, nextMiss = false;
+
             BO.AdjacentStations nextStationAdst, prevStationAdst;
             try
             {
@@ -145,7 +151,7 @@ namespace PLGui
             }
             catch (BO.BadAdjacentStationsException)
             {
-                MessageBox.Show($"Missing distance and time information from station {newLineStation.NextStation}", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Missing distance and time information from station {newLineStation.NextStation}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 
                 spUpdateDistAndTime.Visibility = Visibility.Visible;
                 spNext.Visibility = Visibility.Visible;
@@ -158,10 +164,15 @@ namespace PLGui
                 prevStationAdst = myBL.GetAdjacentStations(newLineStation.PrevStation, newLineStation.Station);
                 newLineStation.DistanceFromPrev = prevStationAdst.Distance;
                 newLineStation.TimeFromPrev = prevStationAdst.Time;
+
+                var prevStation = myBL.GetLineStation(newLineStation.PrevStation, newLineStation.LineId);
+                prevStation.DistanceFromNext = prevStationAdst.Distance;
+                prevStation.TimeFromNext = prevStationAdst.Time;
+                myBL.UpdateLineStation(prevStation);
             }
             catch (BO.BadAdjacentStationsException)
             {
-                MessageBox.Show($"Missing distance and time information from station {newLineStation.PrevStation}", "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Missing distance and time information from station {newLineStation.PrevStation}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 spUpdateDistAndTime.Visibility = Visibility.Visible;
                 spPrev.Visibility = Visibility.Visible;
@@ -169,6 +180,12 @@ namespace PLGui
                     $"from the prev station {newLineStation.PrevStation}\n";
                 prevMiss = true;
             }
+            catch (BO.BadLineStationException ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             if (prevMiss && nextMiss)
             {
                 _updatePrevOrNext = "buth";
@@ -201,17 +218,17 @@ namespace PLGui
             }
             catch (BO.BadLineStationException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             catch(BO.BadAdjacentStationsException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             catch(BO.BadLineException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             clearGridAddSation();
@@ -227,6 +244,7 @@ namespace PLGui
             newLineStation.Station = -1;
             btnUpdete.IsEnabled = false;
         }
+
         /// <summary>
         /// Updates the display list from the data source
         /// </summary>
@@ -235,6 +253,7 @@ namespace PLGui
             myLineStationsList.Clear();
             foreach (var s in myBL.GetLine(newLineStation.LineId).LineStations)
                 myLineStationsList.Add(s);
+            
             lvLineStations.Items.Refresh();
         }
 
@@ -259,7 +278,8 @@ namespace PLGui
                         IsDeleted = false,
                         Station1 = newLineStation.PrevStation,
                         Station2 = newLineStation.Station,
-                        Time = t1
+                        TimeInHours = t1.Hours,
+                        TimeInMinutes = t1.Minutes
                     }); 
                 }
                 if (_updatePrevOrNext == "buth" || _updatePrevOrNext == "next")
@@ -270,13 +290,14 @@ namespace PLGui
                         IsDeleted = false,
                         Station1 = newLineStation.Station,
                         Station2 = newLineStation.NextStation,
-                        Time = t2
+                        TimeInHours = t2.Hours,
+                        TimeInMinutes = t2.Minutes
                     }); 
                 }
             }
             catch (BO.BadAdjacentStationsException ex)
             {
-                MessageBox.Show("Erorr:" + ex.Message, "Erorr", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             textBlockUpdateTimeAndDist.Text = "";
@@ -291,6 +312,8 @@ namespace PLGui
         private bool validBoxs(out double dist1, out double dist2, out TimeSpan t1, out TimeSpan t2, string select = "buth")
         {
             bool valid = true;
+            t1 = t2 = TimeSpan.Zero;
+            
             if (!double.TryParse(tbDistancePrevStation.Text, out dist1) && (select == "buth" || select == "prev"))
             {
                 tbDistancePrevStation.BorderBrush = Brushes.Red;
@@ -301,17 +324,34 @@ namespace PLGui
                 tbDistanceNextStation.BorderBrush = Brushes.Red;
                 valid = false;
             }
-            if (!TimeSpan.TryParse(tbTimePrevStation.Text, out t1) && (select == "buth" || select == "prev"))
+            
+            if (tbTimePrevStation.SelectedTime == null && (select == "buth" || select == "prev"))
             {
                 tbTimePrevStation.BorderBrush = Brushes.Red;
                 valid = false;
             }
-            if (!TimeSpan.TryParse(tbTimeNextStation.Text, out t2) && (select == "buth" || select == "next"))
+            else if(tbTimePrevStation.SelectedTime != null)
+            {
+                t1 = tbTimePrevStation.SelectedTime.Value.TimeOfDay;
+            }
+            
+            if (tbTimeNextStation.SelectedTime == null && (select == "buth" || select == "next"))
             {
                 tbTimeNextStation.BorderBrush = Brushes.Red;
                 valid = false;
             }
+            else if(tbTimeNextStation.SelectedTime != null)
+            {
+                t2 = tbTimeNextStation.SelectedTime.Value.TimeOfDay;
+            }
+            
             return valid;
+        }
+
+        private void numberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9+.]");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

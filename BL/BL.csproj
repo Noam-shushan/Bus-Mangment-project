@@ -47,9 +47,12 @@
     <Compile Include="BO\Bus.cs" />
     <Compile Include="BO\Enums.cs" />
     <Compile Include="BO\LineStation.cs" />
+    <Compile Include="BO\LineTrip.cs" />
     <Compile Include="BO\MyException.cs" />
     <Compile Include="BO\Station.cs" />
     <Compile Include="BO\User.cs" />
+    <Compile Include="Clock.cs" />
+    <Compile Include="ClockFactory.cs" />
     <Compile Include="DeepCopyUtilities.cs" />
     <Compile Include="IBL.cs" />
     <Compile Include="BO\Line.cs" />

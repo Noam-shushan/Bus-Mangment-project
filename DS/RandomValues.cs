@@ -23,6 +23,11 @@ namespace DS
             return key;
         }
 
+        internal static TimeSpan getTime()
+        {
+            return new TimeSpan(random.Next(6, 24), random.Next(0, 60), 0);
+        }
+
         internal static void getLocation(out double latitude, out double longitude)
         {
             latitude = random.NextDouble() + random.Next(33, 36);

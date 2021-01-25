@@ -12,7 +12,12 @@ namespace BO
         public int Station2 { get; set; }
         public int LineCode { get; set; }
         public double Distance { get; set; }
-        public TimeSpan Time { get; set; }
+        public int TimeInMinutes { get; set; }
+        public int TimeInHours { get; set; } 
+        public TimeSpan Time 
+        { 
+            get => new TimeSpan(TimeInHours, TimeInMinutes, 0); 
+        }
         public bool IsDeleted { get; set; }
         public string DistanceFormat
         {
@@ -27,7 +32,7 @@ namespace BO
         {
             get
             {
-                return Time.ToString(@"hh\:mm"); ;
+                return Time.ToString(@"hh\:mm");
             }
         }
     }

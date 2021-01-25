@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://schemas.microsoft.com/netfx/2009/xaml/presentation" 
+        xmlns:materialDesign1="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:PLGui"
         mc:Ignorable="d"
         FontFamily="Consolas" Background="WhiteSmoke"
         Icon="yellow bus icon.png"
-        Title="Management" Height="550" Width="800">
+        Title="Management" Height="550" Width="1000">
     <Window.Resources>
         <Color x:Key="ControlNormalColor">DarkSeaGreen</Color>
         <Color x:Key="ControlMouseOverColor">#FFAFA3B9</Color>
@@ -88,43 +90,11 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="alternatingListViewItemStyle" TargetType="{x:Type ListViewItem}">
-            <Setter Property="Height" Value="30"/>
-            <Style.Triggers>
-                <!-- setting up triggers for alternate background colors -->
-                <Trigger Property="IsSelected" Value="true" >
-                    <Setter Property="Background" Value="Plum" />
-                </Trigger>
-                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="Gainsboro"></Setter>
-                </Trigger>
-                <Trigger Property="ItemsControl.AlternationIndex" Value="2">
-                    <Setter Property="Background" Value="White"></Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="columnHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                        <Border BorderThickness="0,0,0,1" BorderBrush="Black" Background="Transparent">
-                            <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="5,5,5,0" Width="{TemplateBinding Width}" TextAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="OverridesDefaultStyle" Value="True" />
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-        </Style>
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="5, 2"/>
             <Setter Property="Width" Value="120"/>
-        </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="5, 2"/>
-            <Setter Property="Width" Value="120"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
@@ -141,9 +111,6 @@
                     <Setter Property="Foreground" Value="Black"/>
                 </Trigger>
             </Style.Triggers>
-        </Style>
-        <Style x:Key="bussListViewItemStyle" BasedOn="{StaticResource alternatingListViewItemStyle}" TargetType="{x:Type ListViewItem}">
-
         </Style>
     </Window.Resources>
     <Grid>
@@ -199,7 +166,7 @@
 
         <!--#region Lines -->
         <Grid 
-            x:Name="gridLines"  Visibility="Collapsed"
+            x:Name="gridLines" Visibility="Collapsed"
             Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -216,25 +183,23 @@
                 ItemsSource="{Binding}"
                 Grid.Column="0" Grid.Row="0"
                 Grid.RowSpan="2"
-                Width="400" Height="400"
                 HorizontalAlignment="Left"
                 MouseDoubleClick="lvLineList_MouseDoubleClick"
-                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
-                AlternationCount="2"
-                >
+                Height="400"
+                AlternationCount="2">
                 <ListView.View>
-                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                    <GridView >
                         <GridView.Columns>
                             <GridViewColumn 
-                            Header="Line Number" Width="90" 
+                            Header="Line Number" 
                             DisplayMemberBinding="{Binding Path=Code}">
                             </GridViewColumn>
                             <GridViewColumn 
-                            Header="From" Width="155" 
+                            Header="From"
                             DisplayMemberBinding="{Binding Path=FirstStationName}">
                             </GridViewColumn>
                             <GridViewColumn
-                            Header="To" Width="155"
+                            Header="To"
                             DisplayMemberBinding="{Binding Path=LastStationName}"/>
                         </GridView.Columns>
                     </GridView>
@@ -294,7 +259,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="5,0">
                         <TextBlock Text="Time"/>
-                        <TextBox x:Name="tbTimeForNewLineStation" Margin="33,0,0,0" Text="00:00"/>
+                        <materialDesign1:TimePicker x:Name="tbTimeForNewLineStation" Margin="33,0,0,0" Is24Hours="True"/>
                     </StackPanel>
                     
                     <Button 
@@ -324,28 +289,23 @@
                 ItemsSource="{Binding}"
                 Grid.Column="0" Grid.Row="0"
                 Grid.RowSpan="2"
-                Width="400" Height="400"
-                ItemContainerStyle="{StaticResource alternatingListViewItemStyle}"
                 MouseDoubleClick="lvStationList_MouseDoubleClick"
-                AlternationCount="2"
-                >
+                 Height="400"
+                AlternationCount="2">
                 <ListView.View>
-                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                    <GridView>
                         <GridView.Columns>
                             <GridViewColumn 
                                 Header="Station Code" 
-                                DisplayMemberBinding="{Binding Path=Code}"
-                                Width="90">
+                                DisplayMemberBinding="{Binding Path=Code}">
                             </GridViewColumn>
                             <GridViewColumn 
                                 Header="Area" 
-                                DisplayMemberBinding="{Binding Path=Area}"
-                                Width="80">
+                                DisplayMemberBinding="{Binding Path=Area}">
                             </GridViewColumn>
                             <GridViewColumn 
                                 Header="Name" 
-                                DisplayMemberBinding="{Binding Path=Name}"
-                                Width="230">
+                                DisplayMemberBinding="{Binding Path=Name}">
                             </GridViewColumn>
                         </GridView.Columns>
                     </GridView>
@@ -416,15 +376,14 @@
                 x:Name="lvBusList"
                 ItemsSource="{Binding}"
                 SelectionChanged="lvBusList_SelectionChanged"
-                ItemContainerStyle="{StaticResource bussListViewItemStyle}"
                 AlternationCount="2"
                 MouseDoubleClick="lvBusList_MouseDoubleClick"
-                Margin="20,0,10,10"  Width="520" Height="350"
+                Margin="20,0,10,10" Height="350"
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
                 <ListView.View >
-                    <GridView ColumnHeaderContainerStyle="{StaticResource columnHeaderStyle}">
+                    <GridView>
                         <GridView.Columns>
-                            <GridViewColumn  Header="License Number" Width="100">
+                            <GridViewColumn  Header="License Number">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock 
@@ -435,23 +394,16 @@
                             </GridViewColumn>
                             <GridViewColumn 
                                 DisplayMemberBinding="{Binding Path=TotalTrip}"
-                                Header="Kilometers" Width="90">
+                                Header="Kilometers">
                             </GridViewColumn>
                             <GridViewColumn 
                                 DisplayMemberBinding="{Binding Path=FromDateAsDate}"
-                                Header="Start activity" Width="100">
+                                Header="Start activity">
                             </GridViewColumn>
                             <GridViewColumn 
-                                Header="km after treatment" Width="130"
+                                Header="km after treatment"
                                 DisplayMemberBinding="{Binding Path=KilometersAfterTreatment}">
                             </GridViewColumn >
-                            <GridViewColumn Width="100">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ProgressBar x:Name="pbServiceProgres" Value="{Binding Path=Progress}" Maximum="{Binding Path=MaxProgressValue}"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
@@ -519,7 +471,8 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <DatePicker x:Name="dpDateFrom" Grid.Row="0"/>
-                <TextBox x:Name="tbLicenseNum" Margin="0,8,0,0" Text="License Number" Grid.Row="1"/>
+                <TextBox PreviewTextInput="numberValidationTextBox" 
+                    x:Name="tbLicenseNum" Margin="0,8,0,0" Text="License Number" Grid.Row="1"/>
                 <Button 
                     x:Name="btnAddNewBus" Click="btnAddNewBus_Click" 
                     Margin="0,8" Content="Add" Grid.Row="3" Style="{StaticResource busServiceStyle}"/>

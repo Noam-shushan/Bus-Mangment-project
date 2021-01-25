@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,6 +45,12 @@ namespace DS
             double kmPerMin = 0.5;
             double totalMinute = km / kmPerMin;
             return TimeSpan.FromMinutes(totalMinute);
+        }
+
+        public static string GetHashPassword(string password)
+        {
+            SHA512 shaM = new SHA512Managed();
+            return Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(password)));
         }
     }
 }

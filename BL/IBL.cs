@@ -10,6 +10,7 @@ namespace BlApi
     {
         #region User
         BO.User GetUser(string userName);
+        string GetHashPassword(string password);
         IEnumerable<BO.User> GetAllUsers();
         IEnumerable<BO.User> GetAllUsersBy(Predicate<BO.User> predicate);
         void AddUser(BO.User newUser);
@@ -25,6 +26,7 @@ namespace BlApi
         void UpdateBus(BO.Bus bus);
         void RemoveBus(BO.Bus bus);
         void BusServices(BO.Bus bus, string service, double tripKm = 0);
+        void SetBusStatusOnClosing();
         #endregion
 
         #region Line
@@ -50,6 +52,7 @@ namespace BlApi
         #region LineStation
         BO.LineStation GetLineStation(int stationCode, int lineId);
         void AddLineStation(BO.LineStation newLineStation);
+        void UpdateLineStation(BO.LineStation lineStation);
         void RemoveLineStation(BO.LineStation station); 
         #endregion
 
@@ -58,6 +61,14 @@ namespace BlApi
         BO.AdjacentStations GetAdjacentStations(int station1, int station2);
         void UpdateAdjacentStations(BO.AdjacentStations adjacentStations);
         void AddAdjacentStations(BO.AdjacentStations adjacentStations);
+        #endregion
+
+        #region LineTrip
+        int AddLineTrip(BO.LineTrip lineTrip);
+        BO.LineTrip GetLineTrip(int id);
+        IEnumerable<BO.LineTrip> GetAllLineTrips();
+        IEnumerable<BO.LineTrip> GetAllLineTripsBy(Predicate<BO.LineTrip> predicate);
+        IEnumerable<BO.LineTrip> GetAllLineTripsByStation(BO.Station station);
         #endregion
 
     }

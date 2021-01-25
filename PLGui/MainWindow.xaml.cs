@@ -25,6 +25,7 @@ namespace PLGui
         public MainWindow()
         {
             InitializeComponent();
+            tbUsername.Focus();
         }
 
         private void btnLogIn_Click(object sender, RoutedEventArgs e)
@@ -53,7 +54,7 @@ namespace PLGui
                 tbPassword.BorderBrush = Brushes.Red;
                 return;
             }
-            if(tbPassword.Password != user.Password)
+            if(myBL.GetHashPassword(tbPassword.Password) != user.HashedPassword)
             {
                 lbErrPassword.Content = "Error: not valid password";
                 return;
@@ -68,6 +69,26 @@ namespace PLGui
         private void btnAddUser_Click(object sender, RoutedEventArgs e)
         {
             new AddUserWin().Show();
+        }
+
+        private void btnLogIn_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                btnLogIn_Click(sender, e);
+            }
+        }
+
+        private void tbUsername_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+                tbPassword.Focus();
+        }
+
+        private void tbPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                btnLogIn.Focus();
         }
     }
 }
