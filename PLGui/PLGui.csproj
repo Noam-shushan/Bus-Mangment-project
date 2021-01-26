@@ -75,6 +75,7 @@
       <DependentUpon>BusViewInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Constans.cs" />
+    <Compile Include="GuiTools.cs" />
     <Compile Include="LinesManagement.xaml.cs" />
     <Compile Include="LineViewInfo.xaml.cs">
       <DependentUpon>LineViewInfo.xaml</DependentUpon>

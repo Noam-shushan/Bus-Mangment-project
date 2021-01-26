@@ -350,8 +350,7 @@ namespace Dal
                     }
                 }
             }
-            var station = GetStation(lineStation.Station);
-            lineStation.Name = station.Name;
+
             lineStationList.Add(lineStation);
             XmlTools.SaveListToXMLSerializer(lineStationList, lineStationsPath);
         }
@@ -428,8 +427,7 @@ namespace Dal
                     Station1 = lineStation.PrevStation,
                     Station2 = lineStation.NextStation,
                     TimeInHours = prevAdja.TimeInHours + nextAdja.TimeInHours,
-                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes,
-                    LineCode = prevAdja.LineCode
+                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes
                 });
                 
                 var prev = lineStationList.Find(s => s.Station == lineStation.PrevStation 

@@ -142,10 +142,6 @@ namespace DS
                 newLine.Area = StationsList.Find(s => s.Code == newLine.FirstStation).Area;
                 LinesList.Add(newLine);
             }
-            foreach (var ls in LineStationsList)
-            {
-                ls.Name = StationsList.Find(s => s.Code == ls.Station).Name;
-            }
         }
 
         static int[] initializLineStations(int lineId, int numOfLS = 10) 
@@ -211,10 +207,11 @@ namespace DS
             AdjacentStationsList = new List<DO.AdjacentStations>();
             foreach(var line in LinesList)
             {
-                var temp = (from ls in LineStationsList
-                           where ls.LineId == line.Id
-                           select ls).ToList();
-                foreach(var ls in temp)
+                var lineStations = from ls in LineStationsList
+                                    where ls.LineId == line.Id
+                                    select ls;
+                
+                foreach(var ls in lineStations)
                 {
                     if (ls.NextStation == -1)
                         break; // last station in the line
@@ -228,7 +225,6 @@ namespace DS
                     {
                         Station1 = ls.Station,
                         Station2 = ls.NextStation,
-                        LineCode = line.Code,
                         Distance = dist,
                         TimeInHours = time.Hours,
                         TimeInMinutes = time.Minutes,

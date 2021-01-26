@@ -111,9 +111,6 @@
                         <GridViewColumn 
                             Header="Station code" 
                             DisplayMemberBinding="{Binding Path=Station2}"/>
-                        <GridViewColumn 
-                            Header="In Line"
-                            DisplayMemberBinding="{Binding Path=LineCode}"/>
                         <GridViewColumn
                             Header="Distance"
                             DisplayMemberBinding="{Binding Path=DistanceFormat}"/>

@@ -11,6 +11,7 @@ namespace BlApi
         #region User
         BO.User GetUser(string userName);
         string GetHashPassword(string password);
+        bool IsCorrectPassword(BO.User user, string password);
         IEnumerable<BO.User> GetAllUsers();
         IEnumerable<BO.User> GetAllUsersBy(Predicate<BO.User> predicate);
         void AddUser(BO.User newUser);
@@ -53,6 +54,7 @@ namespace BlApi
         BO.LineStation GetLineStation(int stationCode, int lineId);
         void AddLineStation(BO.LineStation newLineStation);
         void UpdateLineStation(BO.LineStation lineStation);
+        void AddDistEndTimeToNewLineStation(BO.LineStation lineStation, out bool prevMiss, out bool nextMiss);
         void RemoveLineStation(BO.LineStation station); 
         #endregion
 

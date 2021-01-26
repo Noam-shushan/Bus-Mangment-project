@@ -6,17 +6,22 @@ using System.Threading.Tasks;
 
 namespace Dal
 {
+    /// <summary>
+    /// Implamenting the IDal
+    /// Extracting data from the main memory
+    /// Management of entities and data
+    /// </summary>
     public class DalObject : DalApi.IDaL
     {
         #region singelton
         public static DalApi.IDaL Instance { get; } = new DalObject();
         
-        DalObject() { } 
+        DalObject() { }
         #endregion
 
         #region Bus
         /// <summary>
-        /// 
+        /// Add a new bus to my Data Source
         /// </summary>
         /// <param name="bus"></param>
         public void AddBus(DO.Bus bus)
@@ -32,6 +37,10 @@ namespace Dal
             DS.DataSource.BussList.Add(bus.Clone());
         }
 
+        /// <summary>
+        /// Get all Buss from my Data Source
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<DO.Bus> GetAllBuss()
         {
             return from bus in DS.DataSource.BussList
@@ -39,6 +48,11 @@ namespace Dal
                    select bus;
         }
 
+        /// <summary>
+        /// Get all buss by condition from my Data Source
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IEnumerable<DO.Bus> GetAllBussBy(Predicate<DO.Bus> predicate)
         {
             return from bus in DS.DataSource.BussList
@@ -46,6 +60,11 @@ namespace Dal
                    select bus;
         }
 
+        /// <summary>
+        /// Get a singal bus from my Data Source
+        /// </summary>
+        /// <param name="licenseNum">license number ,the entity key></param>
+        /// <returns></returns>
         public DO.Bus GetBus(int licenseNum)
         {
             var bus = DS.DataSource.BussList.Find(b => b.LicenseNum == licenseNum);
@@ -56,6 +75,10 @@ namespace Dal
                 throw new DO.BadBusException(licenseNum, "bus not found");
         }
 
+        /// <summary>
+        /// Remove bus from my Data Source
+        /// </summary>
+        /// <param name="bus"></param>
         public void RemoveBus(DO.Bus bus)
         {
             var busToRem = DS.DataSource.BussList.Find(b => b.LicenseNum == bus.LicenseNum);
@@ -70,6 +93,10 @@ namespace Dal
                 throw new DO.BadBusException(bus.LicenseNum, "bus not found");
         }
 
+        /// <summary>
+        /// Update Bus in my Data Source
+        /// </summary>
+        /// <param name="bus"></param>
         public void UpdateBus(DO.Bus bus)
         {
             var busToUp = DS.DataSource.BussList.Find(b => b.LicenseNum == bus.LicenseNum);
@@ -85,6 +112,10 @@ namespace Dal
         #endregion
 
         #region Line
+        /// <summary>
+        /// Get all line from the database
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<DO.Line> GetAllLines()
         {
             return from line in DS.DataSource.LinesList
@@ -92,6 +123,11 @@ namespace Dal
                    select line;
         }
 
+        /// <summary>
+        /// Get all line from the database by some coondition
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IEnumerable<DO.Line> GetAllLinesBy(Predicate<DO.Line> predicate)
         {
             return from line in DS.DataSource.LinesList
@@ -99,6 +135,11 @@ namespace Dal
                    select line;
         }
 
+        /// <summary>
+        /// Get a single line from the database
+        /// </summary>
+        /// <param name="lineId"></param>
+        /// <returns></returns>
         public DO.Line GetLine(int lineId)
         {
             var line = DS.DataSource.LinesList.Find(l => l.Id == lineId);
@@ -109,6 +150,11 @@ namespace Dal
                 throw new DO.BadLineException(lineId, "Line not found");
         }
 
+        /// <summary>
+        /// Add new line to the database
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns>the id of this line that came from the run number in the database</returns>
         public int AddLine(DO.Line line)
         {
             line.Id = DalApi.Counters.LineCounter;
@@ -116,6 +162,10 @@ namespace Dal
             return line.Id;
         }
 
+        /// <summary>
+        /// Upadate line
+        /// </summary>
+        /// <param name="line"></param>
         public void UpdateLine(DO.Line line)
         {
             var lineToUp = DS.DataSource.LinesList.Find(l => l.Id == line.Id);
@@ -129,13 +179,19 @@ namespace Dal
                 throw new DO.BadLineException(line.Id, "Line not found");
         }
 
+        /// <summary>
+        /// Remove line
+        /// </summary>
+        /// <param name="line"></param>
         public void RemoveLine(DO.Line line)
         {
             var lineToRem = DS.DataSource.LinesList.Find(l => l.Id == line.Id);
 
             if (lineToRem != null && !lineToRem.IsDeleted) 
             {
+                // Remove all the line station of this line
                 GetAllLineStationBy(ls => ls.LineId == lineToRem.Id).ToList().ForEach(RemoveLineStationOnRemoveline);
+                
                 DS.DataSource.LinesList.Remove(lineToRem);
                 lineToRem.IsDeleted = true;
                 DS.DataSource.LinesList.Add(lineToRem);
@@ -146,6 +202,10 @@ namespace Dal
         #endregion
 
         #region Station
+        /// <summary>
+        /// Get all station from the database
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<DO.Station> GetAllStations()
         {
             return from station in DS.DataSource.StationsList
@@ -153,6 +213,11 @@ namespace Dal
                    select station;
         }
 
+        /// <summary>
+        /// Get all the station from the database by some predicate
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IEnumerable<DO.Station> GetAllStationsBy(Predicate<DO.Station> predicate)
         {
             return from station in DS.DataSource.StationsList
@@ -160,6 +225,11 @@ namespace Dal
                    select station;
         }
 
+        /// <summary>
+        /// Get a single station from the database
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public DO.Station GetStation(int code)
         {
             var station = DS.DataSource.StationsList.Find(s => s.Code == code);
@@ -169,6 +239,10 @@ namespace Dal
                 throw new DO.BadStationException(code, "Station not found");
         }
 
+        /// <summary>
+        /// Add new station to the database
+        /// </summary>
+        /// <param name="station"></param>
         public void AddStation(DO.Station station)
         {
             var st = DS.DataSource.StationsList.FirstOrDefault(s => s.Code == station.Code);
@@ -178,6 +252,10 @@ namespace Dal
                 DS.DataSource.StationsList.Add(station.Clone());
         }
 
+        /// <summary>
+        /// Update station
+        /// </summary>
+        /// <param name="station"></param>
         public void UpdateStation(DO.Station station)
         {
             var stationToUp = DS.DataSource.StationsList.Find(s => s.Code == station.Code);
@@ -191,13 +269,20 @@ namespace Dal
                 throw new DO.BadStationException(station.Code, "Station not found");
         }
 
+        /// <summary>
+        /// Remove station from the database
+        /// </summary>
+        /// <param name="station"></param>
         public void RemoveStation(DO.Station station)
         {
             var stationToRem = DS.DataSource.StationsList.Find(s => s.Code == station.Code);
 
             if (stationToRem != null && !stationToRem.IsDeleted)
-            {
+            {   
+                // remove all the line station of this station
                 GetAllLineStationBy(s => s.Station == stationToRem.Code).ToList().ForEach(RemoveLineStation);
+                
+                // remove all all adjacent stations pf this station
                 GetAllAdjacentStationsBy(s => s.Station1 == stationToRem.Code 
                 || s.Station2 == stationToRem.Code).ToList().ForEach(RemoveAdjacentStations);
                 
@@ -211,6 +296,10 @@ namespace Dal
         #endregion
 
         #region LineStation
+        /// <summary>
+        /// Get all line stations from the database
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<DO.LineStation> GetAllLineStation()
         {
             return from lineStation in DS.DataSource.LineStationsList
@@ -218,6 +307,11 @@ namespace Dal
                    select lineStation;
         }
 
+        /// <summary>
+        /// Get all line stations from the database by some predicate
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IEnumerable<DO.LineStation> GetAllLineStationBy(Predicate<DO.LineStation> predicate)
         {
             return from lineStation in DS.DataSource.LineStationsList
@@ -226,6 +320,12 @@ namespace Dal
                    select lineStation;
         }
 
+        /// <summary>
+        /// Get a single line station by is key (station code, line id)
+        /// </summary>
+        /// <param name="stationCode"></param>
+        /// <param name="lineId"></param>
+        /// <returns></returns>
         public DO.LineStation GetLineStation(int stationCode, int lineId)
         {
             var lineStation =
@@ -237,6 +337,10 @@ namespace Dal
                 throw new DO.BadLineStationException(stationCode, lineId, "Station Line not found");
         }
 
+        /// <summary>
+        /// Add new line station
+        /// </summary>
+        /// <param name="lineStation"></param>
         public void AddLineStation(DO.LineStation lineStation)
         {
             var ls = DS.DataSource.LineStationsList.FirstOrDefault(s =>
@@ -248,22 +352,25 @@ namespace Dal
                                                     "Duplicate line station");
             }
 
+            #region Check if there is needed data on the database
             var station = DS.DataSource.StationsList.Find(s => s.Code == lineStation.Station);
-            if(station == null)
+            if (station == null)
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Station '{lineStation.Station}' does not exist");
-            if(station.IsDeleted)
+            if (station.IsDeleted)
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Station '{lineStation.Station}' does not exist");
 
             var line = DS.DataSource.LinesList.Find(l => l.Id == lineStation.LineId);
-            if(line == null)
+            if (line == null)
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Line '{lineStation.LineId}' does not exist");
-            if(line.IsDeleted)
+            if (line.IsDeleted)
                 throw new DO.BadLineStationException(lineStation.Station, lineStation.LineId,
                     $"Line '{lineStation.LineId}' does not exist");
+            #endregion
 
+            // Updates the station number on the line of all line stations of this line
             foreach (var s in GetAllLineStationBy(s => s.LineId == line.Id))
             {
                 if(lineStation.PrevStation == s.Station)
@@ -277,10 +384,14 @@ namespace Dal
                     UpdateLineStation(s);
                 }
             } 
-            lineStation.Name = station.Name; 
+
             DS.DataSource.LineStationsList.Add(lineStation.Clone());
         }
 
+        /// <summary>
+        /// Upadte a line station
+        /// </summary>
+        /// <param name="lineStation"></param>
         public void UpdateLineStation(DO.LineStation lineStation)
         {
             var ls = 
@@ -297,6 +408,13 @@ namespace Dal
                                                 lineStation.LineId, "Station line not found");
         }
 
+        /// <summary>
+        /// In deleting a line we want to delete all the stations
+        /// As opposed to a specific deletion of a station
+        /// Therefore we will not set conditions and we will not change other
+        /// stations on the line because everyone will delete
+        /// </summary>
+        /// <param name="lineStation"></param>
         public void RemoveLineStationOnRemoveline(DO.LineStation lineStation)
         {
             var ls =
@@ -310,6 +428,10 @@ namespace Dal
             }
         }
 
+        /// <summary>
+        /// Remove line station
+        /// </summary>
+        /// <param name="lineStation"></param>
         public void RemoveLineStation(DO.LineStation lineStation)
         {
             var ls =
@@ -321,6 +443,7 @@ namespace Dal
                 if (!ls.IsDeleted)
                 {
                     updatePrevAndNextStationOnRemove(ls);
+
                     DS.DataSource.LineStationsList.Remove(ls);
                     ls.IsDeleted = true;
                     DS.DataSource.LineStationsList.Add(ls);
@@ -331,6 +454,7 @@ namespace Dal
                                                 lineStation.LineId, "Station line not found");
         }
 
+        // Update prev and next stations on remove
         void updatePrevAndNextStationOnRemove(DO.LineStation lineStation)
         {
             if (lineStation.NextStation == -1 && lineStation.PrevStation == 0)
@@ -352,8 +476,7 @@ namespace Dal
                     Station1 = prevAdja.Station1,
                     Station2 = nextAdja.Station2,
                     TimeInHours = prevAdja.TimeInHours + nextAdja.TimeInHours,
-                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes,
-                    LineCode = prevAdja.LineCode
+                    TimeInMinutes = prevAdja.TimeInMinutes + nextAdja.TimeInMinutes
                 });
 
                 var prev = GetLineStation(lineStation.PrevStation, lineStation.LineId);
@@ -520,6 +643,11 @@ namespace Dal
         #endregion
 
         #region LineTrip
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lineTrip"></param>
+        /// <returns></returns>
         public int AddLineTrip(DO.LineTrip lineTrip)
         {
             lineTrip.Id = DalApi.Counters.LineTripCounter;

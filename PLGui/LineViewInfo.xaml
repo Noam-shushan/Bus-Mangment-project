@@ -138,9 +138,9 @@
                 Grid.Column="0" Grid.Row="2" Margin="0,5" FontSize="13"
                 Style="{StaticResource textBlocks}"/>
             <Button 
-                x:Name="btnPreviousStation" Content="here" 
+                x:Name="btnSelectPrevStation" Content="here" 
                 Grid.Column="0" Grid.Row="3" Width="50" Margin="0,5"
-                Click="btnPreviousStation_Click"/>
+                Click="btnSelectPrevStation_Click"/>
             <Button 
             x:Name="btnUpdete" Content="Update" Height="25" IsEnabled="False"
             Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center" 
@@ -151,16 +151,14 @@
 
             <TextBlock Text="Prev Station: "/>
             <StackPanel Orientation="Horizontal" x:Name="spPrev" Visibility="Hidden">
-                <TextBlock x:Name="textBlockPrevName"/>
                 <TextBox x:Name="tbDistancePrevStation" Text="Distance" PreviewTextInput="numberValidationTextBox"/>
-                <materialDesign1:TimePicker x:Name="tbTimePrevStation" Text="Time" Is24Hours="True"/>
+                <materialDesign1:TimePicker x:Name="tbTimePrevStation" Is24Hours="True"/>
             </StackPanel>
 
             <TextBlock Text="Next Station: "/>
             <StackPanel Orientation="Horizontal" x:Name="spNext" Visibility="Hidden">
-                <TextBlock x:Name="textBlockNextName"/>
                 <TextBox x:Name="tbDistanceNextStation" Text="Distance" PreviewTextInput="numberValidationTextBox"/>
-                <materialDesign1:TimePicker x:Name="tbTimeNextStation" Text="Time"/>
+                <materialDesign1:TimePicker x:Name="tbTimeNextStation" Is24Hours="True"/>
             </StackPanel>
             <Button 
                 x:Name="btnUpdateDistAndTime"

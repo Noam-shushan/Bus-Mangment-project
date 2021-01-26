@@ -23,8 +23,8 @@ namespace PLGui
     public partial class StationViewInfo : Window
     {
         BlApi.IBL myBL = BlApi.BlFactory.GetBL();
-        ObservableCollection<BO.Line> myLineList = new ObservableCollection<BO.Line>();
-        ObservableCollection<BO.AdjacentStations> myAdjacentStationsList = new ObservableCollection<BO.AdjacentStations>();
+        ObservableCollection<BO.Line> myLineList;
+        ObservableCollection<BO.AdjacentStations> myAdjacentStationsList;
         BO.Station _currStation;
 
         public StationViewInfo(BO.Station station)
@@ -38,20 +38,16 @@ namespace PLGui
             }
             catch (BO.BadStationException ex)
             {
-                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
             textBoxStationInfo.Text = _currStation.ToString();
-            foreach (var line in _currStation.LinesPassBy)
-            {
-                myLineList.Add(line);
-            }
+
+            myLineList = new ObservableCollection<BO.Line>(_currStation.LinesPassBy);
             lvLinesPassBy.ItemsSource = myLineList;
 
-            foreach (var adst in _currStation.MyAdjacentStations)
-            {
-                myAdjacentStationsList.Add(adst);
-            }
+            myAdjacentStationsList = new ObservableCollection<BO.AdjacentStations>(_currStation.MyAdjacentStations);
             lvAdjacentStationsList.ItemsSource = myAdjacentStationsList;
         }
 
@@ -61,14 +57,16 @@ namespace PLGui
             new LineViewInfo(line).Show();
         }
 
+        // update the adjacet station how selected
         private void btnUpdateTimeAndDist_Click(object sender, RoutedEventArgs e)
         {
-            if (isEmptyBoxs())
+            if (isEmptyBoxs()) // check if the uesr not enter any new data
                 return;
+            
             try
-            {
+            {  
                 var adjacentStations = lvAdjacentStationsList.SelectedItem as BO.AdjacentStations;
-                double dist;
+                double dist; // new distance
                 if (!double.TryParse(tbUpdateDistanc.Text, out dist))
                 {
                     MessageBox.Show("Error: not a valid distanc", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -84,10 +82,11 @@ namespace PLGui
             }
             catch (BO.BadAdjacentStationsException ex)
             {
-                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
+            // clear my view
             gridUpdate.Visibility = Visibility.Hidden;
             tbUpdateDistanc.BorderBrush = tbUpdateTime.BorderBrush = Brushes.Black;
             btnUpdateStation.Visibility = Visibility.Visible;
@@ -137,18 +136,16 @@ namespace PLGui
             {
                 myBL.UpdateStation(_currStation);
                 refreshMe(_currStation.Code);
-                Management mywin = null;
-                foreach (var win in Application.Current.Windows)
+                Management managWin = GuiTools.GetCurrentManagmentWin();
+                if (managWin != null)
                 {
-                    if (win.GetType().Name == "Management")
-                        mywin = win as Management;
+                    managWin.refreshMyStationList();
+                    managWin.refreshMyLineList();
                 }
-                if (mywin != null)
-                    mywin.refreshMyStationList();
             }
             catch(BO.BadStationException ex)
             {
-                MessageBox.Show("Error:" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             spUpdate.Visibility = Visibility.Hidden;

@@ -33,6 +33,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DalXml", "DalXml\DalXml.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildXmlFileFromDS", "Test\BuildXmlFileFromDS.csproj", "{719C46E7-ECED-4ED5-B914-CBF3C2878AA7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{81738191-1B3D-4A24-AEB6-C86977CC8DB2}"
+	ProjectSection(SolutionItems) = preProject
+		bin\xml\AdjacentStationsXml.xml = bin\xml\AdjacentStationsXml.xml
+		bin\xml\BussXml.xml = bin\xml\BussXml.xml
+		bin\config.xml = bin\config.xml
+		bin\xml\CountersXml.xml = bin\xml\CountersXml.xml
+		bin\xml\LineStationsXml.xml = bin\xml\LineStationsXml.xml
+		bin\xml\LinesTripXml.xml = bin\xml\LinesTripXml.xml
+		bin\xml\LinesXml.xml = bin\xml\LinesXml.xml
+		bin\xml\StationsXml.xml = bin\xml\StationsXml.xml
+		bin\xml\UserXml.xml = bin\xml\UserXml.xml
+		דוח פרויקט.docx = דוח פרויקט.docx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

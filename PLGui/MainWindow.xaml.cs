@@ -54,9 +54,13 @@ namespace PLGui
                 tbPassword.BorderBrush = Brushes.Red;
                 return;
             }
-            if(myBL.GetHashPassword(tbPassword.Password) != user.HashedPassword)
+            try
             {
-                lbErrPassword.Content = "Error: not valid password";
+                myBL.IsCorrectPassword(user, tbPassword.Password);
+            }
+            catch(BO.BadUsernameException ex)
+            {
+                lbErrPassword.Content = $"Error: {ex.Message}";
                 return;
             }
             
