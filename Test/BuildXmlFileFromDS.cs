@@ -23,20 +23,25 @@ namespace Test
 
         static void Main(string[] args)
         {
-            SaveListToXMLSerializer(DataSource.LinesList, linesPath);
-            SaveListToXMLSerializer(DataSource.AdjacentStationsList, adjacentStationsPath);
-            SaveListToXMLSerializer(DataSource.LineStationsList, lineStationsPath);
-            SaveListToXMLSerializer(DataSource.StationsList, stationPath);
-            creatXmls(DataSource.BussList, bussPath, "Buss");
-            SaveListToXMLSerializer(DataSource.UsersList, usersPath);
-            SaveListToXMLSerializer(DataSource.LineTripsList, @"LinesTripXml.xml");
-            List<int> CountersList = new List<int>
-            {
-                DataSource.LinesList.Last().Id,
-                DataSource.LineTripsList.Last().Id
-            };
-            SaveListToXMLSerializer(CountersList, @"CountersXml.xml");
             Console.ReadKey();
+        }
+
+        public static void CreateXmlFilseToTheList()
+        {
+            //SaveListToXMLSerializer(DataSource.LinesList, linesPath);
+            //SaveListToXMLSerializer(DataSource.AdjacentStationsList, adjacentStationsPath);
+            //SaveListToXMLSerializer(DataSource.LineStationsList, lineStationsPath);
+            //SaveListToXMLSerializer(DataSource.StationsList, stationPath);
+            //creatXmls(DataSource.BussList, bussPath, "Buss");
+            //SaveListToXMLSerializer(DataSource.UsersList, usersPath);
+            //SaveListToXMLSerializer(DataSource.LineTripsList, @"LinesTripXml.xml");
+            //List<int> CountersList = new List<int>
+            //{
+            //    DataSource.LinesList.Last().Id,
+            //    DataSource.LineTripsList.Last().Id
+            //};
+            //SaveListToXMLSerializer(CountersList, @"CountersXml.xml");
+            
         }
 
         public static XElement CreateElement<T>(T obj)

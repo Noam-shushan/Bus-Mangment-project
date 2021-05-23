@@ -87,6 +87,7 @@
 
         <ListView
             x:Name="lvLinesTrip" ItemsSource="{Binding}" Grid.Column="0" Grid.Row="6"
+            Background="MintCream"
             Grid.ColumnSpan="3" Grid.RowSpan="4" Height="200" Visibility="Hidden">
             <ListView.View>
                 <GridView>
@@ -97,8 +98,13 @@
                             Header="Last station" DisplayMemberBinding="{Binding Path=LastStation}"/>
                         <GridViewColumn 
                             Header="Arrival time" DisplayMemberBinding="{Binding Path=ArrivalTimeToStationFormat}"/>
-                        <GridViewColumn 
-                            Header="Estimated arrival time" DisplayMemberBinding="{Binding Path=CurrentTimeToStationFormat}"/>
+                        <GridViewColumn Header="Estimated arrival time">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=CurrentTimeToStationFormat}" Foreground="DarkOrchid"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn> 
                     </GridView.Columns>
                 </GridView>
             </ListView.View>

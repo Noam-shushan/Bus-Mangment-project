@@ -40,31 +40,37 @@ namespace PLGui
         {
             InitializeComponent();
             
+            workerSetup();
+            
             watch = new Stopwatch();
+
+            myStationList = new ObservableCollection<BO.Station>(myBL.GetAllStations());
+            cbStations.ItemsSource = myStationList;
+        }
+
+        private void workerSetup()
+        {
             timerWorker = new BackgroundWorker();
             timerWorker.DoWork += Worker_DoWork;
             timerWorker.ProgressChanged += Worker_ProgressChanged;
             timerWorker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             timerWorker.WorkerReportsProgress = true;
             timerWorker.WorkerSupportsCancellation = true;
-
-            myStationList = new ObservableCollection<BO.Station>(myBL.GetAllStations());
-            cbStations.ItemsSource = myStationList;
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            lvLinesTrip.Visibility = Visibility.Hidden;           
+            lvLinesTrip.Visibility = Visibility.Hidden;
             clock.Height = 402;
             tbSpeed.IsEnabled = true;
 
             watch.Stop();
         }
 
-        private void Worker_DoWork(object sender, DoWorkEventArgs e) 
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            while (!timerWorker.CancellationPending) 
-            {         
+            while (!timerWorker.CancellationPending)
+            {
                 timerWorker.ReportProgress(1);
                 Thread.Sleep(1000);
             }
@@ -78,7 +84,7 @@ namespace PLGui
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             myClock.CurrentTime = TimeSpan.FromTicks(watch.Elapsed.Ticks * myClock.Rate); // update the clock
-            
+
             foreach (var lineTrip in GetUpdeteLineTripList())
             {
                 if (lineTrip.CurrentTimeToStation != TimeSpan.Zero)
@@ -100,7 +106,7 @@ namespace PLGui
 
         private void btnPlayStop_Checked(object sender, RoutedEventArgs e)
         {
-            if(cbStations.SelectedItem == null)
+            if (cbStations.SelectedItem == null)
             {
                 MessageBox.Show("Please select station", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 btnPlayStop.IsChecked = false;
@@ -118,7 +124,7 @@ namespace PLGui
             myClock.Rate = speed;
             myClock.CurrentClock = clock.Time;
             myClock.IsClockRunning = true;
-            
+
             timerWorker.RunWorkerAsync(0);
         }
 
@@ -129,11 +135,11 @@ namespace PLGui
         }
 
         private void cbStations_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        {// Change the time board of the station acording to the selected station 
             var station = cbStations.SelectedItem as BO.Station;
             myLineList = new ObservableCollection<BO.Line>(station.LinesPassBy);
             lvLinesPassBy.ItemsSource = myLineList;
-
+            
             myLinesTripList = new ObservableCollection<BO.LineTrip>(myBL.GetAllLineTripsByStation(station));
 
             lvLinesTrip.ItemsSource = myLinesTripList;

@@ -113,8 +113,9 @@
             </Style.Triggers>
         </Style>
     </Window.Resources>
-    
+
     <Grid>
+        <!--#region Main Grig -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="auto"/>
@@ -135,7 +136,7 @@
             FontSize="35" Grid.ColumnSpan="2"
             Grid.Row="0" Grid.Column="1" Margin="189,10,274.333,9.667" Width="180" />
 
-        <!--#region Main Grig -->
+        
         <Grid  Grid.Column="0" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -167,7 +168,7 @@
 
         <!--#region Lines -->
         <Grid 
-            x:Name="gridLines" Visibility="Collapsed"
+            x:Name="gridLines" Grid.ColumnSpan="2"
             Grid.Column="1" Grid.RowSpan="2" Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
@@ -177,17 +178,18 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <ListView 
                 x:Name="lvLineList"
                 ItemsSource="{Binding}"
                 Grid.Column="0" Grid.Row="0"
-                Grid.RowSpan="2"
+                Grid.RowSpan="3"
+                Width="auto"
                 HorizontalAlignment="Left"
                 MouseDoubleClick="lvLineList_MouseDoubleClick"
-                Height="400"
-                AlternationCount="2">
+                Height="400">
                 <ListView.View>
                     <GridView >
                         <GridView.Columns>
@@ -210,20 +212,19 @@
                 x:Name="btnRemove" Content="Remove Line"
                 Grid.Column="1" Grid.Row="0"
                 VerticalAlignment="Top"
-                Grid.ColumnSpan="2" Margin="67,0,29.333,0"
+                Margin="40,20, 40, 0"
                 Click="btnRemove_Click" Style="{StaticResource curdBtnStyle}"/>
 
             <Button 
                 x:Name="btnAddNewLine" Content="Add Line"
-                Grid.Column="1" Grid.Row="0"
-                Margin="67,48,29.333,63.333" RenderTransformOrigin="0.439,-0.699" Grid.ColumnSpan="2"
+                Grid.Column="1" Grid.Row="1"
+                Margin="40,10"
                 Style="{StaticResource curdBtnStyle}"
                 VerticalAlignment="Center"
                 Click="btnAddNewLine_Click"/>
             <Grid 
-                x:Name="gridAddNewLine" Visibility="Hidden"
-                Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" 
-                Margin="0,9.667,-0.333,95">
+                x:Name="gridAddNewLine" Grid.Row="2" Grid.Column="1" Visibility="Hidden"
+                >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
@@ -252,7 +253,7 @@
                     x:Name="btnAddLine" Content="Add" 
                     Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                     Width="40" Margin="0,5" Click="btnAddLine_Click" Style="{StaticResource curdBtnStyle}"/>
-                
+
                 <StackPanel x:Name="spDistAndTime" Grid.Row="4" Grid.RowSpan="3" Grid.ColumnSpan="2" Visibility="Hidden">
                     <StackPanel Orientation="Horizontal" Margin="5,0">
                         <TextBlock Text="Distance" />
@@ -262,7 +263,7 @@
                         <TextBlock Text="Time"/>
                         <materialDesign1:TimePicker x:Name="tbTimeForNewLineStation" Margin="33,0,0,0" Is24Hours="True"/>
                     </StackPanel>
-                    
+
                     <Button 
                         x:Name="btnUpdateDistAndTime" Click="btnUpdateDistAndTime_Click"
                         Content="Update" Style="{StaticResource curdBtnStyle}" Width="40"/>
@@ -291,8 +292,7 @@
                 Grid.Column="0" Grid.Row="0"
                 Grid.RowSpan="2"
                 MouseDoubleClick="lvStationList_MouseDoubleClick"
-                 Height="400"
-                AlternationCount="2">
+                 Height="400">
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
@@ -377,7 +377,6 @@
                 x:Name="lvBusList"
                 ItemsSource="{Binding}"
                 SelectionChanged="lvBusList_SelectionChanged"
-                AlternationCount="2"
                 MouseDoubleClick="lvBusList_MouseDoubleClick"
                 Margin="20,0,10,10" Height="350"
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">

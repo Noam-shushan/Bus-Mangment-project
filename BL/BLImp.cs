@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace BL
 {
     /// <summary>
-    /// Implementation of IBL
+    /// Implementation of IBL - The logical layer of the project
     /// Links the entities and cross-references data coming from the database
     /// in order to present them to the user
     /// </summary>
@@ -53,7 +53,7 @@ namespace BL
         /// <param name="password"></param>
         /// <returns></returns>
         public string GetHashPassword(string password)
-        {   // credit to Haim Shachor‏
+        {
             SHA512 shaM = new SHA512Managed();
             return Convert.ToBase64String(shaM.ComputeHash(Encoding.UTF8.GetBytes(password)));
         }

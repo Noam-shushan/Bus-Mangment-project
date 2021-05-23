@@ -365,6 +365,7 @@ namespace DS
                     Longitude = 31.801182 
                 }
             };
+            
             foreach(var s in DataSource.StationsList)
             {
                 s.Area = AuxiliaryFunctions.GetArea(s.Latitude, s.Longitude);
